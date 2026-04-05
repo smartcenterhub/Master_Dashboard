@@ -7,13 +7,13 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --sb:240px;--bg:#f5f5f5;--surface:rgba(255,255,255,0.78);--surface-solid:#fff;--border:rgba(0,0,0,0.06);--border-s:rgba(0,0,0,0.04);
-  --tx:rgba(0,0,0,0.85);--tx2:rgba(0,0,0,0.55);--tx3:rgba(0,0,0,0.3);--tx4:rgba(0,0,0,0.18);
-  --accent:#2c2c2e;--accent-bg:rgba(0,0,0,0.04);--accent-border:rgba(0,0,0,0.12);
+  --sb:240px;--bg:#e8eef8;--surface:rgba(255,255,255,0.38);--surface-solid:#fff;--border:rgba(100,100,180,0.15);--border-s:rgba(100,100,180,0.08);
+  --tx:rgba(20,20,55,0.88);--tx2:rgba(40,40,90,0.72);--tx3:rgba(70,70,130,0.48);--tx4:rgba(100,100,160,0.28);
+  --accent:#3a3a7a;--accent-bg:rgba(80,70,180,0.07);--accent-border:rgba(80,70,180,0.2);
   --danger:#e53935;--success:#34C759;--warn:#e8a0b4;
-  --split-color:#636366;--merge-color:#636366;
-  --glass-blur:blur(40px) saturate(180%);--glass-border:0.5px solid rgba(255,255,255,0.55);
-  --glass-shadow:0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06);
+  --split-color:#5a4ab0;--merge-color:#3a6ab0;
+  --glass-blur:blur(40px) saturate(200%);--glass-border:1px solid rgba(255,255,255,0.58);
+  --glass-shadow:0 2px 8px rgba(100,100,200,0.08), 0 8px 28px rgba(100,100,200,0.07);
   --radius:14px;--radius-sm:9px;--radius-xs:7px;
   --ease:cubic-bezier(0.22,1,0.36,1);
 }
@@ -23,11 +23,18 @@
 @keyframes toastIn{from{opacity:0;transform:translateY(8px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.18)}
 body{font-family:-apple-system,'SF Pro Display','SF Pro Text','Inter',system-ui,sans-serif;font-size:13px;line-height:1.5;background:var(--bg);color:var(--tx);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(0,0,0,0.012) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(0,0,0,0.008) 0%,transparent 50%);pointer-events:none;z-index:0}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 80% 60% at 25% 0%,#c9e8ff 0%,transparent 55%),
+  radial-gradient(ellipse 60% 50% at 80% 8%,#ddd6fe 0%,transparent 50%),
+  radial-gradient(ellipse 50% 40% at 60% 40%,#fce7f3 0%,transparent 50%),
+  radial-gradient(ellipse 70% 60% at 8% 65%,#e0f2fe 0%,transparent 55%),
+  radial-gradient(ellipse 80% 70% at 92% 80%,#ede9fe 0%,transparent 60%),
+  linear-gradient(160deg,#dbeafe 0%,#ede9fe 35%,#fce7f3 60%,#e0f9f6 100%);
+  pointer-events:none;z-index:0}
 .layout{display:flex;height:100vh;position:relative;z-index:1}
 
 /* ── SIDEBAR ── */
-.sidebar{width:var(--sb);min-width:var(--sb);background:var(--surface);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-right:var(--glass-border);display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:2}
+.sidebar{width:var(--sb);min-width:var(--sb);background:rgba(255,255,255,0.32);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-right:1px solid rgba(255,255,255,0.52);display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:2;box-shadow:inset -1px 0 0 rgba(255,255,255,0.4)}
 .sb-head{padding:18px 18px 14px;border-bottom:1px solid var(--border-s);display:flex;align-items:center;gap:10px}
 .sb-title{font-size:14px;font-weight:700;flex:1;color:var(--tx);letter-spacing:-0.02em}
 .sb-gear{background:none;border:none;cursor:pointer;font-size:15px;padding:4px 6px;border-radius:6px;color:transparent;transition:all .2s}
@@ -39,8 +46,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .project-nav{flex:1;overflow-y:auto;padding:4px 8px;scrollbar-width:thin}
 .nav-sec{padding:6px 10px 2px;font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:.06em;text-transform:uppercase}
 .nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;font-size:12.5px;color:var(--tx2);user-select:none;transition:all .15s var(--ease);border-radius:var(--radius-sm)}
-.nav-item:hover{background:rgba(0,0,0,0.03)}
-.nav-item.active{background:var(--accent-bg);color:var(--accent);font-weight:600}
+.nav-item:hover{background:rgba(255,255,255,0.28)}
+.nav-item.active{background:rgba(255,255,255,0.48);border:1px solid rgba(255,255,255,0.62);color:var(--accent);font-weight:600;box-shadow:0 2px 8px rgba(100,100,200,0.1)}
 .nav-icon{font-size:15px;min-width:16px}
 .nav-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav-count{font-size:10px;background:rgba(0,0,0,0.05);border-radius:10px;padding:1px 7px;color:var(--tx3);flex-shrink:0;font-variant-numeric:tabular-nums}
@@ -64,18 +71,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* ── MAIN ── */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative;z-index:1}
-.topbar{padding:11px 24px;border-bottom:1px solid var(--border-s);background:rgba(255,255,255,0.65);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);display:flex;align-items:center;gap:7px;flex-shrink:0;flex-wrap:wrap}
-.view-title{font-size:15px;font-weight:700;flex:1;min-width:100px;letter-spacing:-0.02em}
+.topbar{padding:11px 24px;border-bottom:1px solid rgba(255,255,255,0.45);background:rgba(255,255,255,0.28);backdrop-filter:blur(30px) saturate(200%);-webkit-backdrop-filter:blur(30px) saturate(200%);display:flex;align-items:center;gap:7px;flex-shrink:0;flex-wrap:wrap;box-shadow:0 1px 0 rgba(255,255,255,0.55)}
+.view-title{font-size:15px;font-weight:700;flex:1;min-width:100px;letter-spacing:-0.02em;color:rgba(20,20,60,0.82)}
 
-.btn{padding:5px 13px;border-radius:8px;border:var(--glass-border);background:rgba(255,255,255,0.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:11.5px;cursor:pointer;font-weight:500;color:var(--tx2);white-space:nowrap;transition:all .15s var(--ease);box-shadow:0 0.5px 2px rgba(0,0,0,0.04)}
-.btn:hover{background:rgba(255,255,255,0.7);box-shadow:0 1px 4px rgba(0,0,0,0.06);transform:translateY(-0.5px)}
-.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,0.08),0 4px 12px rgba(0,0,0,0.06)}
+.btn{padding:5px 13px;border-radius:8px;border:1px solid rgba(255,255,255,0.62);background:rgba(255,255,255,0.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:11.5px;cursor:pointer;font-weight:500;color:rgba(40,40,90,0.78);white-space:nowrap;transition:all .15s var(--ease);box-shadow:0 1px 3px rgba(100,100,200,0.1)}
+.btn:hover{background:rgba(255,255,255,0.62);box-shadow:0 2px 8px rgba(100,100,200,0.12);transform:translateY(-0.5px)}
+.btn.primary{background:rgba(40,40,90,0.78);color:rgba(255,255,255,0.95);border-color:transparent;box-shadow:0 2px 10px rgba(40,40,120,0.2)}
 .btn.primary:hover{opacity:.9;transform:translateY(-0.5px)}
 .btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
-.btn.mode-split{border-color:var(--split-color);color:var(--split-color)}
+.btn.mode-split{border-color:rgba(100,80,200,0.4);color:rgba(70,45,165,0.88);background:rgba(100,80,200,0.08)}
 .btn.mode-split.active{background:var(--split-color);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 .btn.mode-split.active:hover{opacity:.88}
-.btn.mode-merge{border-color:var(--merge-color);color:var(--merge-color)}
+.btn.mode-merge{border-color:rgba(40,110,190,0.4);color:rgba(20,75,160,0.88);background:rgba(40,110,190,0.08)}
 .btn.mode-merge.active{background:var(--merge-color);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 .btn.mode-merge.active:hover{opacity:.88}
 
@@ -106,26 +113,40 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .map-card-title{font-size:11px;font-weight:500;color:var(--tx);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .map-status-badge{font-size:10px;padding:2px 7px;border-radius:10px;display:inline-block;margin-bottom:4px;max-width:100%}
 .map-card-next{font-size:10px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card.card-stopped{background:rgba(0,0,0,0.02);border:1.5px dashed rgba(0,0,0,0.12);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
-.card.card-stopped::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:rgba(0,0,0,0.08);border-radius:14px 14px 0 0}
-.card.card-stopped .card-hd,.card.card-stopped .card-meta,.card.card-stopped .card-title{color:rgba(0,0,0,0.35)}
+.card.card-stopped{background:rgba(245,238,215,0.35);border:1.5px dashed rgba(200,160,60,0.45);box-shadow:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.card.card-stopped::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:rgba(200,150,50,0.3);border-radius:14px 14px 0 0}
+.card.card-stopped .card-hd,.card.card-stopped .card-meta,.card.card-stopped .card-title{color:rgba(80,65,30,0.6)}
 .card.card-stopped .card-file,.card.card-stopped .memo-lbl,.card.card-stopped .memo-ts-lbl,.card.card-stopped .sec-label,.card.card-stopped .detail-toggle-lbl{color:rgba(0,0,0,0.18)}
 .card.card-stopped .card-ico{opacity:0.4}
 .card.card-stopped .memo-wrap{background:rgba(0,0,0,0.015)}
 .card.card-stopped .memo-dot{background:rgba(0,0,0,0.12);box-shadow:none}
 .card.card-stopped .memo-log-entry{background:rgba(255,255,255,0.3);border-color:rgba(0,0,0,0.04);color:rgba(0,0,0,0.3)}
-.card.card-stopped .card-ft{border-top-color:rgba(0,0,0,0.03)}
-.card.card-stopped .cb{border-color:rgba(0,0,0,0.06);background:rgba(0,0,0,0.02);color:rgba(0,0,0,0.25)}
-.card.card-stopped:hover{transform:none;box-shadow:none}
-.memo-log-list{max-height:220px;overflow-y:auto;margin-bottom:6px;display:flex;flex-direction:column;gap:4px;scrollbar-width:thin}
-.memo-log-entry{background:rgba(255,255,255,0.5);border:var(--glass-border);border-radius:10px;padding:7px 9px;font-size:11px;color:var(--tx);line-height:1.6;position:relative;transition:all .15s var(--ease)}
+.memo-log-entry{background:rgba(255,255,255,0.5);border:var(--glass-border);border-radius:10px;padding:7px 36px 7px 9px;font-size:11px;color:var(--tx);line-height:1.6;position:relative;transition:all .15s var(--ease)}
 .memo-log-entry .mle-ts{font-size:9px;color:var(--tx3);margin-bottom:3px;display:flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
 .memo-log-entry .mle-cat{font-size:9px;font-weight:600;color:var(--accent);background:var(--accent-bg);border-radius:6px;padding:0 5px}
+.mle-textrow{display:flex;align-items:flex-start;gap:4px}
+.mle-num{font-size:9px;color:var(--tx3);opacity:0.5;flex-shrink:0;min-width:10px;text-align:right;padding-top:1px;font-variant-numeric:tabular-nums}
+.mle-handle{position:absolute;top:7px;left:5px;font-size:10px;color:var(--tx3);cursor:grab;opacity:0;transition:opacity .15s;user-select:none;line-height:1}
 .memo-log-entry .mle-del{position:absolute;top:5px;right:6px;font-size:9px;color:var(--tx3);cursor:pointer;opacity:0;transition:opacity .15s}
+.memo-log-entry .mle-check{position:absolute;top:5px;right:24px;cursor:pointer;opacity:0;transition:opacity .15s;display:flex;align-items:center}
+.memo-log-entry .mle-restore{position:absolute;top:5px;right:24px;cursor:pointer;opacity:0;transition:opacity .15s;display:flex;align-items:center}
+.memo-log-entry:hover .mle-restore{opacity:1}
+.memo-log-entry .mle-copy{position:absolute;top:5px;right:42px;cursor:pointer;opacity:0;transition:opacity .15s;display:flex;align-items:center}
+.memo-log-entry:hover .mle-copy{opacity:1}
+.memo-log-entry:hover .mle-check{opacity:1}
 .memo-log-entry:hover .mle-del{opacity:1}
-.mle-ta{width:100%;background:transparent;border:none;border-radius:8px;padding:0;font-size:11px;font-family:inherit;color:var(--tx);line-height:1.65;resize:none;outline:none;cursor:pointer;min-height:18px;overflow:hidden}
-.mle-ta[readonly]{background:transparent;color:var(--tx)}
-.mle-ta:not([readonly]){background:rgba(255,255,255,0.7);border:0.5px solid var(--accent-border);border-radius:8px;padding:4px 6px;cursor:text;margin:-4px -6px;width:calc(100% + 12px);box-shadow:0 0 0 3px rgba(0,0,0,0.04)}
+.memo-log-entry.drag-over-top{border-top:2px solid var(--accent)}
+.memo-log-entry.drag-over-bottom{border-bottom:2px solid var(--accent)}
+.memo-log-list.drag-over-empty{outline:1.5px dashed var(--accent);outline-offset:-2px;border-radius:8px}
+.memo-c-toggle{display:flex;align-items:center;gap:5px;padding:7px 14px;cursor:pointer;user-select:none;border-top:1px solid var(--border-s);transition:background .12s}
+.memo-c-toggle:hover{background:rgba(0,0,0,0.02)}
+.memo-c-lbl{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:.04em;text-transform:uppercase;flex:1}
+.memo-c-arrow{font-size:9px;color:var(--tx3);transition:transform .2s}
+.memo-c-arrow.open{transform:rotate(180deg)}
+.memo-c-body{display:none;border-top:1px solid var(--border-s)}
+.memo-c-body.open{display:block}
+.mle-preview{font-size:11px;color:var(--tx);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;word-break:break-word;min-height:18px;flex:1;min-width:0}
+.mle-ta{width:100%;background:transparent;border:none;border-radius:8px;padding:0;font-size:11px;font-family:inherit;color:var(--tx);line-height:1.65;resize:none;outline:none;cursor:pointer;min-height:18px;overflow:hidden;flex:1;min-width:0}
 .memo-add-btn{background:none;border:none;cursor:pointer;font-size:14px;color:var(--tx3);padding:0 2px;line-height:1;transition:all .15s var(--ease);flex-shrink:0}
 .memo-add-btn:hover{color:var(--accent);transform:scale(1.1)}
 .memo-cats{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:7px}
@@ -158,17 +179,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .board{display:flex;flex-direction:column;gap:16px;width:100%}
 .proj-group{display:flex;flex-direction:column;gap:8px;width:100%;padding-bottom:12px;border-bottom:1px solid var(--border-s)}
 .proj-group:last-child{border-bottom:none}
-.proj-label{font-size:12px;font-weight:600;color:var(--tx2);padding:2px 0;display:flex;align-items:center;gap:6px;letter-spacing:-0.01em}
-.proj-label::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border-s),transparent)}
+.proj-label{font-size:12px;font-weight:600;color:rgba(50,50,110,0.62);padding:2px 0;display:flex;align-items:center;gap:6px;letter-spacing:-0.01em}
+.proj-label::after{content:'';flex:1;height:0.5px;background:linear-gradient(to right,rgba(120,120,200,0.2),transparent)}
 .proj-cards{display:flex;flex-wrap:wrap;gap:10px;align-items:start}
 
 /* ── CARD ── */
-.card{width:292px;min-width:292px;background:rgba(255,255,255,0.72);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:var(--glass-border);border-radius:var(--radius);overflow:hidden;transition:all .25s var(--ease);position:relative;box-shadow:var(--glass-shadow);animation:fadeUp .35s var(--ease) both}
-.card:hover{box-shadow:0 1px 2px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06),0 8px 24px rgba(0,0,0,0.04);transform:translateY(-1px);border-color:rgba(255,255,255,0.75)}
+.card{width:292px;min-width:292px;background:rgba(255,255,255,0.42);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border:1px solid rgba(255,255,255,0.68);border-radius:var(--radius);overflow:hidden;transition:all .25s var(--ease);position:relative;box-shadow:0 2px 8px rgba(100,100,200,0.09),0 8px 28px rgba(100,100,200,0.07),inset 0 1px 0 rgba(255,255,255,0.75);animation:fadeUp .35s var(--ease) both}
+.card:hover{box-shadow:0 4px 16px rgba(100,100,200,0.14),0 12px 36px rgba(100,100,200,0.1),inset 0 1px 0 rgba(255,255,255,0.85);transform:translateY(-1px);border-color:rgba(255,255,255,0.85)}
 .card.selected-merge{border-color:var(--merge-color);box-shadow:0 0 0 2px rgba(8,145,178,.15)}
 .card.selected-stop{border-color:#8e8e93;box-shadow:0 0 0 2px rgba(0,0,0,0.06)}
 .card.selected-pin{border-color:#636366;box-shadow:0 0 0 2px rgba(0,0,0,0.08)}
-.card.card-pinned{border-left:3px solid var(--accent)}
+.card.card-pinned{border-left:3px solid rgba(80,55,180,0.55)}
 .card.mode-split-hover{cursor:pointer}
 .card.mode-split-hover:hover{border-color:var(--split-color);box-shadow:0 0 0 2px rgba(0,0,0,0.06)}
 .card.mode-merge-hover{cursor:pointer}
@@ -234,8 +255,8 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 .sp{font-size:10px;padding:2px 8px;border-radius:12px;border:var(--glass-border);background:rgba(255,255,255,0.5);cursor:pointer;color:var(--tx2);transition:all .15s var(--ease);white-space:nowrap;user-select:none}
 .sp:hover,.sp.on{background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent)}
 
-.card-ft{display:flex;gap:4px;padding:9px 14px;border-top:1px solid var(--border-s)}
-.cb{flex:1;padding:5px 5px;border-radius:var(--radius-xs);border:var(--glass-border);background:rgba(255,255,255,0.4);font-size:10.5px;cursor:pointer;color:var(--tx3);text-align:center;transition:all .15s var(--ease);font-weight:500}
+.card-ft{display:flex;gap:4px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.45);background:rgba(255,255,255,0.12)}
+.cb{flex:1;padding:5px 5px;border-radius:var(--radius-xs);border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.32);font-size:10.5px;cursor:pointer;color:rgba(50,50,110,0.7);text-align:center;transition:all .15s var(--ease);font-weight:500}
 .cb:hover{background:rgba(255,255,255,0.6);color:var(--tx2)}
 .cb.copy{color:var(--accent);border-color:var(--accent-border)}
 .cb.copy:hover{background:var(--accent-bg)}
@@ -250,7 +271,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 /* ── MODALS ── */
 .mbg{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .mbg.open{display:flex}
-.modal{background:rgba(255,255,255,0.92);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:var(--glass-border);border-radius:16px;padding:24px;max-width:90vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.08),0 24px 80px rgba(0,0,0,0.06)}
+.modal{background:rgba(255,255,255,0.88);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid rgba(255,255,255,0.72);border-radius:16px;padding:24px;max-width:90vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(100,100,200,0.1),0 24px 80px rgba(100,100,200,0.08)}
 .modal h3{font-size:15px;font-weight:700;margin-bottom:16px;letter-spacing:-0.02em}
 .fr{margin-bottom:10px}
 .fr label{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:.04em;display:block;margin-bottom:3px;text-transform:uppercase}
@@ -323,7 +344,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 .log-empty{text-align:center;padding:40px;color:var(--tx3);font-size:12px}
 .save-popup{position:fixed;bottom:70px;right:24px;background:rgba(20,20,20,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:rgba(255,255,255,0.95);font-size:12px;padding:8px 16px;border-radius:10px;border:0.5px solid rgba(255,255,255,0.1);opacity:0;pointer-events:none;transition:opacity .2s var(--ease);z-index:998;box-shadow:0 4px 12px rgba(0,0,0,0.12)}
 .save-popup.show{opacity:1}
-.sb-log-btn{margin:0 12px 8px;padding:8px;border-radius:var(--radius-sm);border:var(--glass-border);background:rgba(255,255,255,0.4);font-size:11px;cursor:pointer;color:var(--tx2);display:flex;align-items:center;justify-content:center;gap:5px;width:calc(100% - 24px);transition:all .15s var(--ease)}
+.sb-log-btn{margin:0 12px 8px;padding:8px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.55);background:rgba(255,255,255,0.32);font-size:11px;cursor:pointer;color:rgba(35,35,80,0.72);display:flex;align-items:center;justify-content:center;gap:5px;width:calc(100% - 24px);transition:all .15s var(--ease)}
 .sb-log-btn:hover{background:rgba(255,255,255,0.6);box-shadow:0 1px 4px rgba(0,0,0,0.04)}
 
 /* ── ENDED SECTION ── */
@@ -331,7 +352,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 .ended-hd:hover{background:rgba(0,0,0,0.02)}
 .ended-hd-lbl{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;flex:1}
 .ended-sort{font-size:10px;border:var(--glass-border);border-radius:6px;padding:2px 6px;background:rgba(255,255,255,0.5);color:var(--tx3);cursor:pointer}
-.ended-list{max-height:180px;overflow-y:auto;background:rgba(0,0,0,0.02);scrollbar-width:thin}
+.ended-list{max-height:180px;overflow-y:auto;background:rgba(255,255,255,0.12);scrollbar-width:thin}
 .ended-item{display:flex;align-items:center;gap:6px;padding:6px 14px;cursor:pointer;border-bottom:1px solid var(--border-s);transition:all .12s var(--ease)}
 .ended-item:hover{background:rgba(0,0,0,0.03)}
 .ended-item:last-child{border-bottom:none}
@@ -341,32 +362,32 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 .ended-meta{font-size:9px;color:var(--tx3)}
 
 /* ── QUICK MEMO BAR ── */
-.qm-bar{position:fixed;bottom:0;left:var(--sb);right:0;z-index:12;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-top:1.5px solid rgba(0,0,0,0.08);box-shadow:0 -4px 16px rgba(0,0,0,0.04);transition:transform .25s var(--ease);display:flex;flex-direction:column}
+.qm-bar{position:fixed;bottom:0;left:var(--sb);right:0;z-index:12;background:rgba(255,255,255,0.36);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border-top:1px solid rgba(255,255,255,0.55);box-shadow:0 -1px 0 rgba(255,255,255,0.6),0 -4px 20px rgba(100,100,200,0.08);transition:transform .25s var(--ease);display:flex;flex-direction:column}
 .qm-bar.closed{transform:translateY(calc(100% - 32px))}
 .qm-bar.smooth{transition:height .25s ease-out}
 .qm-resize{height:6px;cursor:ns-resize;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.qm-resize::after{content:'';width:32px;height:3px;border-radius:2px;background:rgba(0,0,0,0.1)}
+.qm-resize::after{content:'';width:32px;height:3px;border-radius:2px;background:rgba(100,100,200,0.18)}
 .qm-bar.closed{transform:translateY(calc(100% - 32px))}
 .qm-hd{display:flex;align-items:center;padding:7px 14px 5px;gap:6px}
-.qm-title{font-size:12px;font-weight:500;color:rgba(0,0,0,0.65)}
+.qm-title{font-size:12px;font-weight:600;color:rgba(30,30,80,0.75)}
 .qm-cnt{font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(0,0,0,0.04);color:var(--tx3)}
-.qm-btn{font-size:10.5px;padding:4px 10px;border-radius:var(--radius-xs);border:var(--glass-border);color:var(--tx2);background:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s var(--ease);white-space:nowrap}
-.qm-btn:hover{background:rgba(255,255,255,0.7);box-shadow:0 1px 4px rgba(0,0,0,0.04)}
-.qm-toggle{font-size:12px;color:rgba(0,0,0,0.2);cursor:pointer;padding:2px 6px;border-radius:4px;transition:transform .2s var(--ease);background:none;border:none}
+.qm-btn{width:28px;height:28px;padding:0;border-radius:8px;border:1px solid rgba(255,255,255,0.65);color:rgba(40,40,90,0.75);background:rgba(255,255,255,0.45);cursor:pointer;transition:all .15s var(--ease);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qm-btn:hover{background:rgba(255,255,255,0.68);box-shadow:0 1px 4px rgba(100,100,200,0.1)}
+.qm-toggle{width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:7px;background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.5);color:rgba(80,80,140,0.55);transition:transform .2s var(--ease)}
 .qm-bar.closed .qm-toggle{transform:rotate(180deg)}
 .qm-list{display:flex;gap:8px;padding:4px 14px 10px;overflow-x:auto;overflow-y:auto;scrollbar-width:thin;flex:1;flex-wrap:wrap;align-content:flex-start}
-.qm-card{min-width:168px;max-width:168px;background:rgba(255,255,255,0.55);border:0.5px solid rgba(255,255,255,0.55);border-radius:10px;padding:8px 10px;cursor:pointer;flex-shrink:0;transition:all .15s var(--ease);position:relative}
+.qm-card{min-width:168px;max-width:168px;background:rgba(255,255,255,0.48);border:1px solid rgba(255,255,255,0.68);border-radius:10px;padding:8px 10px;cursor:pointer;flex-shrink:0;transition:all .15s var(--ease);position:relative;box-shadow:0 1px 4px rgba(100,100,200,0.08),inset 0 1px 0 rgba(255,255,255,0.7)}
 .qm-card:hover{box-shadow:0 1px 6px rgba(0,0,0,0.06);background:rgba(255,255,255,0.7)}
 .qm-card.copied{background:rgba(52,199,89,0.06);border-color:rgba(52,199,89,0.2)}
 .qm-card.ref{border-left:2.5px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.015);border-radius:0 10px 10px 0}
 .qm-card-hd{display:flex;align-items:center;gap:3px;margin-bottom:4px}
 .qm-drag{font-size:6px;color:rgba(0,0,0,0.15);cursor:grab;line-height:1;letter-spacing:1px;flex-shrink:0;user-select:none}
-.qm-card-title{font-size:11px;font-weight:500;color:rgba(0,0,0,0.65);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qm-card-title{font-size:11px;font-weight:600;color:rgba(20,20,60,0.82);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qm-card.ref .qm-card-title{color:rgba(0,0,0,0.55)}
 .qm-ico{font-size:8px;color:rgba(0,0,0,0.18);cursor:pointer;padding:1px 2px;flex-shrink:0;transition:color .12s}
 .qm-ico:hover{color:rgba(0,0,0,0.5)}
 .qm-ico.go{font-size:10px}
-.qm-body{font-size:10.5px;color:rgba(0,0,0,0.4);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qm-body{font-size:10.5px;color:rgba(50,50,110,0.62);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .qm-tags{display:flex;gap:3px;margin-top:4px}
 .qm-tag{font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.25)}
 .qm-tag.warn{background:rgba(232,160,180,0.12);color:rgba(160,80,110,0.6);cursor:pointer}
@@ -382,25 +403,25 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-head">
-    <div class="sb-title">📊 마스터 대시보드</div>
+    <div class="sb-title">🤍 마스터 대시보드</div>
     <button class="sb-gear" onclick="openModal('cfgModal')" title="GitHub Gist 설정">⚙️</button>
   </div>
   <div class="sb-sync" id="syncInfo">Gist 연결 안 됨</div>
   <div style="display:flex;gap:5px;margin:0 12px 8px">
-    <button class="sb-refresh" style="flex:1;margin:0" onclick="saveGist()">💾 저장</button>
-    <button class="sb-refresh" style="flex:1;margin:0" onclick="load()">🔄 불러오기</button>
+    <button class="sb-refresh" style="flex:1;margin:0;display:flex;align-items:center;justify-content:center;gap:5px" onclick="saveGist()"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3a1 1 0 0 1 1-1h7l2 2v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><path d="M5 2v3h4V2"/><rect x="4" y="8" width="6" height="4" rx="0.5"/></svg> 저장</button>
+    <button class="sb-refresh" style="flex:1;margin:0;display:flex;align-items:center;justify-content:center;gap:5px" onclick="load()"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v7"/><path d="M4 6l3 3 3-3"/><path d="M2 11h10"/></svg> 불러오기</button>
   </div>
   <div style="padding:0 12px 8px">
-    <input id="sbSearch" placeholder="🔍 이름 · 메모 검색..." oninput="onSbSearch(this.value)" style="width:100%;padding:7px 10px;border-radius:var(--radius-sm);border:var(--glass-border);background:rgba(0,0,0,0.03);font-size:12px;color:var(--tx);transition:all .2s var(--ease);outline:none" onfocus="this.style.background='rgba(255,255,255,0.6)';this.style.borderColor='var(--accent-border)'" onblur="this.style.background='rgba(0,0,0,0.03)';this.style.borderColor='rgba(255,255,255,0.55)'">
+    <input id="sbSearch" placeholder="🔍 이름 · 메모 검색..." oninput="onSbSearch(this.value)" style="width:100%;padding:7px 10px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.9);background:rgba(255,255,255,0.72);font-size:12px;color:var(--tx);transition:all .2s var(--ease);outline:none" onfocus="this.style.background='rgba(255,255,255,0.88)';this.style.borderColor='rgba(100,90,220,0.35)'" onblur="this.style.background='rgba(255,255,255,0.72)';this.style.borderColor='rgba(255,255,255,0.9)'">
   </div>
   <nav class="project-nav" id="nav">
     <div class="nav-sec">전체</div>
     <div class="nav-item active" id="nav-active" onclick="pick('active')">
-      <span class="nav-icon">💬</span><span class="nav-name">활성 챗</span>
+      <span class="nav-name">활성 챗</span>
       <span class="nav-count" id="cnt-active">0</span>
     </div>
     <div class="nav-item" id="nav-all" onclick="pick('all')">
-      <span class="nav-icon">📋</span><span class="nav-name">전체 보기</span>
+      <span class="nav-name">전체 보기</span>
       <span class="nav-count" id="cnt-all">0</span>
     </div>
     <div class="nav-divider"></div>
@@ -410,7 +431,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
   <!-- 중지 섹션 -->
   <div id="stoppedSection">
     <div class="ended-hd" onclick="toggleStoppedSection()">
-      <span class="ended-hd-lbl">⏸ 중지 <span id="stoppedCount" style="background:var(--border);border-radius:8px;padding:0 5px;font-size:9px">0</span></span>
+      <span class="ended-hd-lbl" style="color:rgba(150,65,8,0.82)">중지 <span id="stoppedCount" style="background:rgba(180,83,9,0.1);border-radius:8px;padding:0 5px;font-size:9px;color:rgba(150,65,8,0.75)">0</span></span>
       <select class="ended-sort" id="stoppedSort" onclick="event.stopPropagation()" onchange="renderStoppedSection()">
         <option value="newest">최신순</option>
         <option value="oldest">오래된순</option>
@@ -422,7 +443,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
   <!-- 종료 섹션 -->
   <div id="endedSection">
     <div class="ended-hd" onclick="toggleEndedSection()">
-      <span class="ended-hd-lbl">🔚 종료 <span id="endedCount" style="background:var(--border);border-radius:8px;padding:0 5px;font-size:9px">0</span></span>
+      <span class="ended-hd-lbl" style="color:rgba(180,35,35,0.8)">종료 <span id="endedCount" style="background:rgba(229,57,53,0.1);border-radius:8px;padding:0 5px;font-size:9px;color:rgba(180,35,35,0.7)">0</span></span>
       <select class="ended-sort" id="endedSort" onclick="event.stopPropagation()" onchange="renderEndedSection()">
         <option value="newest">최신순</option>
         <option value="oldest">오래된순</option>
@@ -431,10 +452,10 @@ textarea.sec-input{resize:vertical;line-height:1.6}
     </div>
     <div id="endedList" class="ended-list"></div>
   </div>
-  <button class="sb-log-btn" onclick="openLogPanel()">📋 변경 로그</button>
+  <button class="sb-log-btn" onclick="openLogPanel()">변경 로그</button>
   <div style="border-top:0.5px solid var(--border-s);padding:4px 0 6px">
     <div class="nav-item" id="nav-map" onclick="pickView('map')">
-      <span class="nav-icon">🗺</span><span class="nav-name">맵 보기</span>
+      <span class="nav-name">맵 보기</span>
     </div>
 
   </div>
@@ -447,36 +468,36 @@ textarea.sec-input{resize:vertical;line-height:1.6}
     <button class="btn" id="undoBtn" onclick="undo()" title="되돌리기 (Ctrl+Z)" disabled style="font-size:14px;padding:4px 9px">↩</button>
     <button class="btn" id="redoBtn" onclick="redo()" title="복구하기 (Ctrl+Y)" disabled style="font-size:14px;padding:4px 9px">↪</button>
     <div style="width:0.5px;height:16px;background:var(--border);margin:0 2px;flex-shrink:0"></div>
-    <button class="btn mode-split" id="splitModeBtn" onclick="toggleMode('split')">✂️ 쪼개기</button>
-    <button class="btn mode-merge" id="mergeModeBtn" onclick="toggleMode('merge')">🔗 합치기</button>
-    <button class="btn" id="continueModeBtn" style="border-color:#636366;color:#636366" onclick="toggleMode('continue')">➡️ 넘어가기</button>
-    <button class="btn" id="endModeBtn" style="border-color:var(--danger);color:var(--danger)" onclick="toggleMode('end')">🔚 종료</button>
-    <button class="btn" id="stopModeBtn" style="border-color:#8e8e93;color:#8e8e93" onclick="toggleMode('stop')">⏸ 중지</button>
-    <button class="btn" id="pinModeBtn" style="border-color:#636366;color:#636366" onclick="toggleMode('pin')">📌 고정</button>
+    <button class="btn mode-split" id="splitModeBtn" onclick="toggleMode('split')">쪼개기</button>
+    <button class="btn mode-merge" id="mergeModeBtn" onclick="toggleMode('merge')">합치기</button>
+    <button class="btn" id="continueModeBtn" style="border-color:rgba(8,125,140,0.4);color:rgba(5,95,110,0.9);background:rgba(8,125,140,0.08)" onclick="toggleMode('continue')">넘어가기</button>
+    <button class="btn" id="endModeBtn" style="border-color:rgba(229,57,53,0.4);color:rgba(180,35,35,0.88);background:rgba(229,57,53,0.07)" onclick="toggleMode('end')">종료</button>
+    <button class="btn" id="stopModeBtn" style="border-color:rgba(180,83,9,0.4);color:rgba(150,65,8,0.88);background:rgba(180,83,9,0.08)" onclick="toggleMode('stop')">중지</button>
+    <button class="btn" id="pinModeBtn" style="border-color:rgba(160,30,100,0.35);color:rgba(130,20,80,0.88);background:rgba(160,30,100,0.07)" onclick="toggleMode('pin')">고정</button>
     <div style="width:0.5px;height:16px;background:var(--border);margin:0 2px;flex-shrink:0"></div>
     <button class="btn" onclick="openModal('addProjModal')">＋ 프로젝트</button>
-    <button class="btn primary" onclick="openChatImport()">💬 챗 가져오기</button>
+    <button class="btn primary" onclick="openChatImport()">챗 가져오기</button>
   </div>
 
   <!-- 모드 안내바 -->
   <div class="mode-bar" id="modeBar">
     <span id="modeMsg"></span>
     <button class="merge-confirm" id="mergeConfirmBtn" onclick="doMerge()">합치기 확정</button>
-    <button class="merge-confirm" id="stopConfirmBtn" style="background:#8e8e93" onclick="confirmStopMulti()">⏸ 중지 확정</button>
-    <button class="merge-confirm" id="pinConfirmBtn" style="background:#636366" onclick="confirmPinMulti()">📌 고정 확정</button>
+    <button class="merge-confirm" id="stopConfirmBtn" style="background:#8e8e93" onclick="confirmStopMulti()">중지 확정</button>
+    <button class="merge-confirm" id="pinConfirmBtn" style="background:#636366" onclick="confirmPinMulti()">고정 확정</button>
     <button class="cancel" onclick="cancelMode()">✕ 취소</button>
   </div>
 
   <div class="board-wrap" id="boardWrap">
     <div class="board" id="board">
-      <div class="empty"><div class="ico">🐙</div><div class="ttl">GitHub Gist 새로고침</div><div>🔄 버튼을 눌러 불러오세요</div></div>
+      <div class="empty"><div class="ttl">GitHub Gist 새로고침</div><div style="display:flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v7"/><path d="M4 6l3 3 3-3"/><path d="M2 11h10"/></svg> 버튼을 눌러 불러오세요</div></div>
     </div>
   </div>
 
   <!-- 맵 섹션 페이지 -->
   <div id="mapSection" style="display:none;flex:1;overflow:auto;background:var(--bg);padding:20px;flex-direction:column">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-      <span style="font-size:13px;font-weight:600;color:var(--tx);flex:1">🗺 프로젝트 현황 맵</span>
+      <span style="font-size:13px;font-weight:600;color:var(--tx);flex:1;display:flex;align-items:center;gap:7px"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3l4 1.5L9 2l4 1.5V11l-4-1.5L5 12l-4-1.5z"/><path d="M5 4.5V12M9 2v9.5"/></svg>프로젝트 현황 맵</span>
     </div>
     <div id="mapSectionContainer" class="map-container"></div>
   </div>
@@ -488,7 +509,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <!-- ── GIST 설정 모달 ── -->
 <div class="mbg" id="cfgModal">
   <div class="modal" style="width:400px">
-    <h3>⚙️ GitHub Gist 설정</h3>
+    <h3>GitHub Gist 설정</h3>
     <div style="font-size:11px;color:var(--tx2);padding:10px 12px;background:rgba(0,0,0,0.02);border:0.5px solid rgba(0,0,0,0.06);border-radius:10px;line-height:1.7;margin-bottom:12px">
       <strong>처음이면:</strong> 토큰만 입력 → 저장 → Gist 자동 생성<br>
       <strong>기존 Gist면:</strong> 토큰 + Gist ID 함께 입력<br>
@@ -506,67 +527,83 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <!-- ── 챗 가져오기 모달 ── -->
 <div class="mbg" id="chatImportModal">
   <div class="modal" style="width:520px">
-    <h3>💬 챗 가져오기</h3>
+    <h3 style="display:flex;align-items:center;gap:8px;color:rgba(15,35,80,0.9)">
+      <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="rgba(40,90,195,0.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H8l-3 2V9H3a1 1 0 0 1-1-1z"/></svg>
+      챗 가져오기
+    </h3>
 
     <!-- 탭 -->
-    <div style="display:flex;gap:4px;margin-bottom:14px">
-      <button class="btn" id="ciTab1" style="flex:1" onclick="switchCiTab('import')">📋 JSON 가져오기</button>
-      <button class="btn" id="ciTab2" style="flex:1" onclick="switchCiTab('manual')">✏️ 직접 입력하기</button>
+    <div style="display:flex;gap:4px;margin-bottom:14px;background:rgba(60,100,210,0.07);border-radius:10px;padding:3px">
+      <button class="btn" id="ciTab1" style="flex:1;border:none;background:rgba(40,90,195,0.85);color:#fff;box-shadow:0 2px 8px rgba(40,90,195,0.22)" onclick="switchCiTab('import')">
+        <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:4px"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V2h4v1"/></svg>
+        JSON 가져오기
+      </button>
+      <button class="btn" id="ciTab2" style="flex:1;border:none;background:transparent;color:rgba(60,50,160,0.6);box-shadow:none" onclick="switchCiTab('manual')">
+        <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M3 7h8M3 4h5M3 10h3"/></svg>
+        직접 입력하기
+      </button>
     </div>
 
     <!-- 탭1: JSON 가져오기 -->
     <div id="ciImportPane">
-      <!-- 프로젝트 선택 -->
       <div style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:600;color:var(--tx3);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">프로젝트</div>
-        <select id="ci-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:var(--glass-border);font-size:12px;background:rgba(255,255,255,0.6);color:var(--tx)" onchange="onCiProjChange('ci')"></select>
+        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">프로젝트</div>
+        <select id="ci-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:1px solid rgba(50,100,210,0.15);font-size:12px;background:rgba(255,255,255,0.7);color:var(--tx)" onchange="onCiProjChange('ci')"></select>
         <div id="ci-newProj" style="display:none;margin-top:8px">
           <div style="display:flex;gap:6px">
-            <input class="mini-input" id="ci-newIcon" placeholder="📁" style="width:48px">
+            <input class="mini-input" id="ci-newIcon" type="hidden" value="📁">
             <input class="mini-input" id="ci-newPid" placeholder="ID (선택)" style="width:80px">
             <input class="mini-input" id="ci-newName" placeholder="프로젝트 이름" style="flex:1">
           </div>
         </div>
       </div>
 
-      <button class="btn" style="width:100%;padding:7px;margin-bottom:10px" onclick="copyPrompt()">📋 프롬프트 복사 → 채팅에 붙여넣기</button>
-      <textarea class="paste-area" id="chatJsonPaste" placeholder='Claude가 출력한 JSON을 여기에 붙여넣으세요' oninput="previewParse(this.value)" style="min-height:70px"></textarea>
+      <button class="btn" style="width:100%;padding:7px;margin-bottom:10px;background:rgba(60,100,210,0.07);border:1px solid rgba(100,90,220,0.2);color:rgba(60,50,160,0.8)" onclick="copyPrompt()">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:5px"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg>
+        프롬프트 복사 → 채팅에 붙여넣기
+      </button>
+      <textarea class="paste-area" id="chatJsonPaste" placeholder='Claude가 출력한 JSON을 여기에 붙여넣으세요' oninput="previewParse(this.value)" style="min-height:70px;border:1px solid rgba(50,100,210,0.15);background:rgba(240,248,255,0.8)"></textarea>
       <div class="parse-preview" id="parsePreview"></div>
-      <div style="margin-top:8px">
-        <input class="mini-input" id="import-chatUrl" placeholder="🔗 채팅 URL (선택)" style="width:100%">
+      <div style="margin-top:8px;position:relative">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="rgba(80,70,180,0.45)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:10px;top:50%;transform:translateY(-50%)"><path d="M2 7a5 5 0 1 0 5-5"/><path d="M7 7l3-3"/><circle cx="7" cy="7" r="1.5"/></svg>
+        <input class="mini-input" id="import-chatUrl" placeholder="채팅 URL (선택)" style="width:100%;padding-left:28px;border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.65)">
       </div>
       <div class="mactions" style="margin-top:12px">
         <button class="btn" onclick="closeModal('chatImportModal')">닫기</button>
-        <button class="btn primary" onclick="doChatImport()">📥 카드 가져오기</button>
+        <button class="btn primary" style="background:rgba(40,90,195,0.85);border-color:transparent;box-shadow:0 2px 10px rgba(40,90,195,0.22);display:flex;align-items:center;gap:6px" onclick="doChatImport()">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v7"/><path d="M4 6l3 3 3-3"/><path d="M2 11h10"/></svg>
+          카드 가져오기
+        </button>
       </div>
     </div>
 
     <!-- 탭2: 직접 입력하기 -->
     <div id="ciManualPane" style="display:none">
-      <!-- 프로젝트 선택 -->
       <div style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:600;color:var(--tx3);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">프로젝트</div>
-        <select id="cm-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:var(--glass-border);font-size:12px;background:rgba(255,255,255,0.6);color:var(--tx)" onchange="onCiProjChange('cm')"></select>
+        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">프로젝트</div>
+        <select id="cm-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:1px solid rgba(50,100,210,0.15);font-size:12px;background:rgba(255,255,255,0.7);color:var(--tx)" onchange="onCiProjChange('cm')"></select>
         <div id="cm-newProj" style="display:none;margin-top:8px">
           <div style="display:flex;gap:6px">
-            <input class="mini-input" id="cm-newIcon" placeholder="📁" style="width:48px">
+            <input class="mini-input" id="cm-newIcon" type="hidden" value="📁">
             <input class="mini-input" id="cm-newPid" placeholder="ID (선택)" style="width:80px">
             <input class="mini-input" id="cm-newName" placeholder="프로젝트 이름" style="flex:1">
           </div>
         </div>
       </div>
-
       <div style="margin-bottom:8px">
-        <div style="font-size:10px;font-weight:600;color:var(--tx3);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">카드 제목</div>
-        <input class="mini-input" id="cm-title" placeholder="카드 이름">
+        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">카드 제목</div>
+        <input class="mini-input" id="cm-title" placeholder="카드 이름" style="border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.7)">
       </div>
       <div style="margin-bottom:8px">
-        <div style="font-size:10px;font-weight:600;color:var(--tx3);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">채팅 URL</div>
-        <input class="mini-input" id="cm-chatUrl" placeholder="https://claude.ai/chat/...">
+        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">채팅 URL</div>
+        <input class="mini-input" id="cm-chatUrl" placeholder="https://claude.ai/chat/..." style="border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.7)">
       </div>
       <div class="mactions" style="margin-top:12px">
         <button class="btn" onclick="closeModal('chatImportModal')">닫기</button>
-        <button class="btn primary" onclick="doManualCard()">✏️ 카드 생성하기</button>
+        <button class="btn primary" style="background:rgba(40,90,195,0.85);border-color:transparent;box-shadow:0 2px 10px rgba(40,90,195,0.22);display:flex;align-items:center;gap:6px" onclick="doManualCard()">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M3 4h5M3 10h3"/></svg>
+          카드 생성하기
+        </button>
       </div>
     </div>
   </div>
@@ -576,7 +613,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <div class="log-overlay" id="logOverlay" onclick="if(event.target===this)closeLogPanel()">
   <div class="log-panel">
     <div class="log-panel-hd">
-      <span class="log-panel-title">📋 변경 로그</span>
+      <span class="log-panel-title" style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h10M2 7h7M2 10h5"/></svg>변경 로그</span>
       <button class="btn" onclick="closeLogPanel()">✕ 닫기</button>
     </div>
     <div class="log-filters" id="logFilters">
@@ -594,14 +631,14 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 </div>
 
 <!-- 저장 팝업 -->
-<div class="save-popup" id="savePopup">✅ 메모 저장됨</div>
+<div class="save-popup" id="savePopup" style="display:flex;align-items:center;gap:6px"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="rgba(52,199,89,0.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3.5 3.5 5.5-6"/></svg>저장됨</div>
 
 <!-- ── 종료 모달 ── -->
 
 ── -->
 <div class="mbg" id="projSplitModal">
   <div class="modal" style="width:520px">
-    <h3>✂️ 프로젝트 쪼개기</h3>
+    <h3>프로젝트 쪼개기</h3>
     <div class="fr"><label>쪼갤 프로젝트</label>
       <select id="ps-src" style="font-size:12px;padding:7px 10px;border-radius:7px;border:0.5px solid var(--border);background:var(--bg);width:100%;color:var(--tx)"></select>
     </div>
@@ -628,7 +665,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <!-- ── 프로젝트 합치기 모달 ── -->
 <div class="mbg" id="projMergeModal">
   <div class="modal" style="width:400px">
-    <h3>🔗 프로젝트 합치기</h3>
+    <h3>프로젝트 합치기</h3>
     <div class="fr"><label>프로젝트 A (유지됨)</label>
       <select id="pm-a" style="font-size:12px;padding:7px 10px;border-radius:7px;border:0.5px solid var(--border);background:var(--bg);width:100%;color:var(--tx)"></select>
     </div>
@@ -646,7 +683,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <div class="map-overlay" id="mapOverlay">
   <div style="background:var(--bg);border-radius:14px;padding:20px;width:96vw;max-height:92vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.12)">
     <div class="map-topbar">
-      <div class="map-topbar-title">🗺 프로젝트 현황 맵</div>
+      <div class="map-topbar-title" style="display:flex;align-items:center;gap:7px"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3l4 1.5L9 2l4 1.5V11l-4-1.5L5 12l-4-1.5z"/><path d="M5 4.5V12M9 2v9.5"/></svg>프로젝트 현황 맵</div>
       <button class="map-close-btn" onclick="closeMap()">✕ 닫기</button>
     </div>
     <div class="map-container" id="mapContainer"></div>
@@ -659,11 +696,9 @@ textarea.sec-input{resize:vertical;line-height:1.6}
     <h3>＋ 새 프로젝트 추가</h3>
     <div class="fr"><label>프로젝트 ID (선택 — 비우면 자동 생성)</label><input id="np-pid" placeholder="자동 생성"></div>
     <div class="fr">
-      <label>이모지 + 이름</label>
-      <div style="display:flex;gap:6px">
-        <input id="np-icon" style="width:52px" placeholder="📁">
-        <input id="np-name" placeholder="프로젝트 이름" style="flex:1">
-      </div>
+      <label>프로젝트 이름</label>
+      <input id="np-name" placeholder="프로젝트 이름">
+      <input id="np-icon" type="hidden" value="📁">
     </div>
     <div class="fr"><label>메인 파일명 (선택)</label><input id="np-file" placeholder="main.html"></div>
     <div class="fr"><label>채팅 URL (선택)</label><input id="np-chatUrl" placeholder="https://claude.ai/chat/..."></div>
@@ -693,7 +728,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <!-- ── 쪼개기 모달 ── -->
 <div class="mbg" id="splitModal">
   <div class="modal" style="width:560px;max-height:85vh;overflow-y:auto">
-    <h3>✂️ 쪼개기 — 작업 영역이 달라진 경우</h3>
+    <h3>쪼개기 — 작업 영역이 달라진 경우</h3>
     <p style="font-size:11px;color:var(--tx3);margin-bottom:12px;line-height:1.6">복붙 정보는 모든 카드에 복사돼요. 메모(진행 로그)는 한 카드에만 이동해요.</p>
     <div id="split-cards-wrap" style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px"></div>
     <button class="btn" style="width:100%;font-size:11px;margin-bottom:10px" onclick="addSplitTarget()">＋ 카드 추가</button>
@@ -710,7 +745,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <!-- ── 합치기 결과 모달 ── -->
 <div class="mbg" id="mergeResultModal">
   <div class="modal" style="width:420px">
-    <h3>🔗 합치기 결과 확인</h3>
+    <h3>합치기 결과 확인</h3>
     <p style="font-size:11px;color:var(--tx3);margin-bottom:10px;line-height:1.6">복붙 정보와 메모가 합쳐집니다. 아래 결과를 확인 후 저장하세요.</p>
     <div class="fr"><label>합쳐진 카드 제목</label><input id="mr-title"></div>
     <div class="fr"><label>채팅 URL (새 합쳐진 채팅)</label><input id="mr-url" placeholder="https://claude.ai/chat/..."></div>
@@ -728,7 +763,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <!-- ── 넘어가기 모달 ── -->
 <div class="mbg" id="continueModal">
   <div class="modal" style="width:400px">
-    <h3>➡️ 넘어가기 — 챗 한도로 새 채팅 이어가기</h3>
+    <h3>넘어가기 — 챗 한도로 새 채팅 이어가기</h3>
     <p style="font-size:11px;color:var(--tx3);margin-bottom:12px;line-height:1.6">모든 정보가 동일하게 복사되고 카드 이름만 달라져요.</p>
     <div class="fr"><label>새 카드 이름</label><input id="cont-title" placeholder="프로젝트명 v2"></div>
     <div class="fr"><label>새 채팅 URL</label><input id="cont-url" placeholder="https://claude.ai/chat/..."></div>
@@ -741,11 +776,34 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 </div>
 
 <div class="ctx-menu" id="ctxMenu">
-  <div class="ctx-item" id="ctxRename" onclick="ctxDoRename()">✏️ 이름 변경</div>
+  <div class="ctx-item" id="ctxRename" onclick="ctxDoRename()">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2.5l2 2L5 11H3v-2z"/><path d="M8 4l2 2"/></svg>
+    이름 변경
+  </div>
   <div class="ctx-sep"></div>
-  <div class="ctx-item" onclick="ctxDoEndProject()" style="color:#d97706">🔚 프로젝트 종료</div>
+  <div class="ctx-item" onclick="ctxDoEndProject()" style="color:rgba(160,80,10,0.88)">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="10" height="10" rx="2"/><path d="M5 7h4"/></svg>
+    프로젝트 종료
+  </div>
   <div class="ctx-sep"></div>
-  <div class="ctx-item danger" id="ctxDelete" onclick="ctxDoDelete()">🗑 프로젝트 삭제</div>
+  <div class="ctx-item danger" id="ctxDelete" onclick="ctxDoDelete()">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1"/><path d="M11 4l-.7 7.3A1 1 0 0 1 9.3 12H4.7a1 1 0 0 1-1-.7L3 4"/><path d="M6 7v3M8 7v3"/></svg>
+    프로젝트 삭제
+  </div>
+</div>
+
+<!-- ── 종료된 카드 팝업 ── -->
+<div class="mbg" id="endedCardModal">
+  <div class="modal" style="width:420px">
+    <h3 id="ecm-title" style="margin-bottom:4px"></h3>
+    <div id="ecm-meta" style="font-size:11px;color:var(--tx3);margin-bottom:14px"></div>
+    <div id="ecm-logs-a" style="margin-bottom:10px"></div>
+    <div id="ecm-logs-b"></div>
+    <div class="mactions" style="margin-top:16px">
+      <button class="btn" onclick="closeModal('endedCardModal')">닫기</button>
+      <button class="btn primary" id="ecm-restore-btn" onclick="">복원</button>
+    </div>
+  </div>
 </div>
 
 <!-- ── Quick Memo Bar ── -->
@@ -755,11 +813,11 @@ textarea.sec-input{resize:vertical;line-height:1.6}
     <span class="qm-title">Quick memo</span>
     <span class="qm-cnt" id="qmCnt">0</span>
     <div style="flex:1"></div>
-    <button class="qm-btn" onclick="addQuickMemo()" title="메모 추가">+</button>
-    <button class="qm-btn" onclick="openQmImport('project')" title="프로젝트 가져오기">📁</button>
-    <button class="qm-btn" onclick="openQmImport('chat')" title="챗 가져오기">💬</button>
-    <button class="qm-btn" onclick="openQmMoveFromBar()" title="프젝으로 옮기기">↗</button>
-    <button class="qm-toggle" id="qmToggle" onclick="toggleMemoBar()">&#x25BC;</button>
+    <button class="qm-btn" onclick="addQuickMemo()" title="새 메모"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg></button>
+    <button class="qm-btn" onclick="openQmImport('project')" title="프로젝트 가져오기"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5a1 1 0 0 1 1-1h2l1 1.5h5a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg></button>
+    <button class="qm-btn" onclick="openQmImport('chat')" title="챗 가져오기"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H8l-3 2V9H3a1 1 0 0 1-1-1z"/></svg></button>
+    <button class="qm-btn" onclick="openQmMoveFromBar()" title="프젝으로 옮기기"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11L11 3"/><path d="M5 3h6v6"/></svg></button>
+    <button class="qm-toggle" id="qmToggle" onclick="toggleMemoBar()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button>
   </div>
   <div class="qm-list" id="qmList"></div>
 </div>
@@ -810,10 +868,10 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 <div class="mbg" id="qmEditModal">
   <div class="modal" style="width:380px">
     <h3>메모 수정</h3>
-    <div class="fr"><label>제목</label><input class="mini-input" id="qmEditTitle" onkeydown="if((event.ctrlKey||event.metaKey)&&(event.key==='s'||event.key==='Enter')){event.preventDefault();saveQmEdit();}"></div>
-    <div class="fr"><label>내용</label><textarea class="sec-input" id="qmEditContent" rows="4" style="resize:vertical" onkeydown="if((event.ctrlKey||event.metaKey)&&(event.key==='s'||event.key==='Enter')){event.preventDefault();saveQmEdit();}"></textarea></div>
+    <div class="fr"><label>제목</label><input class="mini-input" id="qmEditTitle" onkeydown="if((event.ctrlKey||event.metaKey)&&(event.key==='s'||event.key==='Enter')){event.preventDefault();saveQmEdit();}else if(event.key==='Enter'){event.preventDefault();saveQmEdit();}if(event.key==='Escape'){closeQmEditWithSave();}"></div>
+    <div class="fr"><label>내용</label><textarea class="sec-input" id="qmEditContent" rows="4" style="resize:vertical" onkeydown="if((event.ctrlKey||event.metaKey)&&(event.key==='s'||event.key==='Enter')){event.preventDefault();saveQmEdit();}if(event.key==='Escape'){closeQmEditWithSave();}"></textarea></div>
     <div class="mactions">
-      <button class="btn" onclick="closeModal('qmEditModal')">취소</button>
+      <button class="btn" onclick="closeQmEditWithSave()">취소</button>
       <button class="btn primary" onclick="saveQmEdit()">저장</button>
     </div>
   </div>
@@ -853,6 +911,11 @@ async function load(){
     const t=now();localStorage.setItem('last_sync',t);
     setSyncTxt('읽기: '+t);
     loadQmFromGist();
+    // 기존 데이터 자동 승격
+    for(const[pid,proj]of Object.entries(S.projects)){
+      if(pid==='_logs'||pid==='_qm'||proj._isLogs||proj._isQm)continue;
+      for(const card of Object.values(proj.cards||{})){promoteEntries(card);}
+    }
     renderAll();toast('✅ 불러왔어요');
   }catch(e){setSyncTxt('연결 실패');toast('❌ '+e.message);}
 }
@@ -895,16 +958,16 @@ function toggleMode(m){
   document.getElementById('splitModeBtn').classList.toggle('active',m==='split');
   document.getElementById('mergeModeBtn').classList.toggle('active',m==='merge');
   document.getElementById('continueModeBtn').classList.toggle('active',m==='continue');
-  document.getElementById('continueModeBtn').style.background=m==='continue'?'#636366':'';
-  document.getElementById('continueModeBtn').style.color=m==='continue'?'#fff':'#636366';
+  document.getElementById('continueModeBtn').style.background=m==='continue'?'rgba(8,125,140,0.85)':'';
+  document.getElementById('continueModeBtn').style.color=m==='continue'?'#fff':'rgba(5,95,110,0.9)';
   document.getElementById('endModeBtn').classList.toggle('active',m==='end');
   document.getElementById('endModeBtn').style.background=m==='end'?'var(--danger)':'';
-  document.getElementById('endModeBtn').style.color=m==='end'?'#fff':'var(--danger)';
+  document.getElementById('endModeBtn').style.color=m==='end'?'#fff':'rgba(180,35,35,0.88)';
   document.getElementById('stopModeBtn').classList.toggle('active',m==='stop');
-  document.getElementById('stopModeBtn').style.background=m==='stop'?'#8e8e93':'';
-  document.getElementById('stopModeBtn').style.color=m==='stop'?'#fff':'#8e8e93';
+  document.getElementById('stopModeBtn').style.background=m==='stop'?'rgba(150,65,8,0.85)':'';
+  document.getElementById('stopModeBtn').style.color=m==='stop'?'#fff':'rgba(150,65,8,0.88)';
   var pb=document.getElementById('pinModeBtn');
-  pb.classList.toggle('active',m==='pin');pb.style.background=m==='pin'?'#636366':'';pb.style.color=m==='pin'?'#fff':'#636366';
+  pb.classList.toggle('active',m==='pin');pb.style.background=m==='pin'?'rgba(160,30,100,0.82)':'';pb.style.color=m==='pin'?'#fff':'rgba(130,20,80,0.88)';
   const bar=document.getElementById('modeBar');
   bar.classList.add('show');
   const msgs={split:'✂️ 쪼개기 — 쪼갤 카드를 클릭하세요',merge:'🔗 합치기 — 합칠 카드를 선택하세요 (2개 이상)',continue:'➡️ 넘어가기 — 이어갈 카드를 클릭하세요',end:'🔚 종료 — 종료할 카드를 클릭하세요',stop:'⏸ 중지 — 중지할 카드를 선택하세요 (여러 개 가능)',pin:'📌 고정 — 고정할 카드를 선택하세요 (여러 개 가능)'};
@@ -919,13 +982,13 @@ function cancelMode(){
   document.getElementById('splitModeBtn').classList.remove('active');
   document.getElementById('mergeModeBtn').classList.remove('active');
   const cb=document.getElementById('continueModeBtn');
-  cb.classList.remove('active');cb.style.background='';cb.style.color='#636366';
+  cb.classList.remove('active');cb.style.background='';cb.style.color='rgba(5,95,110,0.9)';
   const eb=document.getElementById('endModeBtn');
-  eb.classList.remove('active');eb.style.background='';eb.style.color='var(--danger)';
+  eb.classList.remove('active');eb.style.background='';eb.style.color='rgba(180,35,35,0.88)';
   const sb=document.getElementById('stopModeBtn');
-  sb.classList.remove('active');sb.style.background='';sb.style.color='#8e8e93';
+  sb.classList.remove('active');sb.style.background='';sb.style.color='rgba(150,65,8,0.88)';
   var pb=document.getElementById('pinModeBtn');
-  pb.classList.remove('active');pb.style.background='';pb.style.color='#636366';
+  pb.classList.remove('active');pb.style.background='';pb.style.color='rgba(130,20,80,0.88)';
   document.getElementById('modeBar').classList.remove('show');
   var scb=document.getElementById('stopConfirmBtn');if(scb)scb.classList.remove('show');
   var pcb=document.getElementById('pinConfirmBtn');if(pcb)pcb.classList.remove('show');
@@ -1088,7 +1151,6 @@ function renderStoppedSection(){
   list.innerHTML=stopped.map(({c,pid,projName})=>{
     const d=c.stoppedAt||c.updatedAt?new Date(c.stoppedAt||c.updatedAt).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}):'—';
     return `<div class="ended-item" onclick="pick('${pid}')">
-      <span class="ended-icon">${c.icon||'📋'}</span>
       <div class="ended-info">
         <div class="ended-title">${c.title||'이름 없음'}</div>
         <div class="ended-meta">${projName} · ${d}</div>
@@ -1108,8 +1170,8 @@ function renderEndedSection(){
       continue;
     }
     // 카드 단위 종료
-    for(const c of Object.values(proj.cards||{})){
-      if(c.status==='종료')items.push({type:'card',c,pid,projName:(proj.meta&&proj.meta.name)||pid,
+    for(const [cid,c] of Object.entries(proj.cards||{})){
+      if(c.status==='종료')items.push({type:'card',c,cid:c.id||cid,pid,projName:(proj.meta&&proj.meta.name)||pid,
         date:c.endedAt||c.updatedAt||''});
     }
   }
@@ -1125,7 +1187,6 @@ function renderEndedSection(){
     if(it.type==='proj'){
       const d=it.date?new Date(it.date).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}):'—';
       return `<div class="ended-item" style="background:rgba(0,0,0,0.04)" onclick="restoreProject('${it.pid}')">
-        <span class="ended-icon">${it.icon}</span>
         <div class="ended-info">
           <div class="ended-title" style="color:#7a5060">${it.name} <span style="font-size:9px;background:rgba(232,160,180,0.15);color:#7a5060;border-radius:4px;padding:0 4px">프로젝트</span></div>
           <div class="ended-meta">클릭 시 복원 · ${d}</div>
@@ -1133,14 +1194,61 @@ function renderEndedSection(){
       </div>`;
     }
     const d=it.date?new Date(it.date).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}):'—';
-    return `<div class="ended-item" onclick="pick('${it.pid}')">
-      <span class="ended-icon">${it.c.icon||'📋'}</span>
+    return `<div class="ended-item" data-cid="${(it.cid||'').replace(/"/g,'&quot;')}" data-pid="${it.pid}" onclick="openEndedCardEl(this)">
       <div class="ended-info">
         <div class="ended-title">${it.c.title||'이름 없음'}</div>
         <div class="ended-meta">${it.projName} · ${d}</div>
       </div>
     </div>`;
   }).join('');
+}
+function openEndedCardEl(el){
+  const cardId=el.dataset.cid;const pid=el.dataset.pid;
+  openEndedCard(cardId,pid);
+}
+function openEndedCard(cardId,pid){
+  const proj=S.projects[pid];const card=proj?.cards?.[cardId];if(!card)return;
+  const projName=proj.meta?.name||pid;
+  const endedAt=card.endedAt?new Date(card.endedAt).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+  document.getElementById('ecm-title').textContent=card.title||'이름 없음';
+  document.getElementById('ecm-meta').textContent=projName+' · 종료 '+endedAt;
+  // 진행 로그 A
+  const logA=Array.isArray(card.memoLogA)?card.memoLogA:[];
+  const logAEl=document.getElementById('ecm-logs-a');
+  if(logA.length){
+    logAEl.innerHTML='<div style="font-size:10px;font-weight:600;color:var(--tx3);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase">지금 단계</div>'+
+      logA.slice().reverse().map(e=>{
+        const t=(e.text||'').replace(/</g,'&lt;');
+        return `<div style="font-size:11px;color:var(--tx2);padding:4px 0;border-bottom:0.5px solid var(--border-s);line-height:1.55"><span style="font-size:9px;color:var(--tx3);margin-right:6px">${e.ts||''}</span>${t}</div>`;
+      }).join('');
+  } else {
+    logAEl.innerHTML='<div style="font-size:11px;color:var(--tx3)">로그 없음</div>';
+  }
+  // 다음 단계
+  const logB=Array.isArray(card.memoLogB)?card.memoLogB:[];
+  const logBEl=document.getElementById('ecm-logs-b');
+  if(logB.length){
+    logBEl.innerHTML='<div style="font-size:10px;font-weight:600;color:var(--tx3);margin-bottom:5px;margin-top:10px;letter-spacing:.04em;text-transform:uppercase">다음 단계</div>'+
+      logB.slice().reverse().map(e=>{
+        const t=(e.text||'').replace(/</g,'&lt;');
+        return `<div style="font-size:11px;color:var(--tx2);padding:4px 0;border-bottom:0.5px solid var(--border-s);line-height:1.55"><span style="font-size:9px;color:var(--tx3);margin-right:6px">${e.ts||''}</span>${t}</div>`;
+      }).join('');
+  } else {
+    logBEl.innerHTML='';
+  }
+  // 복원 버튼
+  document.getElementById('ecm-restore-btn').onclick=function(){
+    restoreEndedCard(cardId,pid);
+  };
+  openModal('endedCardModal');
+}
+function restoreEndedCard(cardId,pid){
+  const proj=S.projects[pid];const card=proj?.cards?.[cardId];if(!card)return;
+  snapshot();
+  card.status='';delete card.endedAt;card.updatedAt=new Date().toISOString();
+  addChangeLog&&addChangeLog('status',cardId,pid,card.title||'',(proj.meta?.name||pid),'종료 → 복원');
+  closeModal('endedCardModal');
+  saveGist();renderAll();toast('↩ \''+(card.title||'카드')+'\' 복원됐어요');
 }
 function restoreProject(pid){
   const proj=S.projects[pid];if(!proj)return;
@@ -1150,12 +1258,12 @@ function restoreProject(pid){
 }
 function renderSidebar(){
   const projs=orderedProjects().filter(id=>S.projects[id]?.meta?.status!=='종료');
-  const all=projs.reduce((a,pid)=>a+Object.keys(S.projects[pid]&&S.projects[pid].cards||{}).length,0);
+  const all=projs.reduce((a,pid)=>a+Object.values(S.projects[pid]?.cards||{}).filter(c=>c.status!=='종료').length,0);
   document.getElementById('cnt-all').textContent=all;
   const el=document.getElementById('projectItems');el.innerHTML='';
   for(const id of projs){
     const p=S.projects[id];if(!p)continue;
-    const cnt=Object.keys(p.cards||{}).length;const m=p.meta||{};
+    const cnt=Object.values(p.cards||{}).filter(c=>c.status!=='종료').length;const m=p.meta||{};
     const d=document.createElement('div');
     d.className='nav-item'+(S.cur===id?' active':'');d.id='nav-'+id;
     d.draggable=true;
@@ -1231,7 +1339,8 @@ function orderedCards(proj){
     var gb=b.status==='중지'?2:(b.pinned?0:1);
     if(ga!==gb)return ga-gb;
     if(ga===2){var ta=new Date(a.stoppedAt||0).getTime(),tb=new Date(b.stoppedAt||0).getTime();return tb-ta;}
-    return 0;
+    // 일반 카드: 최신순
+    return new Date(b.updatedAt||0).getTime()-new Date(a.updatedAt||0).getTime();
   });
   return cards;
 }
@@ -1248,7 +1357,7 @@ function renderCards(){
   const board=document.getElementById('board');board.innerHTML='';
   const isActive=S.cur==='active';
   const list=(isActive||S.cur==='all')?orderedProjects().map(id=>[id,S.projects[id]]).filter(([,p])=>p&&!p._isLogs&&!p._isQm):Object.entries(S.projects).filter(([id])=>id===S.cur);
-  if(!list.length){board.innerHTML='<div class="empty"><div class="ico">📭</div><div class="ttl">프로젝트 없음</div><div>＋ 프로젝트 버튼으로 시작하세요</div></div>';return;}
+  if(!list.length){board.innerHTML='<div class="empty"><div class="ttl">프로젝트 없음</div><div>＋ 프로젝트 버튼으로 시작하세요</div></div>';return;}
   let has=false;let activeTotal=0;
   for(const[pid,proj]of list){
     var allCards=orderedCards(proj).filter(c=>c.status!=='종료'&&proj.meta?.status!=='종료'&&matchSearch(c));
@@ -1267,7 +1376,7 @@ function renderCards(){
     grp.appendChild(grid);board.appendChild(grp);
   }
   var cntEl=document.getElementById('cnt-active');if(cntEl)cntEl.textContent=activeTotal||'';
-  if(!has)board.innerHTML=S.searchQuery?'<div class="empty"><div class="ico">🔍</div><div class="ttl">검색 결과 없음</div></div>':'<div class="empty"><div class="ico">📭</div><div class="ttl">'+(isActive?'활성 챗 없음':'카드 없음')+'</div></div>';
+  if(!has)board.innerHTML=S.searchQuery?'<div class="empty"><div class="ttl">검색 결과 없음</div></div>':'<div class="empty"><div class="ttl">'+(isActive?'활성 챗 없음':'카드 없음')+'</div></div>';
 }
 
 function mkCard(c,pid){
@@ -1292,11 +1401,7 @@ function mkCard(c,pid){
 
   const id=c.id;
   const esc=s=>(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-  const presets=['기획 중','개발 중','버그 수정 중','테스트 중','운영 중','배포 완료','검토 중','일시 중단'];
-  const presetsHtml=presets.map(s=>`<span class="sp${c.status===s?' on':''}" onclick="secPickStatus('${id}',this)">${s}</span>`).join('');
-  const nH=(c.next||[]).map((t,i)=>`<li class="${t?'':'emp'}"><span class="n">${i+1}.</span><span class="t">${t||'—'}</span></li>`).join('');
-  const fH=(c.files||[]).map(f=>`<span class="ftag">${f}</span>`).join('');
-  const rH=(c.rules||[]).map(r=>`<li>${r}</li>`).join('');
+
 
   const sec=(name,label,preview,viewHtml,editHtml)=>`
 <div class="section">
@@ -1318,35 +1423,39 @@ function mkCard(c,pid){
   const collapsed=S.collapsedCards?.has(id);
   if(collapsed)el.classList.add('collapsed');
 
-  const urlSec=c.chatUrl?sec('chatUrl','채팅 URL',c.chatUrl,
-    `<span class="chat-url-link" style="cursor:pointer" onclick="copyLink('${c.chatUrl.replace(/'/g,"\\'")}',this)">🔗 ${c.chatUrl.replace('https://','')}</span>`,
-    `<input class="sec-input" id="inp-${id}-chatUrl" value="${esc(c.chatUrl)}" placeholder="https://claude.ai/chat/...">`
-  ):sec('chatUrl','채팅 URL','',
-    `<span style="font-size:11px;color:#ddd">—</span>`,
-    `<input class="sec-input" id="inp-${id}-chatUrl" value="" placeholder="https://claude.ai/chat/...">`
-  );
-
   const updatedAt=c.updatedAt?new Date(c.updatedAt).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
-  const lastMemo=c.memo||'';
-  const lastMemoTs=c.memoTs||'';
-  const projIcon=S.projects[pid]?.meta?.icon||c.icon||'📋';
-  const memoCats=Array.isArray(c.memoCategories)?c.memoCategories:[];
-  const activeCat=memoCatFilter[id]||'all';
-  const memoLog=Array.isArray(c.memoLog)?[...c.memoLog].reverse():[];
-  const visibleLog=memoLog.filter(e=>activeCat==='all'||e.category===activeCat);
-  const memoLogHtml=visibleLog.length?visibleLog.map((entry,ri)=>{
-    const realIdx=memoLog.length-1-memoLog.indexOf(entry);
-    const catLabel=entry.category?`<span class="mle-cat">${entry.category}</span>`:'';
-    const safeText=(entry.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
-    return `<div class="memo-log-entry"><div class="mle-ts">${catLabel}<span>${entry.ts||''}</span></div><textarea class="mle-ta" readonly rows="1" onkeydown="handleLogKey(event,'${id}','${pid}',${realIdx})" onclick="editLogEntry(this)" onblur="blurLogEntry(this,'${id}','${pid}',${realIdx})" oninput="autoResizeTa(this)">${safeText}</textarea><span class="mle-del" onclick="delMemoEntry('${id}','${pid}',${realIdx})">✕</span></div>`;
-  }).join(''):'<div style="font-size:10px;color:var(--tx3);padding:4px 2px">아직 로그 없음</div>';
-  const catChipsHtml=[
-    `<span class="memo-cat-chip${activeCat==='all'?' active':''}" onclick="setMemoCat('${id}','${pid}','all')">전체</span>`,
-    ...memoCats.map(cat=>`<span class="memo-cat-chip${activeCat===cat?' active':''}" onclick="setMemoCat('${id}','${pid}','${cat}')"><span>${cat}</span><span class="cat-del" onclick="event.stopPropagation();delMemoCat('${id}','${pid}','${cat}')">✕</span></span>`),
-    `<span class="memo-cat-add" onclick="addMemoCat('${id}','${pid}')">＋ 분야</span>`
-  ].join('');
-  const detailUpdatedAt=c.detailUpdatedAt?new Date(c.detailUpdatedAt).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
 
+  // ── 마이그레이션: memoLog → memoLogA ──
+  if(!Array.isArray(c.memoLogA)&&Array.isArray(c.memoLog)&&c.memoLog.length){c.memoLogA=[...c.memoLog];}
+  if(!Array.isArray(c.memoLogA))c.memoLogA=[];
+  if(!Array.isArray(c.memoLogB))c.memoLogB=[];
+  if(!Array.isArray(c.memoLogC))c.memoLogC=[];
+  promoteEntries(c);
+  function buildMemoHtml(logArr,logKey){
+    const rev=[...logArr].reverse();
+    if(!rev.length)return '<div style="font-size:10px;color:var(--tx3);padding:4px 2px">아직 로그 없음</div>';
+    return rev.map((entry)=>{
+      const realIdx=logArr.length-1-[...logArr].reverse().indexOf(entry);
+      const catLabel=entry.category?`<span class="mle-cat">${entry.category}</span>`:'';
+      const safeText=(entry.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      return `<div class="memo-log-entry" draggable="true" ondragstart="mleDragStart(event,'${id}','${pid}',${realIdx},'${logKey}')" ondragover="mleDragOver(event)" ondrop="mleDrop(event,'${id}','${pid}',${realIdx},'${logKey}')" ondragend="mleDragEnd(event)"><span class="mle-handle">⣿</span><div class="mle-body"><div class="mle-ts">${catLabel}<span>${entry.ts||''}</span></div><div class="mle-textrow"><span class="mle-num">${logKey!=='a'?(realIdx+1):''}</span><div class="mle-preview" onclick="editLogEntryStart(this,'${id}','${pid}',${realIdx},'${logKey}')">${safeText}</div><textarea class="mle-ta" style="display:none" onkeydown="handleLogKey(event,'${id}','${pid}',${realIdx},'${logKey}')" onblur="blurLogEntry(this,'${id}','${pid}',${realIdx},'${logKey}')" oninput="autoResizeTa(this)"></textarea></div></div><span class="mle-copy" onclick="copyLogText(this,'${id}','${pid}',${realIdx},'${logKey}')" title="텍스트 복사"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(80,80,160,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg></span><span class="mle-check" onclick="checkMemoEntry('${id}','${pid}',${realIdx},'${logKey}')" title="완료 처리"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(52,199,89,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3.5 3.5 5.5-6"/></svg></span><span class="mle-del" onclick="delMemoEntry('${id}','${pid}',${realIdx},'${logKey}')">✕</span></div>`;
+    }).join('');
+  }
+  const memoLogHtmlA=buildMemoHtml(c.memoLogA,'a');
+  const memoLogHtmlB=buildMemoHtml(c.memoLogB,'b');
+  const memoLogHtmlC=buildMemoHtml(c.memoLogC,'c');
+  const lastMemoTsA=c.memoTsA||c.memoTs||'';
+  const lastMemoTsB=c.memoTsB||'';
+
+
+  function buildDoneHtml(doneArr){
+    if(!doneArr||!doneArr.length)return '<div style="font-size:10px;color:var(--tx3);padding:4px 2px">완료된 항목 없음</div>';
+    return [...doneArr].reverse().map((entry,di)=>{
+      const realIdx2=doneArr.length-1-di;
+      const safeText=(entry.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      return `<div class="memo-log-entry" style="opacity:0.65"><div class="mle-body"><div class="mle-ts"><span style="font-size:9px;color:rgba(52,199,89,0.75)">✓ ${entry.completedAt||entry.ts||''}</span></div><div class="mle-preview">${safeText}</div></div><span class="mle-copy" onclick="copyDoneText(this,'${id}','${pid}',${realIdx2})" title="텍스트 복사"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(80,80,160,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg></span><span class="mle-restore" onclick="restoreDoneEntry('${id}','${pid}',${realIdx2},'a')" title="진행 로그로 복원"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(80,100,200,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7H2a5.5 5.5 0 1 1 1 3.7"/><path d="M2 4v3h3"/></svg></span><span class="mle-del" onclick="delDoneEntry('${id}','${pid}',${realIdx2})" title="삭제">✕</span></div>`;
+    }).join('');
+  }
   const isStopped=c.status==='중지';
   const stoppedBadge=isStopped?'<span style="font-size:9px;padding:2px 7px;border-radius:6px;background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.3);font-weight:600;letter-spacing:0.03em;flex-shrink:0">⏸ 중지</span>':'';
   const pinnedBadge=c.pinned&&!isStopped?'<span style="font-size:9px;padding:2px 7px;border-radius:6px;background:var(--accent-bg);color:var(--accent);font-weight:600;letter-spacing:0.03em;flex-shrink:0">📌</span>':'';
@@ -1360,51 +1469,58 @@ function mkCard(c,pid){
     <div class="card-file">${c.file||''}</div>
   </div>
   ${stoppedBadge}${pinnedBadge}
-  ${c.chatUrl?`<span style="flex-shrink:0;font-size:12px;padding:2px 4px;border-radius:4px;color:var(--accent);cursor:pointer;transition:color .15s" title="링크 복사" onclick="event.stopPropagation();copyLink('${c.chatUrl.replace(/'/g,"\\'")}',this)">🔗</span>`:''}
-  <button class="card-ico-btn del" onclick="delCard('${id}','${pid}')" title="삭제">🗑</button>
+  ${c.chatUrl?`<span style="flex-shrink:0;padding:2px 4px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;color:var(--tx3);background:none;border:none" title="링크 복사" onclick="event.stopPropagation();copyLink('${c.chatUrl.replace(/'/g,"\\'")}',this)"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="4" cy="10" r="1.8"/><circle cx="10" cy="4" r="1.8"/><path d="M5.4 8.6l3.2-3.2"/></svg></span>`:''}
+  <button class="card-ico-btn del" onclick="delCard('${id}','${pid}')" title="삭제"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1"/><path d="M11 4l-.7 7.3A1 1 0 0 1 9.3 12H4.7a1 1 0 0 1-1-.7L3 4"/><path d="M6 7v3M8 7v3"/></svg></button>
 </div>
 <div class="card-body">
 
-  <!-- 세션 메모 -->
+  <!-- 진행 로그 A -->
   <div class="memo-wrap">
     <div class="memo-top">
       <span class="memo-dot"></span>
-      <span class="memo-lbl">진행 로그</span>
-      <span class="memo-ts-lbl" id="memo-ts-${id}">${lastMemoTs?'마지막 '+lastMemoTs:''}</span>
-      <button class="memo-add-btn" title="로그 추가 (Ctrl+Enter)" onclick="focusMemoTa('${id}')">＋</button>
+      <span class="memo-lbl">지금 단계</span>
+      <span class="memo-ts-lbl" id="memo-ts-${id}-a">${lastMemoTsA?'마지막 '+lastMemoTsA:''}</span>
+      <button class="memo-add-btn" title="로그 추가 (Ctrl+Enter)" onclick="focusMemoTa('${id}','a')">＋</button>
     </div>
-    <div class="memo-log-list" id="memo-log-${id}">${memoLogHtml}</div>
-    <textarea class="memo-ta" id="memo-ta-${id}" data-pid="${pid}" placeholder="새 로그 입력 후 Ctrl+Enter 또는 Ctrl+S..." style="display:none"></textarea>
+    <div class="memo-log-list" id="memo-log-${id}-a" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','a')">${memoLogHtmlA}</div>
+    <textarea class="memo-ta" id="memo-ta-${id}-a" data-pid="${pid}" data-logkey="a" placeholder="새 로그 입력 후 Ctrl+Enter..." style="display:none" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea>
+  </div>
+  <!-- 진행 로그 B -->
+  <div class="memo-wrap" style="border-top:1px solid var(--border-s)">
+    <div class="memo-top">
+      <span class="memo-dot" style="background:rgba(60,160,220,0.5);box-shadow:0 0 8px rgba(60,160,220,0.25)"></span>
+      <span class="memo-lbl">다음 단계</span>
+      <span class="memo-ts-lbl" id="memo-ts-${id}-b">${lastMemoTsB?'마지막 '+lastMemoTsB:''}</span>
+      <button class="memo-add-btn" title="로그 추가 (Ctrl+Enter)" onclick="focusMemoTa('${id}','b')">＋</button>
+    </div>
+    <div class="memo-log-list" id="memo-log-${id}-b" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','b')">${memoLogHtmlB}</div>
+    <textarea class="memo-ta" id="memo-ta-${id}-b" data-pid="${pid}" data-logkey="b" placeholder="새 로그 입력 후 Ctrl+Enter..." style="display:none" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea>
   </div>
 
-  <!-- 복붙 정보 (기본 접힘) -->
-  <div class="detail-toggle" onclick="toggleDetail('${id}')">
-    <span class="detail-toggle-lbl">복붙 정보</span>
-    <span style="font-size:10px;color:var(--tx3);margin-right:4px">${detailUpdatedAt?'저장 '+detailUpdatedAt:''}</span>
+  <!-- 추가 단계 C (기본 접힘) -->
+  <div class="memo-c-toggle" onclick="toggleMemoC('${id}')">
+    <span class="memo-c-lbl" id="memo-c-lbl-${id}">추가 단계${c.memoLogC.length?' ('+c.memoLogC.length+')':''}</span>
+    <button class="memo-add-btn" title="추가 단계 항목 추가" onclick="event.stopPropagation();focusMemoTa('${id}','c')">＋</button>
+    <span class="memo-c-arrow" id="memo-c-arrow-${id}">▼</span>
+  </div>
+  <div class="memo-c-body" id="memo-c-body-${id}">
+    <div class="memo-wrap" style="border-top:none">
+      <div class="memo-log-list" id="memo-log-${id}-c" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','c')">${memoLogHtmlC}</div>
+      <textarea class="memo-ta" id="memo-ta-${id}-c" data-pid="${pid}" data-logkey="c" placeholder="추가 단계 입력 후 Ctrl+Enter..." style="display:none" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea>
+    </div>
+  </div>
+
+  <!-- 완료된 로그 토글 -->
+  <div class="detail-toggle" onclick="toggleDone('${id}')">
+    <span class="detail-toggle-lbl" style="color:rgba(52,199,89,0.7)"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(52,199,89,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M2.5 7l3.5 3.5 5.5-6"/></svg>완료됨 ${c.memoLogDone&&c.memoLogDone.length?'('+c.memoLogDone.length+')':''}</span>
     <span class="detail-arrow" id="darrow-${id}">▼</span>
   </div>
   <div class="detail-sections" id="detail-${id}">
-${sec('status','현재 상태',c.status,
-  `<div class="status-txt">${c.status||'—'}</div>`,
-  `<div class="sec-presets">${presetsHtml}</div><input class="sec-input" id="inp-${id}-status" value="${esc(c.status)}" placeholder="직접 입력">`
-)}
-${sec('next','다음 할 일',c.next?.[0],
-  `<ul class="next-ul">${nH}</ul>`,
-  [0,1,2].map(i=>`<div class="next-row-edit"><span class="next-n">${i+1}.</span><input class="sec-input" id="inp-${id}-n${i}" value="${esc(c.next?.[i])}" placeholder="${i+1}번 할 일" style="margin:0;flex:1"></div>`).join('')
-)}
-${urlSec}
-${fH?sec('files','파일',c.files?.[0],
-  `<div class="ftags">${fH}</div>`,
-  `<textarea class="sec-input" id="inp-${id}-files" rows="2" placeholder="파일명 (Enter로 구분)">${(c.files||[]).join('\n')}</textarea>`
-):''}
-${rH?sec('rules','Claude 주의사항',c.rules?.[0],
-  `<ul class="rule-ul">${rH}</ul>`,
-  `<textarea class="sec-input" id="inp-${id}-rules" rows="4" placeholder="규칙 (Enter로 구분)">${(c.rules||[]).join('\n')}</textarea>`
-):''}
+    <div class="memo-log-list" id="done-log-${id}" style="padding:6px 14px 8px">${buildDoneHtml(c.memoLogDone||[])}</div>
   </div>
 
   <div class="card-ft">
-    <button class="cb copy" onclick="copyCard('${id}','${pid}')">📋 복사</button>
+    <button class="cb copy" onclick="copyCard('${id}','${pid}')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg> 복사</button>
     ${c.pinned?`<button class="cb" style="color:var(--accent);border-color:var(--accent-border)" onclick="event.stopPropagation();unpinCard('${id}','${pid}')">📌 고정 해제</button>`:''}
     ${c.status==='중지'?`<button class="cb" style="color:#8e8e93;border-color:#8e8e93" onclick="event.stopPropagation();resumeCard('${id}','${pid}')">⏸ 중지 해제</button>`:''}
   </div>
@@ -1487,12 +1603,14 @@ function undo(){
   if(!undoStack.length)return;
   redoStack.push(JSON.stringify(S.projects));
   S.projects=JSON.parse(undoStack.pop());
+  loadQmFromGist();
   saveGist();renderAll();updateUndoRedoBtns();toast('↩ 되돌렸어요');
 }
 function redo(){
   if(!redoStack.length)return;
   undoStack.push(JSON.stringify(S.projects));
   S.projects=JSON.parse(redoStack.pop());
+  loadQmFromGist();
   saveGist();renderAll();updateUndoRedoBtns();toast('↪ 복구했어요');
 }
 function updateUndoRedoBtns(){
@@ -1505,7 +1623,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveGist();toast('💾 저장됐어요');}
   if(e.key==='Escape'){
     const open=document.querySelector('.mbg.open');
-    if(open){if(open.id==='qmEditModal')return;open.classList.remove('open');}
+    if(open){if(open.id==='qmEditModal'){closeQmEditWithSave();return;}open.classList.remove('open');}
   }
 });
 
@@ -1637,80 +1755,104 @@ function onDrop(e,id,pid){
 const memoCatFilter={};
 
 function autoResizeTa(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
-function focusMemoTa(cardId){
-  const ta=document.getElementById(`memo-ta-${cardId}`);if(!ta)return;
+function focusMemoTa(cardId,logKey){
+  logKey=logKey||'a';
+  const ta=document.getElementById(`memo-ta-${cardId}-${logKey}`);if(!ta)return;
   ta.style.display='';ta.focus();
   ta.onkeydown=e=>{
     if((e.ctrlKey||e.metaKey)&&(e.key==='s'||e.key==='Enter')){
       e.preventDefault();
-      saveMemo(cardId,ta.dataset.pid);
+      saveMemo(cardId,ta.dataset.pid,logKey);
     }
     if(e.key==='Escape'){ta.value='';ta.style.display='none';}
   };
 }
-function editLogEntry(ta){
-  if(!ta.readOnly)return;
-  ta.readOnly=false;ta.focus();
+function editLogEntryStart(previewEl,cardId,pid,idx,logKey){
+  if(mleDrag.dragging)return;
+  const entry=document.getElementById(`memo-log-${cardId}-${logKey}`);if(!entry)return;
+  const logArr=getLogArr(S.projects[pid]?.cards?.[cardId],logKey);
+  const ta=previewEl.nextElementSibling;
+  if(!ta||ta.tagName!=='TEXTAREA')return;
+  const text=logArr[idx]?.text||'';
+  ta.value=text;
+  previewEl.style.display='none';
+  ta.style.display='';
   autoResizeTa(ta);
+  ta.focus();
 }
-function blurLogEntry(ta,cardId,pid,idx){
-  // blur 시 저장 후 readonly 복귀 (내용 변경됐을 때만)
-  saveLogEntry(ta,cardId,pid,idx);
+function getLogArr(card,logKey){
+  if(!card)return[];
+  if(logKey==='b')return Array.isArray(card.memoLogB)?card.memoLogB:[];
+  if(logKey==='c')return Array.isArray(card.memoLogC)?card.memoLogC:[];
+  return Array.isArray(card.memoLogA)?card.memoLogA:[];
 }
-function handleLogKey(e,cardId,pid,idx){
+function blurLogEntry(ta,cardId,pid,idx,logKey){
+  logKey=logKey||'a';
+  saveLogEntry(ta,cardId,pid,idx,logKey);
+  // preview 복원
+  const preview=ta.previousElementSibling;
+  if(preview&&preview.classList.contains('mle-preview')){
+    const logArr=getLogArr(S.projects[pid]?.cards?.[cardId],logKey);
+    const text=logArr[idx]?.text||'';
+    preview.textContent=text;
+    ta.style.display='none';
+    preview.style.display='';
+  }
+}
+function handleLogKey(e,cardId,pid,idx,logKey){
+  logKey=logKey||'a';
   if((e.ctrlKey||e.metaKey)&&(e.key==='s'||e.key==='Enter')){
     e.preventDefault();
-    saveLogEntry(e.target,cardId,pid,idx);
+    saveLogEntry(e.target,cardId,pid,idx,logKey);
   }
   if(e.key==='Escape'){
-    // 편집 취소 - 원본 복원
-    const c=S.projects[pid]?.cards?.[cardId];
-    const entry=c?.memoLog?.[idx];
-    if(entry)e.target.value=entry.text||'';
-    e.target.readOnly=true;
+    const card=S.projects[pid]?.cards?.[cardId];
+    const logArr=getLogArr(card,logKey);
+    const entry=logArr[idx];
+    const ta=e.target;
+    if(entry)ta.value=entry.text||'';
+    const preview=ta.previousElementSibling;
+    if(preview&&preview.classList.contains('mle-preview')){
+      ta.style.display='none';preview.style.display='';
+    }
   }
 }
-function saveLogEntry(ta,cardId,pid,idx){
-  if(ta.readOnly)return;
-  const c=S.projects[pid]?.cards?.[cardId];
-  if(!c||!c.memoLog?.[idx])return;
+function saveLogEntry(ta,cardId,pid,idx,logKey){
+  logKey=logKey||'a';
+  const card=S.projects[pid]?.cards?.[cardId];
+  const logArr=getLogArr(card,logKey);
+  if(!card||!logArr[idx])return;
   const newText=ta.value.trim();
-  if(newText&&newText!==c.memoLog[idx].text){
+  if(newText&&newText!==logArr[idx].text){
     snapshot();
-    c.memoLog[idx].text=newText;
+    logArr[idx].text=newText;
     saveGist();showSavePopup();
   } else if(!newText){
-    ta.value=c.memoLog[idx].text||'';
+    ta.value=logArr[idx].text||'';
   }
-  ta.readOnly=true;
 }
 
 function _renderMemoSection(cardId,pid){
   const c=S.projects[pid]?.cards?.[cardId];if(!c)return;
-  const cats=Array.isArray(c.memoCategories)?c.memoCategories:[];
-  const activeCat=memoCatFilter[cardId]||'all';
-  // 칩 재렌더
-  const catsEl=document.getElementById(`memo-cats-${cardId}`);
-  if(catsEl){
-    catsEl.innerHTML=[
-      `<span class="memo-cat-chip${activeCat==='all'?' active':''}" onclick="setMemoCat('${cardId}','${pid}','all')">전체</span>`,
-      ...cats.map(cat=>`<span class="memo-cat-chip${activeCat===cat?' active':''}" onclick="setMemoCat('${cardId}','${pid}','${cat}')"><span>${cat}</span><span class="cat-del" onclick="event.stopPropagation();delMemoCat('${cardId}','${pid}','${cat}')">✕</span></span>`),
-      `<span class="memo-cat-add" onclick="addMemoCat('${cardId}','${pid}')">＋ 분야</span>`
-    ].join('');
-  }
-  // 로그 재렌더
-  const logEl=document.getElementById(`memo-log-${cardId}`);
-  if(logEl){
-    const all=Array.isArray(c.memoLog)?[...c.memoLog].reverse():[];
-    const visible=all.filter(e=>activeCat==='all'||e.category===activeCat);
-    if(!visible.length){logEl.innerHTML='<div style="font-size:10px;color:var(--tx3);padding:4px 2px">아직 로그 없음</div>';return;}
-    logEl.innerHTML=visible.map((entry)=>{
-      const realIdx=c.memoLog.length-1-[...c.memoLog].reverse().indexOf(entry);
+  function renderLogList(logArr,logKey,elId){
+    const el=document.getElementById(elId);if(!el)return;
+    if(!Array.isArray(logArr)||!logArr.length){el.innerHTML='<div style="font-size:10px;color:var(--tx3);padding:4px 2px">아직 로그 없음</div>';return;}
+    const rev=[...logArr].reverse();
+    el.setAttribute('ondragover','mleDragOverList(event)');
+    el.setAttribute('ondrop',`mleDropList(event,'${cardId}','${pid}','${logKey}')`);
+    el.innerHTML=rev.map((entry)=>{
+      const realIdx=logArr.length-1-rev.indexOf(entry);
       const catLabel=entry.category?`<span class="mle-cat">${entry.category}</span>`:'';
       const safeText=(entry.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
-      return `<div class="memo-log-entry"><div class="mle-ts">${catLabel}<span>${entry.ts||''}</span></div><textarea class="mle-ta" readonly rows="1" onkeydown="handleLogKey(event,'${cardId}','${pid}',${realIdx})" onclick="editLogEntry(this)" onblur="blurLogEntry(this,'${cardId}','${pid}',${realIdx})" oninput="autoResizeTa(this)">${safeText}</textarea><span class="mle-del" onclick="delMemoEntry('${cardId}','${pid}',${realIdx})">✕</span></div>`;
+      return `<div class="memo-log-entry" draggable="true" ondragstart="mleDragStart(event,'${cardId}','${pid}',${realIdx},'${logKey}')" ondragover="mleDragOver(event)" ondrop="mleDrop(event,'${cardId}','${pid}',${realIdx},'${logKey}')" ondragend="mleDragEnd(event)"><span class="mle-handle">⣿</span><div class="mle-body"><div class="mle-ts">${catLabel}<span>${entry.ts||''}</span></div><div class="mle-textrow"><span class="mle-num">${logKey!=='a'?(realIdx+1):''}</span><div class="mle-preview" onclick="editLogEntryStart(this,'${cardId}','${pid}',${realIdx},'${logKey}')">${safeText}</div><textarea class="mle-ta" style="display:none" onkeydown="handleLogKey(event,'${cardId}','${pid}',${realIdx},'${logKey}')" onblur="blurLogEntry(this,'${cardId}','${pid}',${realIdx},'${logKey}')" oninput="autoResizeTa(this)"></textarea></div></div><span class="mle-copy" onclick="copyLogText(this,'${cardId}','${pid}',${realIdx},'${logKey}')" title="텍스트 복사"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(80,80,160,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg></span><span class="mle-check" onclick="checkMemoEntry('${cardId}','${pid}',${realIdx},'${logKey}')" title="완료 처리"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(52,199,89,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3.5 3.5 5.5-6"/></svg></span><span class="mle-del" onclick="delMemoEntry('${cardId}','${pid}',${realIdx},'${logKey}')">✕</span></div>`;
     }).join('');
   }
+  renderLogList(c.memoLogA,'a',`memo-log-${cardId}-a`);
+  renderLogList(c.memoLogB,'b',`memo-log-${cardId}-b`);
+  if(!Array.isArray(c.memoLogC))c.memoLogC=[];
+  renderLogList(c.memoLogC,'c',`memo-log-${cardId}-c`);
+  const cLbl=document.getElementById(`memo-c-lbl-${cardId}`);
+  if(cLbl)cLbl.textContent='추가 단계'+(c.memoLogC.length?' ('+c.memoLogC.length+')':'');
 }
 function setMemoCat(cardId,pid,cat){
   memoCatFilter[cardId]=cat;
@@ -1734,8 +1876,9 @@ function delMemoCat(cardId,pid,cat){
   if(memoCatFilter[cardId]===cat)memoCatFilter[cardId]='all';
   saveGist();_renderMemoSection(cardId,pid);
 }
-function saveMemo(cardId, pid){
-  const ta=document.getElementById(`memo-ta-${cardId}`);
+function saveMemo(cardId, pid, logKey){
+  logKey=logKey||'a';
+  const ta=document.getElementById(`memo-ta-${cardId}-${logKey}`);
   if(!ta)return;
   const text=ta.value.trim();
   if(!text){ta.style.display='none';return;}
@@ -1744,20 +1887,219 @@ function saveMemo(cardId, pid){
   snapshot();
   const now=new Date();
   const tsStr=now.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-  if(!Array.isArray(c.memoLog))c.memoLog=[];
-  c.memoLog.push({ts:tsStr,text,category:''});
-  c.memo=text;c.memoTs=tsStr;c.updatedAt=now.toISOString();
+  if(logKey==='c'){
+    if(!Array.isArray(c.memoLogC))c.memoLogC=[];
+    c.memoLogC.push({ts:tsStr,text,category:''});
+    promoteEntries(c);
+  } else if(logKey==='b'){
+    if(!Array.isArray(c.memoLogB))c.memoLogB=[];
+    c.memoLogB.push({ts:tsStr,text,category:''});
+    c.memoTsB=tsStr;
+  } else {
+    if(!Array.isArray(c.memoLogA))c.memoLogA=[];
+    if(!Array.isArray(c.memoLogB))c.memoLogB=[];
+    if(c.memoLogA.length>=1){
+      c.memoLogB.push({ts:tsStr,text,category:''});
+      c.memoTsB=tsStr;
+    } else {
+      c.memoLogA.push({ts:tsStr,text,category:''});
+      c.memoTsA=tsStr;c.memoTs=tsStr;
+    }
+  }
+  c.memo=text;c.updatedAt=now.toISOString();
   ta.value='';ta.style.display='none';
-  const tsEl=document.getElementById(`memo-ts-${cardId}`);
+  const tsEl=document.getElementById(`memo-ts-${cardId}-${logKey}`);
   if(tsEl)tsEl.textContent='마지막 '+tsStr;
   _renderMemoSection(cardId,pid);
   addLog({type:'memo',cardId,pid,cardTitle:c.title||'',projName:S.projects[pid]?.meta?.name||pid,text,ts:now.toISOString()});
   saveGist();showSavePopup();
 }
-function delMemoEntry(cardId,pid,idx){
-  const c=S.projects[pid]?.cards?.[cardId];if(!c||!Array.isArray(c.memoLog))return;
-  snapshot();c.memoLog.splice(idx,1);
+function delMemoEntry(cardId,pid,idx,logKey){
+  logKey=logKey||'a';
+  const card=S.projects[pid]?.cards?.[cardId];
+  const logArr=getLogArr(card,logKey);
+  if(!card||!Array.isArray(logArr))return;
+  snapshot();logArr.splice(idx,1);
+  if(logKey==='b')card.memoLogB=logArr;
+  else if(logKey==='c')card.memoLogC=logArr;
+  else card.memoLogA=logArr;
+  promoteEntries(card);
   saveGist();_renderMemoSection(cardId,pid);
+}
+
+// ── 자동 승격 ──
+function promoteEntries(card){
+  if(!card)return;
+  if(!Array.isArray(card.memoLogA))card.memoLogA=[];
+  if(!Array.isArray(card.memoLogB))card.memoLogB=[];
+  if(!Array.isArray(card.memoLogC))card.memoLogC=[];
+  if(!card.memoLogA.length&&card.memoLogB.length){card.memoLogA.push(card.memoLogB.shift());}
+}
+// ── 완료 처리 ──
+function checkMemoEntry(cardId,pid,idx,logKey){
+  logKey=logKey||'a';
+  const card=S.projects[pid]?.cards?.[cardId];
+  const logArr=getLogArr(card,logKey);
+  if(!card||!logArr[idx])return;
+  snapshot();
+  const entry=logArr.splice(idx,1)[0];
+  if(logKey==='b')card.memoLogB=logArr;else card.memoLogA=logArr;
+  if(!Array.isArray(card.memoLogDone))card.memoLogDone=[];
+  const now=new Date();
+  entry.completedAt=now.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  card.memoLogDone.push(entry);
+  card.updatedAt=now.toISOString();
+  promoteEntries(card);
+  saveGist();_renderMemoSection(cardId,pid);_renderDoneSection(cardId,pid);
+}
+function delDoneEntry(cardId,pid,idx){
+  const card=S.projects[pid]?.cards?.[cardId];
+  if(!card||!Array.isArray(card.memoLogDone))return;
+  snapshot();card.memoLogDone.splice(idx,1);
+  saveGist();_renderDoneSection(cardId,pid);
+}
+function copyLogText(el,cardId,pid,idx,logKey){
+  logKey=logKey||'a';
+  const card=S.projects[pid]?.cards?.[cardId];
+  const logArr=getLogArr(card,logKey);
+  const text=logArr[idx]?.text||'';
+  navigator.clipboard.writeText(text);
+  el.style.opacity='1';setTimeout(()=>el.style.opacity='',700);
+  showSavePopup('복사됨');
+}
+function copyDoneText(el,cardId,pid,idx){
+  const card=S.projects[pid]?.cards?.[cardId];
+  const text=(card?.memoLogDone||[])[idx]?.text||'';
+  navigator.clipboard.writeText(text);
+  el.style.opacity='1';setTimeout(()=>el.style.opacity='',700);
+  showSavePopup('복사됨');
+}
+function restoreDoneEntry(cardId,pid,idx,logKey){
+  logKey=logKey||'a';
+  const card=S.projects[pid]?.cards?.[cardId];
+  if(!card||!Array.isArray(card.memoLogDone))return;
+  snapshot();
+  const entry=card.memoLogDone.splice(idx,1)[0];
+  delete entry.completedAt;
+  if(logKey==='b'){if(!Array.isArray(card.memoLogB))card.memoLogB=[];card.memoLogB.push(entry);}
+  else{if(!Array.isArray(card.memoLogA))card.memoLogA=[];card.memoLogA.push(entry);}
+  card.updatedAt=new Date().toISOString();
+  saveGist();_renderMemoSection(cardId,pid);_renderDoneSection(cardId,pid);
+}
+function toggleMemoC(cardId){
+  const body=document.getElementById('memo-c-body-'+cardId);
+  const arrow=document.getElementById('memo-c-arrow-'+cardId);
+  if(!body)return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(arrow)arrow.classList.toggle('open',!isOpen);
+}
+function toggleDone(cardId){
+  const body=document.getElementById(`detail-${cardId}`);
+  const arrow=document.getElementById(`darrow-${cardId}`);
+  if(!body)return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(arrow)arrow.classList.toggle('open',!isOpen);
+}
+function _renderDoneSection(cardId,pid){
+  const card=S.projects[pid]?.cards?.[cardId];if(!card)return;
+  const el=document.getElementById(`done-log-${cardId}`);if(!el)return;
+  const doneArr=card.memoLogDone||[];
+  if(!doneArr.length){el.innerHTML='<div style="font-size:10px;color:var(--tx3);padding:4px 2px">완료된 항목 없음</div>';return;}
+  el.innerHTML=[...doneArr].reverse().map((entry,di)=>{
+    const realIdx=doneArr.length-1-di;
+    const safeText=(entry.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    return `<div class="memo-log-entry" style="opacity:0.65"><div class="mle-body"><div class="mle-ts"><span style="font-size:9px;color:rgba(52,199,89,0.75)">✓ ${entry.completedAt||entry.ts||''}</span></div><div class="mle-preview">${safeText}</div></div><span class="mle-copy" onclick="copyDoneText(this,'${cardId}','${pid}',${realIdx})" title="텍스트 복사"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(80,80,160,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg></span><span class="mle-restore" onclick="restoreDoneEntry('${cardId}','${pid}',${realIdx},'a')" title="진행 로그로 복원"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="rgba(80,100,200,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7H2a5.5 5.5 0 1 1 1 3.7"/><path d="M2 4v3h3"/></svg></span><span class="mle-del" onclick="delDoneEntry('${cardId}','${pid}',${realIdx})" title="삭제">✕</span></div>`;
+  }).join('');
+  // 카운트 업데이트
+  const toggleEl=document.querySelector(`.detail-toggle[onclick="toggleDone('${cardId}')"]`);
+  if(toggleEl){const lbl=toggleEl.querySelector('.detail-toggle-lbl');if(lbl)lbl.lastChild.textContent=`완료됨 (${doneArr.length})`;}
+}
+
+// ── 메모 로그 드래그 ──
+const mleDrag={dragging:false,cardId:null,pid:null,idx:null,logKey:null};
+function mleDragStart(e,cardId,pid,idx,logKey){
+  mleDrag.dragging=true;mleDrag.cardId=cardId;mleDrag.pid=pid;mleDrag.idx=idx;mleDrag.logKey=logKey;
+  e.dataTransfer.effectAllowed='move';
+  e.currentTarget.style.opacity='0.4';
+}
+function mleDragEnd(e){
+  mleDrag.dragging=false;
+  if(e&&e.currentTarget)e.currentTarget.style.opacity='';
+  document.querySelectorAll('.memo-log-entry').forEach(el=>{el.classList.remove('drag-over-top','drag-over-bottom');});
+  document.querySelectorAll('.memo-log-list').forEach(el=>{el.classList.remove('drag-over-empty');});
+}
+function mleDragOver(e){
+  e.preventDefault();e.stopPropagation();
+  e.dataTransfer.dropEffect='move';
+  const entry=e.currentTarget;
+  const rect=entry.getBoundingClientRect();
+  const mid=rect.top+rect.height/2;
+  entry.classList.toggle('drag-over-top',e.clientY<mid);
+  entry.classList.toggle('drag-over-bottom',e.clientY>=mid);
+}
+function mleDragOverList(e){
+  if(e.target.closest('.memo-log-entry'))return;
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over-empty');
+}
+function mleDrop(e,targetCardId,targetPid,targetIdx,targetLogKey){
+  e.preventDefault();e.stopPropagation();
+  e.currentTarget.classList.remove('drag-over-top','drag-over-bottom');
+  if(!mleDrag.cardId)return;
+  if(mleDrag.cardId!==targetCardId)return;
+  const card=S.projects[targetPid]?.cards?.[targetCardId];if(!card)return;
+  const srcArr=getLogArr(card,mleDrag.logKey);
+  const tgtArr=getLogArr(card,targetLogKey);
+  const item=srcArr[mleDrag.idx];if(!item)return;
+  snapshot();
+  srcArr.splice(mleDrag.idx,1);
+  // 같은 리스트면 인덱스 보정
+  let insertIdx=targetIdx;
+  if(mleDrag.logKey===targetLogKey&&mleDrag.idx<targetIdx)insertIdx--;
+  // 드래그 방향에 따라 before/after
+  const rect=e.currentTarget.getBoundingClientRect();
+  const after=e.clientY>=rect.top+rect.height/2;
+  tgtArr.splice(after?insertIdx+1:insertIdx,0,item);
+  // A max1: 초과분을 B 앞으로
+  if(targetLogKey==='a'&&tgtArr.length>1){var displaced=tgtArr.splice(0,tgtArr.length-1);if(!Array.isArray(card.memoLogB))card.memoLogB=[];card.memoLogB.unshift(...displaced);}
+  if(targetLogKey==='b')card.memoLogB=tgtArr;
+  else if(targetLogKey==='c')card.memoLogC=tgtArr;
+  else card.memoLogA=tgtArr;
+  if(mleDrag.logKey!==targetLogKey){
+    if(mleDrag.logKey==='b')card.memoLogB=srcArr;
+    else if(mleDrag.logKey==='c')card.memoLogC=srcArr;
+    else card.memoLogA=srcArr;
+  }
+  promoteEntries(card);
+  mleDragEnd(null);
+  saveGist();_renderMemoSection(targetCardId,targetPid);
+}
+function mleDropList(e,targetCardId,targetPid,targetLogKey){
+  if(e.target.closest('.memo-log-entry'))return;
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over-empty');
+  if(!mleDrag.cardId||mleDrag.cardId!==targetCardId)return;
+  if(mleDrag.logKey===targetLogKey)return;
+  const card=S.projects[targetPid]?.cards?.[targetCardId];if(!card)return;
+  const srcArr=getLogArr(card,mleDrag.logKey);
+  const tgtArr=getLogArr(card,targetLogKey);
+  const item=srcArr[mleDrag.idx];if(!item)return;
+  snapshot();
+  srcArr.splice(mleDrag.idx,1);
+  tgtArr.push(item);
+  if(targetLogKey==='b')card.memoLogB=tgtArr;else card.memoLogA=tgtArr;
+  if(mleDrag.logKey==='b')card.memoLogB=srcArr;
+  else if(mleDrag.logKey==='c')card.memoLogC=srcArr;
+  else card.memoLogA=srcArr;
+  // A max1
+  if(targetLogKey==='a'&&tgtArr.length>1){var d2=tgtArr.splice(0,tgtArr.length-1);if(!Array.isArray(card.memoLogB))card.memoLogB=[];card.memoLogB.unshift(...d2);card.memoLogA=tgtArr;}
+  if(targetLogKey==='b')card.memoLogB=tgtArr;
+  else if(targetLogKey==='c')card.memoLogC=tgtArr;
+  promoteEntries(card);
+  mleDragEnd(null);
+  saveGist();_renderMemoSection(targetCardId,targetPid);
 }
 
 // ── 디테일 섹션 토글 ──
@@ -1772,9 +2114,9 @@ function toggleDetail(cardId){
 
 // ── 저장 팝업 ──
 let spTimer;
-function showSavePopup(msg='✅ 저장됨'){
+function showSavePopup(msg='저장됨'){
   const el=document.getElementById('savePopup');
-  el.textContent=msg;el.classList.add('show');
+  el.innerHTML='<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="rgba(52,199,89,0.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3.5 3.5 5.5-6"/></svg>'+msg;el.classList.add('show');
   clearTimeout(spTimer);spTimer=setTimeout(()=>el.classList.remove('show'),1800);
 }
 
@@ -1847,12 +2189,12 @@ function renderLogPanel(){
 function getProjOptions(excludePid){
   return Object.entries(S.projects)
     .filter(([pid,p])=>pid!=='_logs'&&pid!=='_qm'&&!p._isLogs&&!p._isQm&&pid!==excludePid)
-    .map(([pid,p])=>`<option value="${pid}">${p.meta?.icon||'📁'} ${p.meta?.name||pid}</option>`).join('');
+    .map(([pid,p])=>`<option value="${pid}">${p.meta?.name||pid}</option>`).join('');
 }
 function openProjSplitPick(){
   const sel=document.getElementById('ps-src');
   sel.innerHTML=Object.entries(S.projects).filter(([pid,p])=>pid!=='_logs'&&pid!=='_qm'&&!p._isLogs&&!p._isQm)
-    .map(([pid,p])=>`<option value="${pid}">${p.meta?.icon||'📁'} ${p.meta?.name||pid}</option>`).join('');
+    .map(([pid,p])=>`<option value="${pid}">${p.meta?.name||pid}</option>`).join('');
   ['ps-a-icon','ps-a-name','ps-a-pid','ps-b-icon','ps-b-name','ps-b-pid'].forEach(id=>document.getElementById(id).value='');
   openModal('projSplitModal');
 }
@@ -1911,12 +2253,26 @@ const openSecs={};
 function toggleSec(cardId,pid,name){
   if(S.mode)return;
   const cur=openSecs[cardId];
-  if(cur===name){cancelSec(cardId,name);return;}
-  if(cur)cancelSec(cardId,cur);
+  // 다른 섹션 열려있으면 먼저 저장
+  if(cur&&cur!==name)saveSec(cardId,pid,cur);
+  if(cur===name){saveSec(cardId,pid,name);return;}
   openSecs[cardId]=name;
   document.getElementById(`row-${cardId}-${name}`)?.classList.add('open');
   document.getElementById(`body-${cardId}-${name}`)?.classList.add('open');
   document.getElementById(`content-${cardId}-${name}`)?.classList.add('hidden');
+  // 열린 후 입력창에 Enter → 저장 바인딩
+  setTimeout(()=>{
+    const body=document.getElementById(`body-${cardId}-${name}`);
+    if(!body)return;
+    body.querySelectorAll('input,textarea').forEach(inp=>{
+      inp.addEventListener('keydown',function(e){
+        if(e.key==='Enter'&&!e.shiftKey&&inp.tagName==='INPUT'){
+          e.preventDefault();saveSec(cardId,pid,name);
+        }
+        if(e.key==='Escape'){cancelSec(cardId,name);}
+      },{once:false});
+    });
+  },50);
 }
 function cancelSec(cardId,name){
   delete openSecs[cardId];
@@ -2131,30 +2487,15 @@ function doAddProject(){
 }
 
 // ── 챗 가져오기 ──
-const BASE_PROMPT=`⚠️ 이 요청은 지금 이 채팅에서 진행 중인 작업과 완전히 별개입니다.
-카드 정보를 채우는 것 자체를 작업 결과나 다음 할 일에 포함하지 마세요.
-이 채팅에서 실제로 진행한 개발/작업 내용을 기반으로 아래 양식만 채워주세요.
-
-이 채팅 전체 대화를 보고, 이 프로젝트의 카드 정보를 채워주세요.
-다른 텍스트 없이 아래 JSON 형식으로만 출력해주세요:
+const BASE_PROMPT=`이 채팅 전체 대화를 보고, 아래 JSON 형식으로만 출력해주세요. 다른 텍스트 없이 JSON만.
 
 [
   {
     "pid": "(영문 프로젝트ID, 예: data_hub)",
-    "icon": "(이 프로젝트를 대표하는 이모지 1개)",
-    "title": "(프로젝트명)",
-    "file": "(주로 다루는 파일명, 없으면 빈 문자열)",
-    "chatUrl": "(이 채팅의 URL — 브라우저 주소창의 URL 그대로, 모르면 빈 문자열)",
-    "status": "(지금 어느 단계인지 한 줄, 예: 개발 중 / 버그 수정 중 / 운영 중)",
-    "next": ["(다음 할 일 1)", "(다음 할 일 2)", "(다음 할 일 3)"],
-    "rules": ["(이 채팅에서 파악한 절대 지켜야 할 규칙 1)", "(규칙 2)"]
+    "title": "(이 채팅의 작업 내용을 한 줄로 요약한 카드 이름)",
+    "chatUrl": "(이 채팅의 URL — 브라우저 주소창 그대로, 모르면 빈 문자열)"
   }
-]
-
-규칙이란: 이 채팅에서 작업하며 주의가 필요했던 것들.
-예) "기존 기능 건드리지 않기", "단일 HTML 파일 원칙", "날짜 파싱 substring(0,10) 필수"
-
-다시 강조: 이 카드 작성 요청 자체는 next(다음 할 일)나 rules(규칙)에 절대 포함하지 마세요.`;
+]`;
 
 let chatFormCount=0;
 function openChatImport(){
@@ -2173,14 +2514,24 @@ function switchCiTab(tab){
   const man=document.getElementById('ciManualPane');
   const t1=document.getElementById('ciTab1');
   const t2=document.getElementById('ciTab2');
-  if(tab==='import'){imp.style.display='';man.style.display='none';t1.classList.add('primary');t2.classList.remove('primary');}
-  else{imp.style.display='none';man.style.display='';t1.classList.remove('primary');t2.classList.add('primary');}
+  const onStyle='background:rgba(40,90,195,0.85);color:#fff;border:none;box-shadow:0 2px 8px rgba(40,90,195,0.22)';
+  const offStyle='background:transparent;color:rgba(35,75,175,0.6);border:none;box-shadow:none';
+  if(tab==='import'){
+    imp.style.display='';man.style.display='none';
+    t1.style.cssText=t1.style.cssText.replace(/background:[^;]+/,'').replace(/color:[^;]+/,'').replace(/border:[^;]+/,'').replace(/box-shadow:[^;]+/,'');
+    t1.setAttribute('style','flex:1;'+onStyle);
+    t2.setAttribute('style','flex:1;'+offStyle);
+  } else {
+    imp.style.display='none';man.style.display='';
+    t1.setAttribute('style','flex:1;'+offStyle);
+    t2.setAttribute('style','flex:1;'+onStyle);
+  }
 }
 function populateProjSelect(prefix){
   const sel=document.getElementById(prefix+'-proj');if(!sel)return;
   sel.innerHTML='<option value="">— 프로젝트 선택 —</option>';
   orderedProjects().filter(function(id){var p=S.projects[id];return p&&!p._isLogs&&p.meta?.status!=='종료';}).forEach(function(id){
-    var p=S.projects[id];var o=document.createElement('option');o.value=id;o.textContent=(p.meta?.icon||'📁')+' '+(p.meta?.name||id);sel.appendChild(o);
+    var p=S.projects[id];var o=document.createElement('option');o.value=id;o.textContent=p.meta?.name||id;sel.appendChild(o);
   });
   var nw=document.createElement('option');nw.value='__new__';nw.textContent='＋ 새 프로젝트 만들기';sel.appendChild(nw);
   var np=document.getElementById(prefix+'-newProj');if(np)np.style.display='none';
@@ -2436,6 +2787,8 @@ function toggleMemoBar(){
   window.addEventListener('resize',function(){MAX_H=Math.round(window.innerHeight*0.6);});
 })();
 function renderMemoBar(){
+  // undo/redo 후 S.projects._qm.items와 qmMemos 동기화
+  if(S.projects._qm&&Array.isArray(S.projects._qm.items))qmMemos=S.projects._qm.items;
   var list=document.getElementById('qmList');if(!list)return;
   document.getElementById('qmCnt').textContent=qmMemos.length;
   if(!qmMemos.length){list.innerHTML='<div style="font-size:11px;color:var(--tx3);padding:4px 8px">메모가 없어요 — + 메모로 추가하세요</div>';return;}
@@ -2467,6 +2820,7 @@ function addQuickMemo(){
   openQmEdit(id);
 }
 function delQuickMemo(id){
+  saveQmToGist();snapshot();
   qmMemos=qmMemos.filter(function(m){return m.id!==id;});
   saveQmToGist();saveGist();renderMemoBar();
 }
@@ -2486,7 +2840,16 @@ function saveQmEdit(){
   var m=qmMemos.find(function(x){return x.id===qmEditId;});if(!m)return;
   m.title=document.getElementById('qmEditTitle').value.trim()||'메모';
   m.content=document.getElementById('qmEditContent').value.trim();
-  closeModal('qmEditModal');saveQmToGist();saveGist();renderMemoBar();toast('✅ 저장됨');
+  closeModal('qmEditModal');saveQmToGist();saveGist();renderMemoBar();
+}
+function closeQmEditWithSave(){
+  var m=qmMemos.find(function(x){return x.id===qmEditId;});
+  if(m){
+    m.title=document.getElementById('qmEditTitle').value.trim()||'메모';
+    m.content=document.getElementById('qmEditContent').value.trim();
+    saveQmToGist();saveGist();renderMemoBar();
+  }
+  closeModal('qmEditModal');
 }
 function openQmImport(mode){
   qmImportMode=mode;
@@ -2596,7 +2959,7 @@ function now(){return new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minu
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600);}
-document.querySelectorAll('.mbg').forEach(b=>b.addEventListener('click',e=>{if(e.target===b){if(b.id==='qmEditModal')return;b.classList.remove('open');}}));
+document.querySelectorAll('.mbg').forEach(b=>b.addEventListener('click',e=>{if(e.target===b){if(b.id==='qmEditModal'){closeQmEditWithSave();return;}b.classList.remove('open');}}));
 
 // ── INIT ──
 if(S.token){
