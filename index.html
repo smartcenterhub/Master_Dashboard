@@ -117,8 +117,7 @@ body::before{content:'';position:fixed;inset:0;background:
 .card.card-stopped::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:rgba(200,150,50,0.3);border-radius:14px 14px 0 0}
 .card.card-stopped .card-hd,.card.card-stopped .card-meta,.card.card-stopped .card-title{color:rgba(80,65,30,0.6)}
 .card.card-stopped .card-file,.card.card-stopped .memo-lbl,.card.card-stopped .memo-ts-lbl,.card.card-stopped .sec-label,.card.card-stopped .detail-toggle-lbl{color:rgba(0,0,0,0.18)}
-.card.card-stopped .card-ico{opacity:0.4}
-.card.card-stopped .memo-wrap{background:rgba(0,0,0,0.015)}
+.card.card-stopped .card.card-stopped .memo-wrap{background:rgba(0,0,0,0.015)}
 .card.card-stopped .memo-dot{background:rgba(0,0,0,0.12);box-shadow:none}
 .card.card-stopped .memo-log-entry{background:rgba(255,255,255,0.3);border-color:rgba(0,0,0,0.04);color:rgba(0,0,0,0.3)}
 .memo-log-entry{background:rgba(255,255,255,0.5);border:var(--glass-border);border-radius:10px;padding:7px 36px 7px 9px;font-size:11px;color:var(--tx);line-height:1.6;position:relative;transition:all .15s var(--ease)}
@@ -161,24 +160,20 @@ body::before{content:'';position:fixed;inset:0;background:
 .step-box{background:rgba(255,255,255,0.5);border:var(--glass-border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
 .step-num{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
 .step-desc{font-size:11px;color:var(--tx2);line-height:1.6;margin-bottom:10px}
-.paste-area{width:100%;padding:9px 12px;border-radius:10px;border:0.5px solid var(--accent-border);font-size:11px;font-family:'SF Mono',Menlo,monospace;background:rgba(0,0,0,0.02);color:var(--tx);min-height:90px;resize:vertical;transition:all .2s var(--ease)}
 .paste-area:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,0,0,0.04);background:rgba(255,255,255,0.7)}
-.parse-preview{font-size:11px;color:var(--success);margin-top:6px;min-height:16px}
 .adv-toggle{font-size:11px;color:var(--tx3);cursor:pointer;display:flex;align-items:center;gap:4px;user-select:none;margin-top:8px;padding:4px 0}
 .adv-toggle:hover{color:var(--tx2)}
 .adv-body{display:none;margin-top:10px}
 .adv-body.open{display:block}
 
 /* 카드 편집 모달 */
-.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:24px;right:24px;background:rgba(20,20,20,0.82);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);color:rgba(255,255,255,0.95);font-size:12.5px;padding:10px 18px;border-radius:12px;border:0.5px solid rgba(255,255,255,0.1);box-shadow:0 4px 12px rgba(0,0,0,0.15),0 20px 60px rgba(0,0,0,0.1);opacity:0;pointer-events:none;transition:opacity .2s var(--ease);z-index:999;max-width:320px}
 .toast.show{opacity:1;animation:toastIn .25s var(--ease) both}
 .board-wrap{flex:1;overflow-x:hidden;overflow-y:auto;padding:20px 24px 240px;scrollbar-width:thin}
 .board{display:flex;flex-direction:column;gap:16px;width:100%}
-.proj-group{display:flex;flex-direction:column;gap:8px;width:100%;padding-bottom:12px;border-bottom:1px solid var(--border-s)}
-.proj-group:last-child{border-bottom:none}
+.proj-group{display:flex;flex-direction:column;gap:8px;width:100%;padding-bottom:12px}
 .proj-label{font-size:12px;font-weight:600;color:rgba(50,50,110,0.62);padding:2px 0;display:flex;align-items:center;gap:6px;letter-spacing:-0.01em}
 .proj-label::after{content:'';flex:1;height:0.5px;background:linear-gradient(to right,rgba(120,120,200,0.2),transparent)}
 .proj-cards{display:flex;flex-wrap:wrap;gap:10px;align-items:start}
@@ -201,67 +196,27 @@ body::before{content:'';position:fixed;inset:0;background:
 .card-hd{display:flex;align-items:flex-start;gap:7px;padding:11px 14px 8px}
 .card-collapse{background:none;border:none;cursor:pointer;font-size:10px;padding:2px 3px;border-radius:4px;color:var(--tx3);line-height:1;flex-shrink:0;transition:transform .2s var(--ease)}
 .card.collapsed .card-collapse{transform:rotate(-90deg)}
-.card-ico{font-size:15px;line-height:1;padding-top:1px}
 .card-meta{flex:1;min-width:0}
 .card-title{font-size:12.5px;font-weight:600;line-height:1.4;color:var(--tx);letter-spacing:-0.01em}
 .card-file{font-size:10px;color:var(--tx3);font-family:'SF Mono',Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;font-variant-numeric:tabular-nums}
+.card-desc{font-size:10px;color:var(--tx3);margin-top:2px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .15s}
+.card:hover .card-desc{opacity:1!important}
+.card-desc-empty{opacity:0}
+.card:hover .card-desc-empty{opacity:0.35}
+.card-desc-input{width:100%;font-size:10px;border:none;border-bottom:1px solid var(--accent);background:transparent;color:var(--tx3);outline:none;padding:0;line-height:1.45;font-family:inherit}
 .card-ico-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:6px;color:var(--tx3);line-height:1;transition:all .15s var(--ease)}
 .card-ico-btn:hover{background:rgba(0,0,0,0.04);color:var(--tx2)}
 .card-ico-btn.del:hover{color:var(--danger)}
 
 /* 섹션 */
-.section{border-top:1px solid var(--border-s)}
-.sec-row{display:flex;align-items:center;padding:7px 14px;cursor:pointer;user-select:none;transition:all .15s var(--ease);gap:7px}
-.sec-row:hover{background:rgba(0,0,0,0.02)}
-.sec-row.open{background:var(--accent-bg)}
-.sec-label{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:.05em;text-transform:uppercase;flex:1}
-.sec-row.open .sec-label{color:var(--accent)}
-.sec-preview{font-size:11px;color:var(--tx3);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sec-row.open .sec-preview{display:none}
-.sec-arrow{font-size:9px;color:var(--tx3);transition:transform .2s var(--ease);flex-shrink:0}
-.sec-row.open .sec-arrow{transform:rotate(180deg);color:var(--accent)}
-.sec-content{padding:0 14px 9px;display:block}
-.sec-content.hidden{display:none}
-.sec-body{display:none;padding:9px 14px 11px;background:var(--accent-bg)}
-.sec-body.open{display:block}
-.sec-input{width:100%;background:rgba(255,255,255,0.7);border:0.5px solid rgba(255,255,255,0.6);border-radius:var(--radius-xs);padding:6px 8px;font-size:11px;font-family:inherit;color:var(--tx);outline:none;margin-bottom:4px;transition:all .2s var(--ease)}
-.sec-input:focus{border-color:var(--accent-border);box-shadow:0 0 0 3px rgba(0,0,0,0.04);background:rgba(255,255,255,0.9)}
-textarea.sec-input{resize:vertical;line-height:1.6}
-.sec-presets{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:7px}
-.sec-actions{display:flex;gap:5px;margin-top:6px}
-.sec-save{flex:2;padding:5px;border-radius:var(--radius-xs);border:none;background:var(--accent);color:#fff;font-size:11px;cursor:pointer;font-weight:500;box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:all .15s var(--ease)}
-.sec-save:hover{opacity:.9;transform:translateY(-0.5px)}
-.sec-cancel{flex:1;padding:5px;border-radius:var(--radius-xs);border:var(--glass-border);background:transparent;font-size:11px;cursor:pointer;color:var(--tx3);transition:all .15s var(--ease)}
-.sec-cancel:hover{background:rgba(0,0,0,0.03)}
-.next-row-edit{display:flex;align-items:center;gap:5px;margin-bottom:5px}
-.next-n{font-size:11px;color:var(--tx3);min-width:16px;flex-shrink:0}
-
+textarea
 /* 섹션 뷰 콘텐츠 */
-.status-txt{font-size:11px;color:var(--tx2);min-height:14px}
-.next-ul{list-style:none}
-.next-ul li{font-size:11px;color:var(--tx2);padding:1px 0;display:flex;gap:4px}
-.next-ul li .n{color:var(--tx3);min-width:13px;flex-shrink:0}
-.next-ul li.emp .t{color:#ddd}
-.ftags{display:flex;flex-wrap:wrap;gap:3px}
-.ftag{font-size:10px;font-family:'SF Mono',Menlo,monospace;background:var(--accent-bg);color:var(--accent);padding:1px 6px;border-radius:6px}
-.hist-ul{list-style:none}
-.hist-ul li{font-size:10px;color:var(--tx3);padding:1px 0;display:flex;gap:4px}
-.hist-ul li .d{min-width:32px;font-family:'SF Mono',monospace;color:#bbb;flex-shrink:0}
-.rule-ul{list-style:none}
-.rule-ul li{font-size:10px;color:var(--tx3);padding:1px 0 1px 9px;position:relative}
-.rule-ul li::before{content:'●';color:var(--accent);font-size:6px;position:absolute;left:0;top:4px}
 
-/* 프리셋 */
-.sp{font-size:10px;padding:2px 8px;border-radius:12px;border:var(--glass-border);background:rgba(255,255,255,0.5);cursor:pointer;color:var(--tx2);transition:all .15s var(--ease);white-space:nowrap;user-select:none}
-.sp:hover,.sp.on{background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent)}
 
 .card-ft{display:flex;gap:4px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.45);background:rgba(255,255,255,0.12)}
 .cb{flex:1;padding:5px 5px;border-radius:var(--radius-xs);border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.32);font-size:10.5px;cursor:pointer;color:rgba(50,50,110,0.7);text-align:center;transition:all .15s var(--ease);font-weight:500}
 .cb:hover{background:rgba(255,255,255,0.6);color:var(--tx2)}
-.cb.copy{color:var(--accent);border-color:var(--accent-border)}
-.cb.copy:hover{background:var(--accent-bg)}
 
-.chat-url-link{font-size:10px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%;cursor:pointer;transition:color .15s var(--ease)}
 .chat-url-link:hover{color:var(--tx)}
 
 /* ── EMPTY ── */
@@ -293,13 +248,11 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 .chat-form-row2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
 .mini-input{width:100%;padding:6px 10px;border-radius:var(--radius-xs);border:var(--glass-border);font-size:11px;font-family:inherit;background:rgba(255,255,255,0.6);color:var(--tx);transition:all .2s var(--ease)}
 .mini-input:focus{outline:none;border-color:var(--accent-border);box-shadow:0 0 0 3px rgba(0,0,0,0.04);background:rgba(255,255,255,0.9)}
-.paste-area{width:100%;padding:9px 12px;border-radius:10px;border:0.5px solid var(--accent-border);font-size:11px;font-family:'SF Mono',Menlo,monospace;background:rgba(0,0,0,0.02);color:var(--tx);min-height:80px;resize:vertical;transition:all .2s var(--ease)}
 .paste-area:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,0,0,0.04);background:rgba(255,255,255,0.7)}
 .section-divider{height:1px;background:var(--border-s);margin:14px 0}
 .section-label{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:8px}
 
 /* 카드 편집 모달 */
-.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 /* ── 세션 메모 ── */
 .memo-wrap{padding:10px 14px;border-bottom:1px solid var(--border-s);background:rgba(245,220,230,0.18)}
@@ -307,7 +260,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 .memo-dot{width:6px;height:6px;border-radius:50%;background:var(--warn);flex-shrink:0;box-shadow:0 0 8px rgba(232,160,180,0.35)}
 .memo-lbl{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:.05em;text-transform:uppercase;flex:1}
 .memo-ts-lbl{font-size:10px;color:var(--tx3);font-family:'SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums}
-.memo-ta{width:100%;background:rgba(255,255,255,0.7);border:0.5px solid rgba(255,255,255,0.6);border-radius:10px;padding:9px 12px;font-size:12.5px;font-family:inherit;color:var(--tx);resize:none;min-height:56px;line-height:1.6;outline:none;transition:all .2s var(--ease)}
+.memo-ta{width:100%;background:rgba(255,255,255,0.5);border:var(--glass-border);border-radius:10px;padding:7px 9px;font-size:11px;font-family:inherit;color:var(--tx);resize:none;min-height:32px;line-height:1.6;outline:none;transition:all .2s var(--ease);display:block}
 .memo-ta:focus{border-color:rgba(232,160,180,0.4);box-shadow:0 0 0 3px rgba(232,160,180,0.08);background:rgba(255,255,255,0.9)}
 .memo-actions{display:flex;justify-content:flex-end;margin-top:5px}
 .memo-save-btn{font-size:10px;padding:3px 10px;border-radius:5px;border:none;background:var(--warn);color:#fff;cursor:pointer;font-weight:500}
@@ -526,85 +479,40 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 
 <!-- ── 챗 가져오기 모달 ── -->
 <div class="mbg" id="chatImportModal">
-  <div class="modal" style="width:520px">
+  <div class="modal" style="width:400px">
     <h3 style="display:flex;align-items:center;gap:8px;color:rgba(15,35,80,0.9)">
       <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="rgba(40,90,195,0.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H8l-3 2V9H3a1 1 0 0 1-1-1z"/></svg>
       챗 가져오기
     </h3>
-
-    <!-- 탭 -->
-    <div style="display:flex;gap:4px;margin-bottom:14px;background:rgba(60,100,210,0.07);border-radius:10px;padding:3px">
-      <button class="btn" id="ciTab1" style="flex:1;border:none;background:rgba(40,90,195,0.85);color:#fff;box-shadow:0 2px 8px rgba(40,90,195,0.22)" onclick="switchCiTab('import')">
-        <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:4px"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V2h4v1"/></svg>
-        JSON 가져오기
-      </button>
-      <button class="btn" id="ciTab2" style="flex:1;border:none;background:transparent;color:rgba(60,50,160,0.6);box-shadow:none" onclick="switchCiTab('manual')">
-        <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M3 7h8M3 4h5M3 10h3"/></svg>
-        직접 입력하기
-      </button>
-    </div>
-
-    <!-- 탭1: JSON 가져오기 -->
-    <div id="ciImportPane">
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">프로젝트</div>
-        <select id="ci-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:1px solid rgba(50,100,210,0.15);font-size:12px;background:rgba(255,255,255,0.7);color:var(--tx)" onchange="onCiProjChange('ci')"></select>
-        <div id="ci-newProj" style="display:none;margin-top:8px">
-          <div style="display:flex;gap:6px">
-            <input class="mini-input" id="ci-newIcon" type="hidden" value="📁">
-            <input class="mini-input" id="ci-newPid" placeholder="ID (선택)" style="width:80px">
-            <input class="mini-input" id="ci-newName" placeholder="프로젝트 이름" style="flex:1">
-          </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">프로젝트</div>
+      <select id="cm-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:1px solid rgba(50,100,210,0.15);font-size:12px;background:rgba(255,255,255,0.7);color:var(--tx)" onchange="onCiProjChange('cm')"></select>
+      <div id="cm-newProj" style="display:none;margin-top:8px">
+        <div style="display:flex;gap:6px">
+          <input class="mini-input" id="cm-newIcon" type="hidden" value="📁">
+          <input class="mini-input" id="cm-newPid" placeholder="ID (선택)" style="width:80px">
+          <input class="mini-input" id="cm-newName" placeholder="프로젝트 이름" style="flex:1">
         </div>
       </div>
-
-      <button class="btn" style="width:100%;padding:7px;margin-bottom:10px;background:rgba(60,100,210,0.07);border:1px solid rgba(100,90,220,0.2);color:rgba(60,50,160,0.8)" onclick="copyPrompt()">
-        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:5px"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg>
-        프롬프트 복사 → 채팅에 붙여넣기
-      </button>
-      <textarea class="paste-area" id="chatJsonPaste" placeholder='Claude가 출력한 JSON을 여기에 붙여넣으세요' oninput="previewParse(this.value)" style="min-height:70px;border:1px solid rgba(50,100,210,0.15);background:rgba(240,248,255,0.8)"></textarea>
-      <div class="parse-preview" id="parsePreview"></div>
-      <div style="margin-top:8px;position:relative">
-        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="rgba(80,70,180,0.45)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:10px;top:50%;transform:translateY(-50%)"><path d="M2 7a5 5 0 1 0 5-5"/><path d="M7 7l3-3"/><circle cx="7" cy="7" r="1.5"/></svg>
-        <input class="mini-input" id="import-chatUrl" placeholder="채팅 URL (선택)" style="width:100%;padding-left:28px;border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.65)">
-      </div>
-      <div class="mactions" style="margin-top:12px">
-        <button class="btn" onclick="closeModal('chatImportModal')">닫기</button>
-        <button class="btn primary" style="background:rgba(40,90,195,0.85);border-color:transparent;box-shadow:0 2px 10px rgba(40,90,195,0.22);display:flex;align-items:center;gap:6px" onclick="doChatImport()">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v7"/><path d="M4 6l3 3 3-3"/><path d="M2 11h10"/></svg>
-          카드 가져오기
-        </button>
-      </div>
     </div>
-
-    <!-- 탭2: 직접 입력하기 -->
-    <div id="ciManualPane" style="display:none">
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">프로젝트</div>
-        <select id="cm-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:1px solid rgba(50,100,210,0.15);font-size:12px;background:rgba(255,255,255,0.7);color:var(--tx)" onchange="onCiProjChange('cm')"></select>
-        <div id="cm-newProj" style="display:none;margin-top:8px">
-          <div style="display:flex;gap:6px">
-            <input class="mini-input" id="cm-newIcon" type="hidden" value="📁">
-            <input class="mini-input" id="cm-newPid" placeholder="ID (선택)" style="width:80px">
-            <input class="mini-input" id="cm-newName" placeholder="프로젝트 이름" style="flex:1">
-          </div>
-        </div>
-      </div>
-      <div style="margin-bottom:8px">
-        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">카드 제목</div>
-        <input class="mini-input" id="cm-title" placeholder="카드 이름" style="border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.7)">
-      </div>
-      <div style="margin-bottom:8px">
-        <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">채팅 URL</div>
-        <input class="mini-input" id="cm-chatUrl" placeholder="https://claude.ai/chat/..." style="border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.7)">
-      </div>
-      <div class="mactions" style="margin-top:12px">
-        <button class="btn" onclick="closeModal('chatImportModal')">닫기</button>
-        <button class="btn primary" style="background:rgba(40,90,195,0.85);border-color:transparent;box-shadow:0 2px 10px rgba(40,90,195,0.22);display:flex;align-items:center;gap:6px" onclick="doManualCard()">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M3 4h5M3 10h3"/></svg>
-          카드 생성하기
-        </button>
-      </div>
+    <div style="margin-bottom:8px">
+      <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">카드 제목</div>
+      <input class="mini-input" id="cm-title" placeholder="카드 이름" style="border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.7)">
+    </div>
+    <div style="margin-bottom:8px">
+      <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">채팅 URL</div>
+      <input class="mini-input" id="cm-chatUrl" placeholder="https://claude.ai/chat/..." style="border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.7)">
+    </div>
+    <div style="margin-bottom:8px">
+      <div style="font-size:10px;font-weight:600;color:rgba(40,75,175,0.55);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase">설명 (선택)</div>
+      <input class="mini-input" id="cm-desc" placeholder="한 줄 설명..." style="border:1px solid rgba(50,100,210,0.15);background:rgba(255,255,255,0.7)">
+    </div>
+    <div class="mactions" style="margin-top:12px">
+      <button class="btn" onclick="closeModal('chatImportModal')">닫기</button>
+      <button class="btn primary" style="background:rgba(40,90,195,0.85);border-color:transparent;box-shadow:0 2px 10px rgba(40,90,195,0.22);display:flex;align-items:center;gap:6px" onclick="doManualCard()">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M3 4h5M3 10h3"/></svg>
+        카드 생성하기
+      </button>
     </div>
   </div>
 </div>
@@ -692,30 +600,10 @@ textarea.sec-input{resize:vertical;line-height:1.6}
 
 <!-- ── 프로젝트 추가 모달 ── -->
 <div class="mbg" id="addProjModal">
-  <div class="modal" style="width:380px">
+  <div class="modal" style="width:360px">
     <h3>＋ 새 프로젝트 추가</h3>
+    <div class="fr"><label>프로젝트 이름</label><input id="np-name" placeholder="프로젝트 이름"></div>
     <div class="fr"><label>프로젝트 ID (선택 — 비우면 자동 생성)</label><input id="np-pid" placeholder="자동 생성"></div>
-    <div class="fr">
-      <label>프로젝트 이름</label>
-      <input id="np-name" placeholder="프로젝트 이름">
-      <input id="np-icon" type="hidden" value="📁">
-    </div>
-    <div class="fr"><label>메인 파일명 (선택)</label><input id="np-file" placeholder="main.html"></div>
-    <div class="fr"><label>채팅 URL (선택)</label><input id="np-chatUrl" placeholder="https://claude.ai/chat/..."></div>
-    <div class="fr"><label>현재 상태</label>
-      <div class="status-presets">
-        <span class="sp" onclick="npPickStatus(this)">기획 중</span>
-        <span class="sp" onclick="npPickStatus(this)">개발 중</span>
-        <span class="sp" onclick="npPickStatus(this)">버그 수정 중</span>
-        <span class="sp" onclick="npPickStatus(this)">테스트 중</span>
-        <span class="sp" onclick="npPickStatus(this)">운영 중</span>
-        <span class="sp" onclick="npPickStatus(this)">배포 완료</span>
-        <span class="sp" onclick="npPickStatus(this)">검토 중</span>
-        <span class="sp" onclick="npPickStatus(this)">일시 중단</span>
-      </div>
-      <input id="np-status" placeholder="직접 입력 또는 위에서 선택"></div>
-    <div class="fr"><label>다음 할 일 (Enter로 구분, 최대 3개)</label><textarea id="np-next" placeholder="할 일 1&#10;할 일 2&#10;할 일 3" style="min-height:70px"></textarea></div>
-    <div class="fr"><label>Claude 주의사항 (Enter로 구분)</label><textarea id="np-rules" placeholder="절대 하지 말 것&#10;이 프로젝트만의 규칙" style="min-height:60px"></textarea></div>
     <div class="mactions">
       <button class="btn" onclick="closeModal('addProjModal')">취소</button>
       <button class="btn primary" onclick="doAddProject()">추가 + Gist 저장</button>
@@ -749,6 +637,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
     <p style="font-size:11px;color:var(--tx3);margin-bottom:10px;line-height:1.6">복붙 정보와 메모가 합쳐집니다. 아래 결과를 확인 후 저장하세요.</p>
     <div class="fr"><label>합쳐진 카드 제목</label><input id="mr-title"></div>
     <div class="fr"><label>채팅 URL (새 합쳐진 채팅)</label><input id="mr-url" placeholder="https://claude.ai/chat/..."></div>
+    <div class="fr"><label>설명 (선택)</label><input id="mr-desc" placeholder="한 줄 설명..."></div>
     <div style="font-size:11px;padding:8px 10px;background:var(--bg);border-radius:7px;margin-bottom:10px">
       <div style="font-weight:600;color:var(--tx2);margin-bottom:4px">합쳐질 내용 미리보기</div>
       <div id="mr-preview" style="font-size:10px;color:var(--tx3);line-height:1.7"></div>
@@ -767,6 +656,7 @@ textarea.sec-input{resize:vertical;line-height:1.6}
     <p style="font-size:11px;color:var(--tx3);margin-bottom:12px;line-height:1.6">모든 정보가 동일하게 복사되고 카드 이름만 달라져요.</p>
     <div class="fr"><label>새 카드 이름</label><input id="cont-title" placeholder="프로젝트명 v2"></div>
     <div class="fr"><label>새 채팅 URL</label><input id="cont-url" placeholder="https://claude.ai/chat/..."></div>
+    <div class="fr"><label>설명 (선택)</label><input id="cont-desc" placeholder="한 줄 설명..."></div>
     <div style="font-size:10px;color:var(--tx3);padding:7px 10px;background:var(--bg);border-radius:6px;margin-bottom:8px">원본 카드는 유지되고 새 카드가 추가돼요. 메모/복붙정보 모두 동일하게 복사해요.</div>
     <div class="mactions">
       <button class="btn" onclick="closeModal('continueModal');cancelMode()">취소</button>
@@ -789,6 +679,31 @@ textarea.sec-input{resize:vertical;line-height:1.6}
   <div class="ctx-item danger" id="ctxDelete" onclick="ctxDoDelete()">
     <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1"/><path d="M11 4l-.7 7.3A1 1 0 0 1 9.3 12H4.7a1 1 0 0 1-1-.7L3 4"/><path d="M6 7v3M8 7v3"/></svg>
     프로젝트 삭제
+  </div>
+</div>
+
+<!-- ── 로그 엔트리 추가 모달 ── -->
+<div class="mbg" id="logAddModal">
+  <div class="modal" style="width:360px">
+    <h3 style="margin-bottom:12px">엔트리에 추가</h3>
+    <div id="lam-text" style="font-size:11px;color:var(--tx2);background:var(--accent-bg);border-radius:8px;padding:8px 10px;margin-bottom:14px;line-height:1.6;max-height:80px;overflow-y:auto"></div>
+    <div class="fr"><label>프로젝트</label>
+      <select id="lam-proj" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:var(--glass-border);font-size:12px;background:rgba(255,255,255,0.7);color:var(--tx)" onchange="lamLoadCards()"></select>
+    </div>
+    <div class="fr"><label>카드</label>
+      <select id="lam-card" style="width:100%;padding:7px 10px;border-radius:var(--radius-xs);border:var(--glass-border);font-size:12px;background:rgba(255,255,255,0.7);color:var(--tx)"></select>
+    </div>
+    <div class="fr"><label>추가할 위치</label>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="radio" name="lam-target" value="a" checked> 지금 단계</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="radio" name="lam-target" value="b"> 다음 단계</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="radio" name="lam-target" value="c"> 추가 단계</label>
+      </div>
+    </div>
+    <div class="mactions">
+      <button class="btn" onclick="closeModal('logAddModal')">취소</button>
+      <button class="btn primary" onclick="doLogAdd()">추가</button>
+    </div>
   </div>
 </div>
 
@@ -1063,6 +978,12 @@ function confirmPinMulti(){
   });
   saveGist();cancelMode();renderAll();toast('📌 '+count+'개 카드 고정됐어요');
 }
+function pinCardDirect(id,pid){
+  const proj=S.projects[pid];const card=proj&&proj.cards&&proj.cards[id];if(!card)return;
+  snapshot();card.pinned=true;card.updatedAt=new Date().toISOString();
+  addChangeLog&&addChangeLog('status',id,pid,card.title||'',(proj.meta?.name||pid),'📌 고정');
+  saveGist();renderAll();
+}
 function unpinCard(id,pid){
   var proj=S.projects[pid];var c=proj&&proj.cards&&proj.cards[id];if(!c)return;
   snapshot();
@@ -1201,6 +1122,46 @@ function renderEndedSection(){
       </div>
     </div>`;
   }).join('');
+}
+function openLogAdd(text){
+  document.getElementById('lam-text').textContent=text;
+  // 프로젝트 셀렉트 채우기
+  const sel=document.getElementById('lam-proj');
+  sel.innerHTML=orderedProjects()
+    .filter(pid=>S.projects[pid]&&!S.projects[pid]._isLogs&&!S.projects[pid]._isQm&&S.projects[pid].meta?.status!=='종료')
+    .map(pid=>`<option value="${pid}">${S.projects[pid].meta?.name||pid}</option>`).join('');
+  lamLoadCards();
+  openModal('logAddModal');
+}
+function lamLoadCards(){
+  const pid=document.getElementById('lam-proj').value;
+  const proj=S.projects[pid];
+  const sel=document.getElementById('lam-card');
+  if(!proj){sel.innerHTML='';return;}
+  sel.innerHTML=Object.entries(proj.cards||{})
+    .filter(([,c])=>c.status!=='종료')
+    .map(([id,c])=>`<option value="${id}">${c.title||'이름 없음'}</option>`).join('');
+}
+function doLogAdd(){
+  const text=document.getElementById('lam-text').textContent.trim();
+  const pid=document.getElementById('lam-proj').value;
+  const cardId=document.getElementById('lam-card').value;
+  const logKey=document.querySelector('input[name="lam-target"]:checked')?.value||'a';
+  const card=S.projects[pid]?.cards?.[cardId];
+  if(!text||!card)return;
+  snapshot();
+  const now=new Date();
+  const tsStr=now.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const entry={ts:tsStr,text,category:''};
+  if(logKey==='c'){if(!Array.isArray(card.memoLogC))card.memoLogC=[];card.memoLogC.push(entry);}
+  else if(logKey==='b'){if(!Array.isArray(card.memoLogB))card.memoLogB=[];card.memoLogB.push(entry);}
+  else{if(!Array.isArray(card.memoLogA))card.memoLogA=[];
+    if(card.memoLogA.length>=1){if(!Array.isArray(card.memoLogB))card.memoLogB=[];card.memoLogB.push(entry);}
+    else{card.memoLogA.push(entry);}}
+  promoteEntries(card);
+  card.updatedAt=now.toISOString();
+  closeModal('logAddModal');
+  saveGist();renderAll();toast('✅ 엔트리에 추가됐어요');
 }
 function openEndedCardEl(el){
   const cardId=el.dataset.cid;const pid=el.dataset.pid;
@@ -1458,7 +1419,7 @@ function mkCard(c,pid){
   }
   const isStopped=c.status==='중지';
   const stoppedBadge=isStopped?'<span style="font-size:9px;padding:2px 7px;border-radius:6px;background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.3);font-weight:600;letter-spacing:0.03em;flex-shrink:0">⏸ 중지</span>':'';
-  const pinnedBadge=c.pinned&&!isStopped?'<span style="font-size:9px;padding:2px 7px;border-radius:6px;background:var(--accent-bg);color:var(--accent);font-weight:600;letter-spacing:0.03em;flex-shrink:0">📌</span>':'';
+  const pinnedBadge='';
 
   el.innerHTML=`
 <div class="card-hd">
@@ -1467,8 +1428,11 @@ function mkCard(c,pid){
     <div class="card-title" title="클릭하여 이름 수정" onclick="startTitleEdit('${id}','${pid}',this)" style="cursor:text">${c.title||'이름 없음'}</div>
     <input class="card-title-input" id="title-inp-${id}" value="${esc(c.title)}" placeholder="카드 이름" style="display:none;width:100%;font-size:12px;font-weight:600;border:none;border-bottom:1.5px solid var(--accent);background:transparent;color:var(--tx);outline:none;padding:0;line-height:1.4" onblur="saveTitleEdit('${id}','${pid}')" onkeydown="if(event.key==='Enter'){event.preventDefault();saveTitleEdit('${id}','${pid}');}if(event.key==='Escape'){cancelTitleEdit('${id}');}">
     <div class="card-file">${c.file||''}</div>
+    <div class="card-desc${c.description?'':' card-desc-empty'}" onclick="startDescEdit('${id}','${pid}',this)" style="cursor:text" title="클릭하여 설명 ${c.description?'수정':'추가'}">${c.description||''}</div>
+    <input class="card-desc-input" id="desc-inp-${id}" value="${esc(c.description||'')}" placeholder="설명 추가..." style="display:none;width:100%;font-size:10px;border:none;border-bottom:1px solid var(--accent);background:transparent;color:var(--tx3);outline:none;padding:0;line-height:1.45" onblur="saveDescEdit('${id}','${pid}')" onkeydown="if(event.key==='Enter'){event.preventDefault();saveDescEdit('${id}','${pid}');}if(event.key==='Escape'){cancelDescEdit('${id}');}">
   </div>
   ${stoppedBadge}${pinnedBadge}
+  <button class="card-ico-btn" style="${c.pinned?'color:rgba(80,55,180,0.7)':''}" onclick="event.stopPropagation();${c.pinned?`unpinCard('${id}','${pid}')`:`pinCardDirect('${id}','${pid}')`}" title="${c.pinned?'고정 해제':'고정'}"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l-1 3h-3l2.5 2.5-1 3.5 2.5-2 2.5 2-1-3.5 2.5-2.5h-3z"/><line x1="7" y1="10.5" x2="7" y2="13"/></svg></button>
   ${c.chatUrl?`<span style="flex-shrink:0;padding:2px 4px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;color:var(--tx3);background:none;border:none" title="링크 복사" onclick="event.stopPropagation();copyLink('${c.chatUrl.replace(/'/g,"\\'")}',this)"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="4" cy="10" r="1.8"/><circle cx="10" cy="4" r="1.8"/><path d="M5.4 8.6l3.2-3.2"/></svg></span>`:''}
   <button class="card-ico-btn del" onclick="delCard('${id}','${pid}')" title="삭제"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1"/><path d="M11 4l-.7 7.3A1 1 0 0 1 9.3 12H4.7a1 1 0 0 1-1-.7L3 4"/><path d="M6 7v3M8 7v3"/></svg></button>
 </div>
@@ -1482,8 +1446,7 @@ function mkCard(c,pid){
       <span class="memo-ts-lbl" id="memo-ts-${id}-a">${lastMemoTsA?'마지막 '+lastMemoTsA:''}</span>
       <button class="memo-add-btn" title="로그 추가 (Ctrl+Enter)" onclick="focusMemoTa('${id}','a')">＋</button>
     </div>
-    <div class="memo-log-list" id="memo-log-${id}-a" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','a')">${memoLogHtmlA}</div>
-    <textarea class="memo-ta" id="memo-ta-${id}-a" data-pid="${pid}" data-logkey="a" placeholder="새 로그 입력 후 Ctrl+Enter..." style="display:none" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea>
+    <div class="memo-log-list" id="memo-log-${id}-a" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','a')">${memoLogHtmlA}<textarea class="memo-ta" id="memo-ta-${id}-a" data-pid="${pid}" data-logkey="a" placeholder="새 로그 입력 후 Ctrl+Enter..." style="display:none;margin-top:4px" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea></div>
   </div>
   <!-- 진행 로그 B -->
   <div class="memo-wrap" style="border-top:1px solid var(--border-s)">
@@ -1493,8 +1456,7 @@ function mkCard(c,pid){
       <span class="memo-ts-lbl" id="memo-ts-${id}-b">${lastMemoTsB?'마지막 '+lastMemoTsB:''}</span>
       <button class="memo-add-btn" title="로그 추가 (Ctrl+Enter)" onclick="focusMemoTa('${id}','b')">＋</button>
     </div>
-    <div class="memo-log-list" id="memo-log-${id}-b" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','b')">${memoLogHtmlB}</div>
-    <textarea class="memo-ta" id="memo-ta-${id}-b" data-pid="${pid}" data-logkey="b" placeholder="새 로그 입력 후 Ctrl+Enter..." style="display:none" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea>
+    <div class="memo-log-list" id="memo-log-${id}-b" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','b')">${memoLogHtmlB}<textarea class="memo-ta" id="memo-ta-${id}-b" data-pid="${pid}" data-logkey="b" placeholder="새 로그 입력 후 Ctrl+Enter..." style="display:none;margin-top:4px" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea></div>
   </div>
 
   <!-- 추가 단계 C (기본 접힘) -->
@@ -1505,8 +1467,7 @@ function mkCard(c,pid){
   </div>
   <div class="memo-c-body" id="memo-c-body-${id}">
     <div class="memo-wrap" style="border-top:none">
-      <div class="memo-log-list" id="memo-log-${id}-c" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','c')">${memoLogHtmlC}</div>
-      <textarea class="memo-ta" id="memo-ta-${id}-c" data-pid="${pid}" data-logkey="c" placeholder="추가 단계 입력 후 Ctrl+Enter..." style="display:none" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea>
+      <div class="memo-log-list" id="memo-log-${id}-c" ondragover="mleDragOverList(event)" ondrop="mleDropList(event,'${id}','${pid}','c')">${memoLogHtmlC}<textarea class="memo-ta" id="memo-ta-${id}-c" data-pid="${pid}" data-logkey="c" placeholder="추가 단계 입력 후 Ctrl+Enter..." style="display:none;margin-top:4px" onblur="if(this.value.trim())saveMemo('${id}',this.dataset.pid,this.dataset.logkey)"></textarea></div>
     </div>
   </div>
 
@@ -1519,11 +1480,9 @@ function mkCard(c,pid){
     <div class="memo-log-list" id="done-log-${id}" style="padding:6px 14px 8px">${buildDoneHtml(c.memoLogDone||[])}</div>
   </div>
 
-  <div class="card-ft">
-    <button class="cb copy" onclick="copyCard('${id}','${pid}')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="7" height="8" rx="1.5"/><path d="M9 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1"/></svg> 복사</button>
-    ${c.pinned?`<button class="cb" style="color:var(--accent);border-color:var(--accent-border)" onclick="event.stopPropagation();unpinCard('${id}','${pid}')">📌 고정 해제</button>`:''}
-    ${c.status==='중지'?`<button class="cb" style="color:#8e8e93;border-color:#8e8e93" onclick="event.stopPropagation();resumeCard('${id}','${pid}')">⏸ 중지 해제</button>`:''}
-  </div>
+  ${c.status==='중지'?`<div class="card-ft">
+    <button class="cb" style="color:#8e8e93;border-color:#8e8e93" onclick="event.stopPropagation();resumeCard('${id}','${pid}')">⏸ 중지 해제</button>
+  </div>`:''}
 </div>`;
 
   if(S.mode){el.querySelectorAll('button').forEach(b=>b.addEventListener('click',e=>e.stopPropagation(),true));}
@@ -1579,6 +1538,35 @@ function cancelTitleEdit(id){
   inp.style.display='none';
   const titleEl=inp.previousElementSibling;
   if(titleEl)titleEl.style.display='';
+}
+
+function startDescEdit(id,pid,el){
+  el.style.display='none';
+  const inp=document.getElementById('desc-inp-'+id);
+  if(!inp)return;
+  inp.style.display='block';
+  inp.focus();inp.select();
+}
+function saveDescEdit(id,pid){
+  const inp=document.getElementById('desc-inp-'+id);
+  if(!inp)return;
+  const val=inp.value.trim();
+  const card=S.projects[pid]?.cards?.[id];if(!card)return;
+  if(val!==( card.description||'')){
+    snapshot();
+    card.description=val;card.updatedAt=new Date().toISOString();
+    saveGist();
+    const el=document.querySelector('.card[data-id="'+id+'"]');
+    if(el)el.replaceWith(mkCard(card,pid));
+  } else {
+    cancelDescEdit(id);
+  }
+}
+function cancelDescEdit(id){
+  const inp=document.getElementById('desc-inp-'+id);if(!inp)return;
+  inp.style.display='none';
+  const descEl=inp.previousElementSibling;
+  if(descEl)descEl.style.display='';
 }
 
 // ── CARD OPS ──
@@ -1752,7 +1740,6 @@ function onDrop(e,id,pid){
 }
 
 // ── 세션 메모 저장 ──
-const memoCatFilter={};
 
 function autoResizeTa(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
 function focusMemoTa(cardId,logKey){
@@ -1853,28 +1840,6 @@ function _renderMemoSection(cardId,pid){
   renderLogList(c.memoLogC,'c',`memo-log-${cardId}-c`);
   const cLbl=document.getElementById(`memo-c-lbl-${cardId}`);
   if(cLbl)cLbl.textContent='추가 단계'+(c.memoLogC.length?' ('+c.memoLogC.length+')':'');
-}
-function setMemoCat(cardId,pid,cat){
-  memoCatFilter[cardId]=cat;
-  _renderMemoSection(cardId,pid);
-}
-function addMemoCat(cardId,pid){
-  const name=prompt('분야 이름을 입력해주세요');
-  if(!name||!name.trim())return;
-  const nm=name.trim();
-  const c=S.projects[pid]?.cards?.[cardId];if(!c)return;
-  if(!Array.isArray(c.memoCategories))c.memoCategories=[];
-  if(c.memoCategories.includes(nm)){toast('이미 있는 분야예요');return;}
-  snapshot();c.memoCategories.push(nm);
-  saveGist();_renderMemoSection(cardId,pid);
-}
-function delMemoCat(cardId,pid,cat){
-  if(!confirm(`'${cat}' 분야를 삭제할까요?\n해당 분야 로그는 숨겨지지만 데이터는 유지됩니다.`))return;
-  const c=S.projects[pid]?.cards?.[cardId];if(!c)return;
-  snapshot();
-  c.memoCategories=(c.memoCategories||[]).filter(x=>x!==cat);
-  if(memoCatFilter[cardId]===cat)memoCatFilter[cardId]='all';
-  saveGist();_renderMemoSection(cardId,pid);
 }
 function saveMemo(cardId, pid, logKey){
   logKey=logKey||'a';
@@ -2102,15 +2067,6 @@ function mleDropList(e,targetCardId,targetPid,targetLogKey){
   saveGist();_renderMemoSection(targetCardId,targetPid);
 }
 
-// ── 디테일 섹션 토글 ──
-function toggleDetail(cardId){
-  const body=document.getElementById(`detail-${cardId}`);
-  const arrow=document.getElementById(`darrow-${cardId}`);
-  if(!body)return;
-  const isOpen=body.classList.contains('open');
-  body.classList.toggle('open',!isOpen);
-  if(arrow)arrow.classList.toggle('open',!isOpen);
-}
 
 // ── 저장 팝업 ──
 let spTimer;
@@ -2171,6 +2127,7 @@ function renderLogPanel(){
     ${es.map(e=>{
       const t=new Date(e.ts).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
       const typeLabel={memo:'메모',status:'상태',next:'할 일',save:'저장'}[e.type]||e.type;
+      const addBtn=e.type==='memo'&&e.text?`<button class="lam-btn" data-text="${(e.text||'').replace(/"/g,'&quot;').replace(/\n/g,'&#10;')}" onclick="openLogAdd(this.dataset.text)" style="margin-top:5px;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(40,90,195,0.3);background:rgba(40,90,195,0.07);color:rgba(20,60,160,0.8);cursor:pointer">＋ 엔트리에 추가</button>`:'';
       return `<div class="log-entry">
         <div class="le-dot ${e.type}"></div>
         <div class="le-right">
@@ -2180,6 +2137,7 @@ function renderLogPanel(){
             <span class="le-ref">${e.projName||''} · ${e.cardTitle||''}</span>
           </div>
           <div class="le-text">${e.text||'—'}</div>
+          ${addBtn}
         </div>
       </div>`;
     }).join('')}`).join('');
@@ -2243,74 +2201,7 @@ function toggleCollapse(id){
   if(S.collapsedCards.has(id)){S.collapsedCards.delete(id);el.classList.remove('collapsed');}
   else{S.collapsedCards.add(id);el.classList.add('collapsed');}
 }
-function npPickStatus(el){
-  el.closest('.status-presets').querySelectorAll('.sp').forEach(s=>s.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('np-status').value=el.textContent;
-}
 // ── 섹션 토글 편집 ──
-const openSecs={};
-function toggleSec(cardId,pid,name){
-  if(S.mode)return;
-  const cur=openSecs[cardId];
-  // 다른 섹션 열려있으면 먼저 저장
-  if(cur&&cur!==name)saveSec(cardId,pid,cur);
-  if(cur===name){saveSec(cardId,pid,name);return;}
-  openSecs[cardId]=name;
-  document.getElementById(`row-${cardId}-${name}`)?.classList.add('open');
-  document.getElementById(`body-${cardId}-${name}`)?.classList.add('open');
-  document.getElementById(`content-${cardId}-${name}`)?.classList.add('hidden');
-  // 열린 후 입력창에 Enter → 저장 바인딩
-  setTimeout(()=>{
-    const body=document.getElementById(`body-${cardId}-${name}`);
-    if(!body)return;
-    body.querySelectorAll('input,textarea').forEach(inp=>{
-      inp.addEventListener('keydown',function(e){
-        if(e.key==='Enter'&&!e.shiftKey&&inp.tagName==='INPUT'){
-          e.preventDefault();saveSec(cardId,pid,name);
-        }
-        if(e.key==='Escape'){cancelSec(cardId,name);}
-      },{once:false});
-    });
-  },50);
-}
-function cancelSec(cardId,name){
-  delete openSecs[cardId];
-  document.getElementById(`row-${cardId}-${name}`)?.classList.remove('open');
-  document.getElementById(`body-${cardId}-${name}`)?.classList.remove('open');
-  document.getElementById(`content-${cardId}-${name}`)?.classList.remove('hidden');
-}
-function saveSec(cardId,pid,name){
-  const c=S.projects[pid]?.cards?.[cardId];if(!c)return;
-  snapshot();
-  if(name==='status'){
-    c.status=document.getElementById(`inp-${cardId}-status`)?.value.trim()||'';
-  }else if(name==='next'){
-    c.next=[0,1,2].map(i=>document.getElementById(`inp-${cardId}-n${i}`)?.value.trim()||'');
-  }else if(name==='chatUrl'){
-    c.chatUrl=document.getElementById(`inp-${cardId}-chatUrl`)?.value.trim()||'';
-  }else if(name==='files'){
-    const files=(document.getElementById(`inp-${cardId}-files`)?.value||'').split('\n').filter(Boolean);
-    c.files=files;c.file=files[0]||'';
-  }else if(name==='rules'){
-    c.rules=(document.getElementById(`inp-${cardId}-rules`)?.value||'').split('\n').filter(Boolean);
-  }
-  c.updatedAt=new Date().toISOString();
-  c.detailUpdatedAt=new Date().toISOString();
-  const projName=S.projects[pid]?.meta?.name||pid;
-  if(name==='status')addChangeLog('status',cardId,pid,c.title,projName,`→ ${c.status}`);
-  else if(name==='next')addChangeLog('next',cardId,pid,c.title,projName,c.next.filter(Boolean).join(' / '));
-  else addChangeLog('save',cardId,pid,c.title,projName,name+' 수정');
-  cancelSec(cardId,name);
-  const el=document.querySelector(`.card[data-id="${cardId}"]`);
-  if(el)el.replaceWith(mkCard(c,pid));
-  renderSidebar();saveGist();toast('✅ 저장됐어요');
-}
-function secPickStatus(cardId,el){
-  el.closest('.sec-presets').querySelectorAll('.sp').forEach(s=>s.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById(`inp-${cardId}-status`).value=el.textContent;
-}
 
 // ── 쪼개기 ──
 let splitTargetCount=0;
@@ -2338,6 +2229,7 @@ function addSplitTarget(defaultTitle='',memoDefault=false){
   <div style="flex:1"><div style="font-size:10px;color:var(--tx3);margin-bottom:2px">카드 이름</div><input class="mini-input" id="st-${n}-title" value="${defaultTitle}" placeholder="챗 이름 / 작업 영역명"></div>
   <div style="flex:1"><div style="font-size:10px;color:var(--tx3);margin-bottom:2px">새 채팅 URL</div><input class="mini-input" id="st-${n}-url" placeholder="https://claude.ai/chat/..."></div>
 </div>
+<div style="margin-bottom:6px"><div style="font-size:10px;color:var(--tx3);margin-bottom:2px">설명 (선택)</div><input class="mini-input" id="st-${n}-desc" placeholder="한 줄 설명..."></div>
 <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx2);cursor:pointer">
   <input type="radio" name="split-memo-dest" value="${n}" ${memoDefault?'checked':''} style="width:13px;height:13px">
   이 카드에 원본 메모 이동
@@ -2352,10 +2244,11 @@ function confirmSplit(){
     const el=document.getElementById(`st-${i}`);if(!el)continue;
     const title=document.getElementById(`st-${i}-title`)?.value.trim()||orig.title+' '+i;
     const url=document.getElementById(`st-${i}-url`)?.value.trim()||'';
+    const desc=document.getElementById(`st-${i}-desc`)?.value.trim()||'';
     const isMemoTarget=String(i)===String(memoDest);
     const card={
       id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,5)+(i),
-      icon:orig.icon||'📋',title,chatUrl:url,
+      icon:orig.icon||'📋',title,chatUrl:url,description:desc,
       status:orig.status||'',file:orig.file||'',
       next:[...(orig.next||[])],
       history:[{date:td(),text:orig.title+'에서 분리'},...(orig.history||[])].slice(0,10),
@@ -2410,6 +2303,7 @@ function confirmMergeResult(){
     icon:cards[0].icon||'📋',
     title:document.getElementById('mr-title').value.trim()||cards.map(c=>c.title).join(' + '),
     chatUrl:document.getElementById('mr-url').value.trim()||'',
+    description:document.getElementById('mr-desc')?.value.trim()||'',
     status:cards[0].status||'',file:cards[0].file||'',
     next:[...new Set(cards.flatMap(c=>c.next||[]))].filter(Boolean).slice(0,3),
     history:[{date:td(),text:cards.length+'개 카드 합침'},...cards.flatMap(c=>c.history||[])].slice(0,10),
@@ -2434,6 +2328,7 @@ function openContinue(id,pid){
   const c=S.projects[pid].cards[id];
   document.getElementById('cont-title').value=c.title+' v2';
   document.getElementById('cont-url').value='';
+  const contDesc=document.getElementById('cont-desc');if(contDesc)contDesc.value=c.description||'';
   openModal('continueModal');
 }
 function confirmContinue(){
@@ -2444,6 +2339,7 @@ function confirmContinue(){
     ...JSON.parse(JSON.stringify(orig)),
     id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
     title:newTitle,chatUrl:newUrl,
+    description:document.getElementById('cont-desc')?.value.trim()||orig.description||'',
     parentIds:[orig.id],relType:'continue',
     history:[{date:td(),text:orig.title+'에서 이어짐'},...(orig.history||[])].slice(0,10),
     updatedAt:new Date().toISOString()};
@@ -2458,11 +2354,6 @@ function confirmContinue(){
   saveGist();closeModal('continueModal');cancelMode();renderAll();toast('➡️ 넘어가기 완료, 이전 카드 종료 처리됐어요');
 }
 
-function copyCard(id,pid){
-  const c=S.projects[pid]?.cards?.[id];if(!c)return;
-  const txt=`# 프로젝트 카드 — ${c.title}\n${c.chatUrl?`채팅: ${c.chatUrl}\n`:''}\n## 현재 상태\n${c.status||'—'}\n\n## 다음 할 일\n${(c.next||[]).map((t,i)=>`${i+1}. ${t||'—'}`).join('\n')}\n\n## 파일 위치\n${(c.files||[]).map(f=>`- ${f}`).join('\n')||'—'}\n\n## 최근 이력\n${(c.history||[]).slice(0,5).map(h=>`- [${h.date}] ${h.text}`).join('\n')||'—'}\n\n## Claude 주의사항\n${(c.rules||[]).map(r=>`- ${r}`).join('\n')||'—'}`;
-  navigator.clipboard.writeText(txt).then(()=>toast('📋 복사됐어요 — 채팅에 붙여넣으세요'));
-}
 
 // ── 프로젝트 추가 ──
 function doAddProject(){
@@ -2470,19 +2361,9 @@ function doAddProject(){
   const name=document.getElementById('np-name').value.trim();
   if(!name){toast('프로젝트 이름을 입력하세요');return;}
   if(!pid)pid=autoPid(name);
-  const icon=document.getElementById('np-icon').value.trim()||'📁';
-  const file=document.getElementById('np-file').value.trim();
-  const id='c_'+Date.now();
-  const chatUrl=document.getElementById('np-chatUrl')?.value.trim()||'';
-  const card={id,icon,title:name,file,chatUrl,
-    status:document.getElementById('np-status').value.trim(),
-    next:document.getElementById('np-next').value.split('\n').filter(Boolean).slice(0,3),
-    history:[],files:file?[file]:[],
-    rules:document.getElementById('np-rules').value.split('\n').filter(Boolean),
-    parentIds:[],childIds:[],updatedAt:new Date().toISOString()};
-  S.projects[pid]={meta:{id:pid,name,icon},cards:{[id]:card},cardOrder:[id]};
+  S.projects[pid]={meta:{id:pid,name,icon:'📁'},cards:{},cardOrder:[]};
   saveGist();closeModal('addProjModal');renderAll();
-  ['np-pid','np-icon','np-name','np-file','np-chatUrl','np-status','np-next','np-rules'].forEach(i=>document.getElementById(i)&&(document.getElementById(i).value=''));
+  ['np-pid','np-name'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   toast('✅ 프로젝트 추가됐어요');
 }
 
@@ -2497,35 +2378,11 @@ const BASE_PROMPT=`이 채팅 전체 대화를 보고, 아래 JSON 형식으로�
   }
 ]`;
 
-let chatFormCount=0;
 function openChatImport(){
-  document.getElementById('chatJsonPaste').value='';
-  document.getElementById('parsePreview').textContent='';
-  const importUrl=document.getElementById('import-chatUrl');if(importUrl)importUrl.value='';
   const cmTitle=document.getElementById('cm-title');if(cmTitle)cmTitle.value='';
   const cmUrl=document.getElementById('cm-chatUrl');if(cmUrl)cmUrl.value='';
-  populateProjSelect('ci');
   populateProjSelect('cm');
-  switchCiTab('import');
   openModal('chatImportModal');
-}
-function switchCiTab(tab){
-  const imp=document.getElementById('ciImportPane');
-  const man=document.getElementById('ciManualPane');
-  const t1=document.getElementById('ciTab1');
-  const t2=document.getElementById('ciTab2');
-  const onStyle='background:rgba(40,90,195,0.85);color:#fff;border:none;box-shadow:0 2px 8px rgba(40,90,195,0.22)';
-  const offStyle='background:transparent;color:rgba(35,75,175,0.6);border:none;box-shadow:none';
-  if(tab==='import'){
-    imp.style.display='';man.style.display='none';
-    t1.style.cssText=t1.style.cssText.replace(/background:[^;]+/,'').replace(/color:[^;]+/,'').replace(/border:[^;]+/,'').replace(/box-shadow:[^;]+/,'');
-    t1.setAttribute('style','flex:1;'+onStyle);
-    t2.setAttribute('style','flex:1;'+offStyle);
-  } else {
-    imp.style.display='none';man.style.display='';
-    t1.setAttribute('style','flex:1;'+offStyle);
-    t2.setAttribute('style','flex:1;'+onStyle);
-  }
 }
 function populateProjSelect(prefix){
   const sel=document.getElementById(prefix+'-proj');if(!sel)return;
@@ -2563,67 +2420,16 @@ function getSelectedProj(prefix){
   if(!sel.value){toast('프로젝트를 선택하세요');return null;}
   return sel.value;
 }
-function copyPrompt(){
-  navigator.clipboard.writeText(BASE_PROMPT).then(function(){toast('📋 프롬프트 복사됐어요! 채팅에 붙여넣으세요');});
-}
-function previewParse(val){
-  var prev=document.getElementById('parsePreview');
-  if(!val.trim()){prev.textContent='';return;}
-  try{
-    var m=val.match(/\[[\s\S]*\]/);
-    var list=JSON.parse(m?m[0]:val);
-    if(Array.isArray(list)&&list.length>0){prev.style.color='var(--success)';prev.textContent='✅ '+list.length+'개 카드 감지됨';}
-  }catch(e){prev.style.color='var(--danger)';prev.textContent='⚠️ JSON 형식이 아직 아니에요';}
-}
-function doChatImport(){
-  var raw=(document.getElementById('chatJsonPaste')?.value||'').trim();
-  if(!raw){toast('Claude 결과를 붙여넣어주세요');return;}
-  var list;
-  try{var m=raw.match(/\[[\s\S]*\]/);list=JSON.parse(m?m[0]:raw);}
-  catch(e){toast('❌ JSON 파싱 실패: '+e.message);return;}
-  if(!Array.isArray(list)){toast('❌ 배열 형식이어야 해요');return;}
-  var fallbackPid=getSelectedProj('ci');
-  var cnt=0;
-  snapshot();
-  for(var i=0;i<list.length;i++){
-    var item=list[i];
-    var pid=(item.pid||'').trim()||fallbackPid;var title=(item.title||'').trim();
-    if(!pid||!title)continue;
-    if(!S.projects[pid])S.projects[pid]={meta:{id:pid,name:title,icon:item.icon||'📋'},cards:{},cardOrder:[]};
-    var proj=S.projects[pid];
-    var existId=Object.keys(proj.cards||{}).find(function(k){return proj.cards[k].title===title;});
-    var id=existId||('c_'+Date.now()+'_'+Math.random().toString(36).slice(2,5));
-    var existing=proj.cards[id]||{};
-    var file=item.file||existing.file||'';
-    var manualUrl=(document.getElementById('import-chatUrl')?.value||'').trim();
-    var chatUrl=manualUrl||item.chatUrl||existing.chatUrl||'';
-    var chatName=title;
-    var card=Object.assign({},existing,{id:id,icon:item.icon||existing.icon||'📋',title:title,file:file,chatUrl:chatUrl,chatName:chatName,
-      status:item.status||existing.status||'',
-      next:Array.isArray(item.next)?item.next.slice(0,3):(existing.next||[]),
-      history:existing.history||[],files:file?[file]:(existing.files||[]),
-      rules:Array.isArray(item.rules)?item.rules:(existing.rules||[]),
-      memo:existing.memo||'',memoTs:existing.memoTs||'',
-      detailUpdatedAt:new Date().toISOString(),
-      parentIds:existing.parentIds||[],childIds:existing.childIds||[],
-      updatedAt:new Date().toISOString()});
-    proj.cards[id]=card;
-    if(!proj.cardOrder)proj.cardOrder=[id];
-    else if(!proj.cardOrder.includes(id))proj.cardOrder.push(id);
-    cnt++;
-  }
-  saveGist();closeModal('chatImportModal');renderAll();
-  toast('✅ '+cnt+'개 카드 가져왔어요!');
-}
 function doManualCard(){
   var pid=getSelectedProj('cm');if(!pid)return;
   var title=(document.getElementById('cm-title')?.value||'').trim();
   if(!title){toast('카드 제목을 입력하세요');return;}
   var chatUrl=(document.getElementById('cm-chatUrl')?.value||'').trim();
+  var desc=(document.getElementById('cm-desc')?.value||'').trim();
   var proj=S.projects[pid];var projIcon=proj?.meta?.icon||'📋';
   snapshot();
   var id='c_'+Date.now()+'_'+Math.random().toString(36).slice(2,5);
-  var card={id:id,icon:projIcon,title:title,chatUrl:chatUrl,chatName:title,
+  var card={id:id,icon:projIcon,title:title,chatUrl:chatUrl,chatName:title,description:desc,
     status:'',file:'',next:['','',''],history:[],files:[],rules:[],
     memo:'',memoTs:'',memoLog:[],
     parentIds:[],childIds:[],updatedAt:new Date().toISOString()};
@@ -2720,16 +2526,7 @@ function renderMap(){
 }
 document.getElementById('mapOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('mapOverlay'))closeMap();});
 
-// ── 카드 바깥 클릭 → 열린 섹션 자동 저장 ──
-document.addEventListener('click', e => {
-  for(const [cardId, name] of Object.entries(openSecs)) {
-    const card = document.querySelector(`.card[data-id="${cardId}"]`);
-    if(card && !card.contains(e.target)) {
-      const pid = card.dataset.pid;
-      saveSec(cardId, pid, name);
-    }
-  }
-}, true);
+
 
 // ── QUICK MEMO BAR ──
 let qmMemos=[];let qmImportMode='';let qmMoveId='';let qmEditId='';let qmDrag={srcIdx:-1};
