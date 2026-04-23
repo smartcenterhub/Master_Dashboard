@@ -1,0 +1,3373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스티커 메모</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4ebd8;
+    --ink: #3a2e1f;
+    --ink-dim: #6b5333;
+    --ink-soft: #8a7454;
+    --line: rgba(120, 90, 50, 0.18);
+    --line-soft: rgba(120, 90, 50, 0.1);
+    --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+            "Malgun Gothic", "맑은 고딕", Roboto, sans-serif;
+    --shadow-note: 0 1px 2px rgba(0,0,0,0.06), 0 5px 14px rgba(80,50,20,0.1), 0 14px 28px rgba(80,50,20,0.07);
+    --shadow-hover: 0 2px 4px rgba(0,0,0,0.08), 0 8px 20px rgba(80,50,20,0.15), 0 20px 40px rgba(80,50,20,0.1);
+    --shadow-drag: 0 2px 5px rgba(0,0,0,0.08), 0 10px 22px rgba(80,50,20,0.14), 0 22px 44px rgba(80,50,20,0.08);
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--board, #f4ebd8);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.3s ease;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.025) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.025) 0 1px, transparent 1px 4px);
+    pointer-events: none;
+    z-index: 1;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,0.18) 0%, transparent 50%),
+      radial-gradient(1000px 500px at 110% 10%, rgba(0,0,0,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ===== Topbar ===== */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 10px 16px 0;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+  }
+  .brand {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand .dot {
+    width: 7px; height: 7px;
+    background: #d9a441;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(217, 164, 65, 0.18);
+  }
+  .sync-status {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .sync-status.ok { color: #5a7d4d; }
+  .sync-status.err { color: #a55c3e; }
+  .tools { display: flex; gap: 6px; }
+  .icon-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.5);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  .icon-btn:hover {
+    background: rgba(255,255,255,0.9);
+    color: var(--ink);
+  }
+  .icon-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .icon-btn:disabled:hover {
+    background: rgba(255,255,255,0.5);
+    color: var(--ink-dim);
+  }
+  .icon-btn-svg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .icon-btn-svg svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+  }
+
+  /* ===== Tabbar ===== */
+  .tabbar {
+    display: flex;
+    gap: 2px 4px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    row-gap: 2px;
+  }
+  .tab {
+    padding: 6px 11px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    background: transparent;
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 7px 7px 0 0;
+    transition: background 0.12s ease, color 0.12s ease;
+    white-space: nowrap;
+    position: relative;
+    top: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 180px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab .tab-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .tab:hover { color: var(--ink); background: rgba(255,255,255,0.4); }
+  .tab.active {
+    background: var(--board, #f4ebd8);
+    border-color: var(--line);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .tab-swatch {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: var(--swatch);
+    flex-shrink: 0;
+  }
+  .tab-count {
+    font-size: 10px;
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+    margin-left: -2px;
+  }
+  .tab-add {
+    padding: 6px 10px;
+    border: 1px dashed var(--line);
+    background: transparent;
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 7px 7px 0 0;
+    position: relative;
+    top: 1px;
+    white-space: nowrap;
+  }
+  .tab-add:hover { color: var(--ink); border-color: var(--ink-dim); }
+
+  /* ===== Canvas ===== */
+  .canvas {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 100px;
+    padding-bottom: 80px;
+    z-index: 2;
+  }
+
+  /* ===== Post-it ===== */
+  .postit-note {
+    position: absolute;
+    width: 240px;
+    background: var(--paper, #fff8cc);
+    box-shadow: var(--shadow-note);
+    transform: rotate(var(--rot, 0deg));
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    max-height: 320px;
+    min-width: 160px;
+    min-height: 80px;
+  }
+  .postit-note.custom-size { max-height: none; }
+  .postit-note:hover { box-shadow: var(--shadow-hover); }
+
+  /* Resize handle */
+  .note-resize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nwse-resize;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    background:
+      linear-gradient(135deg,
+        transparent 0%,
+        transparent 42%,
+        rgba(0,0,0,0.3) 42%,
+        rgba(0,0,0,0.3) 50%,
+        transparent 50%,
+        transparent 65%,
+        rgba(0,0,0,0.3) 65%,
+        rgba(0,0,0,0.3) 73%,
+        transparent 73%);
+  }
+  .postit-note:hover .note-resize { opacity: 0.6; }
+  .note-resize:hover { opacity: 1 !important; }
+  .postit-note.resizing { transition: none; }
+  .postit-note.resizing .note-resize { opacity: 1; }
+
+  /* Copy feedback — green shadow pulse (quick in, slow fade, soft) */
+  .postit-note.copied-flash {
+    animation: copied-shadow-flash 1.5s ease-out;
+  }
+  @keyframes copied-shadow-flash {
+    0% {
+      box-shadow:
+        0 1px 2px rgba(0,0,0,0.06),
+        0 5px 14px rgba(80,50,20,0.1),
+        0 14px 28px rgba(80,50,20,0.07);
+    }
+    10% {
+      box-shadow:
+        0 0 0 1px rgba(90, 160, 90, 0.45),
+        0 4px 14px rgba(90, 160, 90, 0.3),
+        0 16px 36px rgba(90, 160, 90, 0.22);
+    }
+    100% {
+      box-shadow: var(--shadow-note);
+    }
+  }
+  .postit-note.dragging {
+    transition: none;
+    box-shadow: var(--shadow-drag);
+    cursor: grabbing !important;
+  }
+  /* Tape = drag handle */
+  .note-tape {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    width: 62px;
+    height: 20px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 100%),
+      rgba(245, 225, 175, 0.75);
+    border-left: 1px dashed rgba(120, 90, 50, 0.25);
+    border-right: 1px dashed rgba(120, 90, 50, 0.25);
+    box-shadow:
+      0 2px 4px rgba(80, 50, 20, 0.15),
+      inset 0 1px 0 rgba(255,255,255,0.4);
+    cursor: grab;
+    z-index: 2;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .note-tape::after {
+    /* subtle texture lines */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0 3px,
+      rgba(120, 90, 50, 0.05) 3px 4px
+    );
+    pointer-events: none;
+  }
+  .note-tape:hover {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.15) 100%),
+      rgba(245, 215, 150, 0.9);
+    transform: translateX(-50%) rotate(-3deg) scale(1.08);
+    box-shadow:
+      0 3px 6px rgba(80, 50, 20, 0.2),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .note-tape:active { cursor: grabbing; }
+  .postit-note.dragging .note-tape { cursor: grabbing; }
+
+  /* Note head */
+  .note-head {
+    padding: 12px 12px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 6px;
+    border-bottom: 1px dashed rgba(0,0,0,0.11);
+    flex-shrink: 0;
+  }
+  .note-title {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+    flex: 1;
+    letter-spacing: -0.01em;
+    outline: none;
+    cursor: default;
+    padding: 1px 3px;
+    margin: -1px -3px;
+    border-radius: 3px;
+    min-height: 17px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    user-select: none;
+  }
+  .note-title[contenteditable="true"] {
+    cursor: text;
+    background: rgba(0,0,0,0.05);
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  .note-actions {
+    display: flex;
+    gap: 1px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    flex-shrink: 0;
+  }
+  .postit-note:hover .note-actions { opacity: 1; }
+  .note-btn {
+    width: 20px; height: 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--ink-dim);
+    border-radius: 3px;
+    font-family: inherit;
+    line-height: 1;
+    padding: 0;
+  }
+  .note-btn:hover { background: rgba(0,0,0,0.08); color: var(--ink); }
+  .note-btn-edit {
+    transform: rotate(90deg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Note body */
+  .note-body-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 24px;
+  }
+  .note-body {
+    padding: 6px 12px 12px;
+    overflow-y: auto;
+    flex: 1;
+    cursor: pointer;
+    min-height: 24px;
+  }
+  .note-body[data-mode="edit"] { cursor: text; }
+  .note-body::-webkit-scrollbar { width: 5px; }
+  .note-body::-webkit-scrollbar-track { background: transparent; }
+  .note-body::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 3px;
+  }
+  .note-body::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
+
+  .note-body-edit {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: rgba(0,0,0,0.04);
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--ink-dim);
+    border-radius: 3px;
+    font-family: inherit;
+    line-height: 1;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.12s ease;
+    z-index: 2;
+  }
+  .postit-note:hover .note-body-edit { opacity: 1; }
+  .note-body-edit:hover { background: rgba(0,0,0,0.1); color: var(--ink); }
+  /* Hide body edit button when body is in edit mode (textarea takes over) */
+  .note-body[data-mode="edit"] + .note-body-edit { display: none; }
+
+  .body-line {
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 0;
+    color: var(--ink);
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 1.4em;
+  }
+  .body-line.line-empty { height: 1.4em; min-height: 1.4em; }
+  .body-line .line-text {
+    display: inline;
+  }
+
+  /* ===== Body edit textarea ===== */
+  .body-edit-textarea {
+    width: 100%;
+    min-height: 60px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--ink);
+    outline: none;
+    resize: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+    box-sizing: border-box;
+    overflow-y: auto;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  .body-edit-textarea::-webkit-scrollbar { width: 5px; }
+  .body-edit-textarea::-webkit-scrollbar-track { background: transparent; }
+  .body-edit-textarea::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 3px;
+  }
+  .note-body[data-mode="edit"] {
+    /* Keep same padding as view mode so textarea visually aligns */
+    padding: 6px 12px 12px;
+    background: rgba(0,0,0,0.05);
+  }
+
+  /* ===== List view (전체 탭) ===== */
+  .list-view {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .list-section {
+    margin-bottom: 28px;
+  }
+  .list-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px 10px;
+    margin: 0 -8px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 8px;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+    transition: background 0.12s ease;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .list-header:hover {
+    background: rgba(255,255,255,0.5);
+  }
+  .list-header:hover .list-go {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .list-chevron {
+    font-size: 9px;
+    color: var(--ink-soft);
+    width: 12px;
+    text-align: center;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+  .list-section.expanded .list-chevron {
+    transform: rotate(90deg);
+  }
+  .list-section.expanded .list-header {
+    margin-bottom: 0;
+    border-bottom-color: transparent;
+  }
+  .list-go {
+    margin-left: auto;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, background 0.12s ease, color 0.12s ease;
+    font-weight: 500;
+    font-family: inherit;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .list-go:hover {
+    background: rgba(255,255,255,0.8);
+    color: var(--ink);
+  }
+  /* Always show on touch devices (no hover) */
+  @media (hover: none) {
+    .list-go { opacity: 1; transform: translateX(0); }
+  }
+  .list-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+    margin-top: 0;
+    animation: list-expand 0.2s ease;
+  }
+  @keyframes list-expand {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .list-swatch {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12);
+  }
+  .list-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .list-count {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .list-item {
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink);
+    transition: background 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .list-item:hover {
+    background: rgba(255,255,255,0.55);
+  }
+  .list-item .bullet {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--ink-soft);
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .list-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    opacity: 0.7;
+    line-height: 1.6;
+  }
+
+  /* ===== Empty state ===== */
+  .empty-state {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.7;
+    opacity: 0.7;
+  }
+
+  /* ===== FABs ===== */
+  .add-note {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 50;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: var(--ink);
+    color: #fff9e8;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18), 0 10px 28px rgba(0,0,0,0.14);
+    transition: transform 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+  }
+  .add-note:hover { transform: scale(1.08); }
+  .add-note:active { transform: scale(0.96); }
+
+  .add-tape {
+    position: fixed;
+    bottom: 20px;
+    right: 78px; /* sits to the left of add-note */
+    z-index: 50;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(80, 60, 20, 0.35);
+    background:
+      linear-gradient(180deg,
+        transparent 30%,
+        #fff176 30%,
+        #fff176 70%,
+        transparent 70%),
+      #faf3e2;
+    color: #3a2e1f;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(80,50,20,0.15), 0 8px 20px rgba(80,50,20,0.12);
+    transition: transform 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .add-tape:hover { transform: scale(1.1); }
+  .add-tape:active { transform: scale(0.94); }
+
+  /* ===== Label tape (highlighter style) ===== */
+  .label-tape {
+    position: absolute;
+    min-width: 60px;
+    max-width: 280px;
+    padding: 2px 10px;
+    background:
+      linear-gradient(180deg,
+        transparent 20%,
+        var(--tape-color, #fff176) 20%,
+        var(--tape-color, #fff176) 80%,
+        transparent 80%);
+    transform: rotate(var(--rot, 0deg));
+    cursor: grab;
+    z-index: 5;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #3a2e1f;
+    letter-spacing: -0.01em;
+    transition: filter 0.2s ease;
+  }
+  .label-tape:hover {
+    filter: brightness(1.05) saturate(1.1);
+  }
+  .label-tape:active { cursor: grabbing; }
+  .label-tape.dragging {
+    transition: none;
+    filter: brightness(1.08) saturate(1.15);
+    cursor: grabbing;
+  }
+  .label-tape.locked { cursor: default; }
+  .label-tape.locked:active { cursor: default; }
+  .label-tape-text {
+    flex: 1;
+    outline: none;
+    padding: 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 20px;
+  }
+  .label-tape-text[contenteditable="true"] {
+    background: rgba(255,255,255,0.5);
+    border-radius: 2px;
+    cursor: text;
+    overflow: visible;
+    text-overflow: unset;
+  }
+  .label-tape-actions {
+    display: flex;
+    gap: 1px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    flex-shrink: 0;
+  }
+  .label-tape:hover .label-tape-actions { opacity: 1; }
+  .label-tape-btn {
+    width: 18px; height: 18px;
+    border: none;
+    background: rgba(255,255,255,0.6);
+    cursor: pointer;
+    font-size: 11px;
+    color: rgba(60, 40, 20, 0.75);
+    border-radius: 3px;
+    font-family: inherit;
+    line-height: 1;
+    padding: 0;
+  }
+  .label-tape-btn:hover {
+    background: rgba(255,255,255,0.95);
+    color: rgba(60, 40, 20, 1);
+  }
+  .label-tape-btn-lock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .label-tape-btn-lock svg {
+    width: 11px;
+    height: 11px;
+    display: block;
+  }
+  .label-tape-btn-lock.active {
+    background: rgba(255,255,255,0.95);
+    color: rgba(60, 40, 20, 1);
+  }
+
+  /* Lock button (in note-actions) */
+  .note-btn-lock svg {
+    width: 12px;
+    height: 12px;
+    display: block;
+  }
+  .note-btn-lock.active {
+    background: rgba(0,0,0,0.06);
+    color: var(--ink);
+  }
+  /* Visual hint on locked note: dashed "anchored" feel on the tape */
+  .postit-note.locked .note-tape { cursor: not-allowed; opacity: 0.7; }
+  .postit-note.locked .note-tape:hover {
+    transform: translateX(-50%) rotate(-3deg);
+    background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 100%), rgba(245, 225, 175, 0.75);
+    box-shadow: 0 2px 4px rgba(80, 50, 20, 0.15), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+
+  /* ===== Modal (settings) ===== */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0,0,0,0.25);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .modal.open { display: flex; }
+  .modal-content {
+    background: #faf3e2;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-content h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .modal-content .subtitle {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+  }
+
+  /* ===== Guide modal ===== */
+  .modal-content.guide-content {
+    max-width: 520px;
+    padding: 0;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 22px 14px;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .guide-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .guide-close {
+    width: 26px; height: 26px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--ink-dim);
+    border-radius: 5px;
+    padding: 0;
+    font-family: inherit;
+    line-height: 1;
+  }
+  .guide-close:hover { background: rgba(0,0,0,0.06); color: var(--ink); }
+  .guide-body {
+    padding: 16px 22px 20px;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    overflow-y: auto;
+    flex: 1;
+  }
+  .guide-body h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 18px 0 8px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .guide-body h3:first-child { margin-top: 0; }
+  .guide-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: var(--ink);
+    color: #fff9e8;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    flex-shrink: 0;
+  }
+  .guide-body ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 4px;
+  }
+  .guide-body li {
+    padding: 3px 0 3px 14px;
+    position: relative;
+    color: var(--ink-dim);
+  }
+  .guide-body li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .guide-body li b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .guide-body .kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    color: var(--ink);
+  }
+  .guide-footer {
+    padding: 11px 22px 14px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: center;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+  .setting-group {
+    margin-bottom: 16px;
+  }
+  .setting-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    margin-bottom: 5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .setting-group input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.6);
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .setting-group input:focus { border-color: var(--ink-dim); }
+  .setting-group .hint {
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .setting-group .hint a {
+    color: var(--ink-dim);
+    text-decoration: underline;
+  }
+  .setting-group .hint code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-size: 10px;
+  }
+  .gist-row {
+    display: flex;
+    gap: 6px;
+  }
+  .gist-row input { flex: 1; }
+  .btn {
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.5);
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .btn:hover { background: rgba(255,255,255,0.9); }
+  .btn-primary {
+    background: var(--ink);
+    color: #fff9e8;
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: #4a3820; }
+  .setting-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .setting-status {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    min-height: 16px;
+  }
+  .setting-status.ok { color: #5a7d4d; }
+  .setting-status.err { color: #a55c3e; }
+
+  /* Context menu */
+  .menu {
+    display: none;
+    position: fixed;
+    z-index: 300;
+    background: #faf3e2;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    padding: 4px;
+    min-width: 140px;
+  }
+  .menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .menu button:hover { background: rgba(0,0,0,0.06); }
+  .menu button.danger { color: #a55c3e; }
+  .menu button.danger:hover { background: rgba(165, 92, 62, 0.1); }
+
+  /* Color picker */
+  .color-picker {
+    display: none;
+    position: fixed;
+    z-index: 310;
+    background: #faf3e2;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    padding: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .color-picker.open { display: grid; }
+  .swatch {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    position: relative;
+    padding: 0;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.selected {
+    border: 2px solid var(--ink);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.5), 0 0 0 3px var(--ink);
+  }
+  .swatch-reset {
+    background: transparent !important;
+    border: 1.5px dashed rgba(0,0,0,0.35) !important;
+    color: rgba(0,0,0,0.55);
+    font-size: 14px;
+    line-height: 0;
+    font-family: inherit;
+  }
+  .swatch-reset:hover { color: var(--ink); border-color: var(--ink) !important; }
+
+  /* Board picker (in settings) */
+  .board-picker {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .board-swatch {
+    position: relative;
+    aspect-ratio: 1.4 / 1;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    padding: 0;
+    transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+  }
+  .board-swatch::before {
+    /* subtle grid preview */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.04) 0 1px, transparent 1px 4px);
+  }
+  .board-swatch::after {
+    /* mini sticky note preview */
+    content: '';
+    position: absolute;
+    left: 22%;
+    top: 25%;
+    width: 36%;
+    height: 45%;
+    background: #fff8cc;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    transform: rotate(-6deg);
+    border-radius: 1px;
+  }
+  .board-swatch:hover {
+    transform: scale(1.05);
+    border-color: rgba(0,0,0,0.25);
+  }
+  .board-swatch.selected {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 2px rgba(58,46,31,0.15);
+  }
+  .board-swatch-label {
+    position: absolute;
+    bottom: 2px;
+    left: 4px;
+    font-size: 9px;
+    color: rgba(0,0,0,0.55);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    z-index: 2;
+    letter-spacing: -0.02em;
+  }
+
+  /* ===== Status line (replaces toast) ===== */
+  .status-line {
+    position: fixed;
+    top: 48px; /* just below topbar row with buttons */
+    right: 18px;
+    z-index: 400;
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--ink-soft);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-align: right;
+    max-width: 280px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .status-line.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .status-line.success { color: #5a7d4d; }
+  .status-line.error { color: #a55c3e; }
+  .status-line.info { color: #4a637d; }
+  .status-line-icon {
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  /* ===== Multi-selection — corner markers ===== */
+  .corner-marker {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    z-index: 10;
+    stroke: #3a2e1f;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: square;
+  }
+  .corner-marker.tl { top: -5px; left: -5px; }
+  .corner-marker.tr { top: -5px; right: -5px; }
+  .corner-marker.bl { bottom: -5px; left: -5px; }
+  .corner-marker.br { bottom: -5px; right: -5px; }
+
+  /* When selected (corner markers visible), the whole surface becomes a drag handle.
+     Child elements cannot receive clicks — all interaction blocked except drag. */
+  .postit-note.selected > *:not(.corner-marker),
+  .label-tape.selected > *:not(.corner-marker) {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .postit-note.selected,
+  .label-tape.selected {
+    cursor: move;
+  }
+
+  /* Hide markers during drag/resize */
+  .postit-note.dragging .corner-marker,
+  .postit-note.resizing .corner-marker,
+  .label-tape.dragging .corner-marker {
+    display: none;
+  }
+
+  /* Rubber-band selection box */
+  .rubberband {
+    position: absolute;
+    background: rgba(212, 164, 65, 0.12);
+    border: 1.5px solid rgba(212, 164, 65, 0.7);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  /* Block text selection while rubber-band is active */
+  body.rubberband-active,
+  body.rubberband-active * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+
+  /* Selection indicator */
+  .selection-indicator {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-40px);
+    z-index: 500;
+    padding: 6px 14px;
+    background: rgba(58, 46, 31, 0.92);
+    color: #fff9e8;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 100px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18), 0 10px 28px rgba(0,0,0,0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .selection-indicator.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Save button active pulse */
+  .icon-btn.pulse {
+    animation: save-pulse 0.5s ease;
+  }
+  @keyframes save-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); background: rgba(90, 125, 77, 0.3); }
+  }
+
+  @media (max-width: 500px) {
+    .postit-note {
+      position: relative !important;
+      width: calc(100% - 30px) !important;
+      max-width: 340px;
+      max-height: none;
+      margin: 14px auto !important;
+      top: auto !important;
+      left: auto !important;
+      transform: rotate(var(--rot, 0deg));
+    }
+    .note-tape { display: none; }
+    .note-actions { opacity: 1; }
+    .label-tape-actions { opacity: 1; }
+    .canvas { padding-left: 12px; padding-right: 12px; }
+    .add-note { bottom: 16px; right: 16px; }
+    .status-line { display: none; }
+    .add-tape { bottom: 16px; right: 70px; }
+    .label-tape { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>스티커 메모</span>
+      <span class="sync-status" id="syncStatus"></span>
+    </div>
+    <div class="tools">
+      <button class="icon-btn icon-btn-svg" id="undoBtn" title="실행 취소 (Ctrl+Z)" disabled>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 3 7 L 7 3 M 3 7 L 7 11 M 3 7 L 11 7 A 3 3 0 0 1 14 10 V 11 A 3 3 0 0 1 11 14 L 7 14"/>
+        </svg>
+      </button>
+      <button class="icon-btn icon-btn-svg" id="redoBtn" title="다시 실행 (Ctrl+Y)" disabled>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 13 7 L 9 3 M 13 7 L 9 11 M 13 7 L 5 7 A 3 3 0 0 0 2 10 V 11 A 3 3 0 0 0 5 14 L 9 14"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="saveBtn" title="저장 (Ctrl+S)">💾</button>
+      <button class="icon-btn" id="settingsBtn" title="설정">⚙</button>
+      <button class="icon-btn icon-btn-svg" id="guideBtn" title="사용법 안내">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="6.5"/>
+          <path d="M 6.5 6 A 1.5 1.5 0 1 1 8 8 V 9.5"/>
+          <circle cx="8" cy="11.5" r="0.3" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="tabbar" id="tabbar"></div>
+</div>
+
+<main class="canvas" id="canvas"></main>
+
+<div class="status-line" id="statusLine"></div>
+<div class="selection-indicator" id="selectionIndicator"></div>
+
+<button class="add-tape" id="addTapeBtn" title="새 테이프 라벨">＋</button>
+<button class="add-note" id="addNoteBtn" title="새 메모">＋</button>
+
+<!-- Guide Modal -->
+<div class="modal" id="guideModal">
+  <div class="modal-content guide-content">
+    <div class="guide-header">
+      <div class="guide-title">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="6.5"/>
+          <path d="M 6.5 6 A 1.5 1.5 0 1 1 8 8 V 9.5"/>
+          <circle cx="8" cy="11.5" r="0.3" fill="currentColor"/>
+        </svg>
+        <span>사용법 안내</span>
+      </div>
+      <button class="guide-close" id="guideCloseBtn" title="닫기">×</button>
+    </div>
+    <div class="guide-body">
+
+      <h3><span class="guide-num">1</span>메모</h3>
+      <ul>
+        <li><b>＋ 검정 버튼</b> 또는 <span class="kbd">Ctrl+N</span> — 새 메모 추가</li>
+        <li><b>테이프</b>(상단 가운데) 드래그 — 메모 이동</li>
+        <li><b>테이프</b> <span class="kbd">Ctrl</span>+드래그 — 제목 복사된 새 메모 생성</li>
+        <li><b>본문 클릭</b> — 본문 전체 복사 + 리플 애니메이션</li>
+        <li><b>제목/본문 더블클릭</b> — 수정 모드</li>
+        <li><b>본문 텍스트 드래그</b> — 일부만 선택 (<span class="kbd">Ctrl+C</span>로 복사)</li>
+        <li><b>우측 하단 ↘</b> — 크기 조절 (잠긴 상태에서도 가능)</li>
+      </ul>
+
+      <h3><span class="guide-num">2</span>수정 · 잠금 · 삭제</h3>
+      <ul>
+        <li><b>🔓 자물쇠</b> — 위치 잠금 (크기·편집은 가능)</li>
+        <li><b>✏ 연필</b> — 제목 + 본문 편집 모드</li>
+        <li><b>× 닫기</b> — 메모 삭제</li>
+        <li>편집 중 <span class="kbd">Tab</span> — 제목 → 본문으로 이동</li>
+        <li>편집 중 <span class="kbd">Esc</span> 또는 <span class="kbd">Ctrl+Enter</span> — 편집 종료 (저장)</li>
+      </ul>
+
+      <h3><span class="guide-num">3</span>여러 개 선택 · 이동</h3>
+      <ul>
+        <li><b>빈 공간 드래그</b> — Rubber-band 선택</li>
+        <li><b>Shift + 클릭</b> — 개별 선택 + 맨 위로 올리기</li>
+        <li>선택된 항목 드래그 — 전부 같이 이동</li>
+        <li><span class="kbd">Delete</span> — 일괄 삭제 · <span class="kbd">Esc</span> — 해제</li>
+      </ul>
+
+      <h3><span class="guide-num">4</span>탭</h3>
+      <ul>
+        <li><b>＋ 탭 추가</b> — 새 주제</li>
+        <li>탭 <b>우클릭 / 길게 터치</b> — 이름·색·삭제 메뉴</li>
+        <li><b>전체 탭</b> — 모든 메모 제목 목록 (헤더 클릭해 펼치기)</li>
+      </ul>
+
+      <h3><span class="guide-num">5</span>테이프 라벨 (구역 표시)</h3>
+      <ul>
+        <li><b>＋ 베이지 버튼</b> — 색 선택 팝업 → 색 고르면 라벨 생성</li>
+        <li>라벨 어디든 드래그로 이동</li>
+        <li><b>더블클릭</b>으로 이름 편집, 외부 클릭 또는 <span class="kbd">Esc</span>로 저장</li>
+        <li><b>🔒 자물쇠</b>로 위치 고정 · <span class="kbd">Shift</span>+클릭 후 <span class="kbd">Delete</span>로 삭제</li>
+        <li>현재 탭에만 보임, 8색 형광펜 팔레트 (생성 후 색 변경 불가)</li>
+      </ul>
+
+      <h3><span class="guide-num">6</span>저장 · 동기화</h3>
+      <ul>
+        <li>모든 변경 <b>자동 저장</b> (localStorage)</li>
+        <li><b>💾 또는 <span class="kbd">Ctrl+S</span></b> — 수동 저장</li>
+        <li><b><span class="kbd">Ctrl+Z</span></b> — 실행 취소 · <b><span class="kbd">Ctrl+Y</span></b> — 다시 실행</li>
+        <li><b>⚙ 설정</b>에서 GitHub 토큰 → Gist로 기기 간 동기화</li>
+      </ul>
+
+    </div>
+    <div class="guide-footer">
+      ※ 모바일에서는 일부 기능 (Rubber-band, Shift)이 제한됩니다
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <h2>설정</h2>
+    <div class="subtitle">GitHub Gist에 메모를 저장하면 다른 기기에서도 열어볼 수 있어요.</div>
+
+    <div class="setting-group">
+      <label>메모판 색상</label>
+      <div class="board-picker" id="boardPicker"></div>
+    </div>
+
+    <div class="setting-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="tokenInput" placeholder="ghp_..." autocomplete="off">
+      <div class="hint">
+        <a href="https://github.com/settings/tokens/new?scopes=gist&description=Sticky+Memo" target="_blank" rel="noopener">토큰 발급하기 →</a>
+        &nbsp;필요한 권한: <code>gist</code>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>Gist ID</label>
+      <div class="gist-row">
+        <input type="text" id="gistIdInput" placeholder="(없으면 새로 생성)">
+        <button class="btn" id="createGistBtn">새로 생성</button>
+      </div>
+      <div class="hint">비어있으면 "새로 생성" 버튼으로 프라이빗 Gist를 만들어줍니다. 다른 기기에서는 같은 Gist ID를 입력하세요.</div>
+    </div>
+
+    <div class="setting-group">
+      <button class="btn" id="pullGistBtn">지금 불러오기 (덮어쓰기)</button>
+    </div>
+
+    <div class="setting-status" id="settingsStatus"></div>
+
+    <div class="setting-actions">
+      <button class="btn" id="closeSettingsBtn">닫기</button>
+      <button class="btn btn-primary" id="saveSettingsBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tab context menu -->
+<div class="menu" id="tabMenu">
+  <button data-action="rename">이름 변경</button>
+  <button data-action="color">색상 변경</button>
+  <button data-action="delete" class="danger">탭 삭제</button>
+</div>
+
+<!-- Color picker -->
+<div class="color-picker" id="colorPicker"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ===== Palette =====
+  const COLORS = [
+    '#fff8cc', // butter yellow
+    '#ffd9e3', // cotton pink
+    '#d4edda', // mint
+    '#d9e8ff', // sky
+    '#ffe4c7', // peach
+    '#eadcf8', // lavender
+    '#d6ede9', // seafoam
+    '#f5e1c4', // sand
+  ];
+
+  // Minimum viewport Y so tape (at -9px from note) stays visible below topbar
+  function getMinY() {
+    const topbar = document.querySelector('.topbar');
+    const h = topbar ? topbar.getBoundingClientRect().height : 90;
+    return h + 15; // topbar height + margin so tape is clearly visible
+  }
+
+  // ===== Default state =====
+  const uid = (p) => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const DEFAULT_STATE = () => ({
+    tabs: [
+      { id: uid('t'), name: '업무', color: COLORS[0] },
+      { id: uid('t'), name: '개인', color: COLORS[1] },
+      { id: uid('t'), name: '아이디어', color: COLORS[3] },
+    ],
+    notes: [],
+    tapes: [],
+    activeTab: null,
+    gistId: null,
+    boardColor: '#f4ebd8',
+  });
+
+  // Tape label colors (highlighter palette)
+  const TAPE_COLORS = [
+    '#fff176', // yellow
+    '#ffb3d9', // pink
+    '#b3ffd9', // mint green
+    '#b3d9ff', // sky blue
+    '#ffcc80', // orange
+    '#d9b3ff', // purple
+    '#ff9999', // red/coral
+    '#a8f0a8', // lime
+  ];
+
+  // Board color presets
+  const BOARDS = [
+    { name: '크림', color: '#f4ebd8' },
+    { name: '리넨', color: '#ece4d4' },
+    { name: '세이지', color: '#d8e2d0' },
+    { name: '민트', color: '#d2e8df' },
+    { name: '스카이', color: '#dbe5ed' },
+    { name: '라벤더', color: '#e2dbeb' },
+    { name: '블러쉬', color: '#eeddd9' },
+    { name: '코르크', color: '#d7b891' },
+    { name: '페이퍼', color: '#ebe8e0' },
+    { name: '소프트 그레이', color: '#dedad3' },
+  ];
+
+  // ===== Storage keys =====
+  const LS_DATA = 'stickymemo.data.v1';
+  const LS_TOKEN = 'stickymemo.token.v1';
+
+  // ===== State =====
+  let state;
+  let token = localStorage.getItem(LS_TOKEN) || '';
+
+  try {
+    const raw = localStorage.getItem(LS_DATA);
+    state = raw ? JSON.parse(raw) : DEFAULT_STATE();
+  } catch {
+    state = DEFAULT_STATE();
+  }
+  if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
+    state.activeTab = state.tabs[0]?.id || 'all';
+  }
+  // Migration: ensure tapes array exists
+  if (!Array.isArray(state.tapes)) state.tapes = [];
+
+  // ===== Helpers =====
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+
+  // Strip checkbox markers and trim; keep non-empty lines
+  function cleanBodyForCopy(body) {
+    return (body || '')
+      .split('\n')
+      .map(line => {
+        const m = line.match(/^(\s*)\[[ xX]\]\s?(.*)$/);
+        return m ? m[2] : line;
+      })
+      .map(line => line.trimEnd())
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  async function copyToClipboard(text) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {}
+    // Fallback for older browsers / insecure contexts
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.top = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+
+  // Copy feedback: flash green shadow on the note briefly
+  function spawnRipple(noteEl) {
+    if (!noteEl) return;
+    noteEl.classList.remove('copied-flash');
+    // Force reflow so animation restarts cleanly
+    void noteEl.offsetWidth;
+    noteEl.classList.add('copied-flash');
+    // Clean up after animation completes
+    noteEl.addEventListener('animationend', function handler() {
+      noteEl.classList.remove('copied-flash');
+      noteEl.removeEventListener('animationend', handler);
+    });
+  }
+
+  // ===== Status line (replaces toast) =====
+  // Single-line status indicator below the save/settings icons.
+  // Shows the last message only; next call overwrites it.
+  const statusEl = $('#statusLine');
+  let statusTimer = null;
+
+  function toast(msg, type = 'info', opts = {}) {
+    const { duration = (type === 'error' ? 5000 : 3000), icon } = opts;
+
+    clearTimeout(statusTimer);
+    const iconChar = icon ?? ({ success: '✓', error: '⚠', info: '·' }[type] || '·');
+
+    statusEl.className = 'status-line visible ' + type;
+    statusEl.innerHTML = `<span class="status-line-icon"></span><span class="status-line-msg"></span>`;
+    statusEl.querySelector('.status-line-icon').textContent = iconChar;
+    statusEl.querySelector('.status-line-msg').textContent = msg;
+
+    statusTimer = setTimeout(() => {
+      statusEl.classList.remove('visible');
+    }, duration);
+  }
+
+  // ===== Persistence =====
+  function saveLocal() {
+    localStorage.setItem(LS_DATA, JSON.stringify(state));
+    scheduleGistPush();
+  }
+
+  // ===== Undo / Redo history =====
+  // Session-only: stacks of state snapshots (JSON strings)
+  const HISTORY_LIMIT = 50;
+  const undoStack = [];
+  const redoStack = [];
+  let suppressHistory = false; // set true while applying undo/redo to avoid re-pushing
+
+  function snapshot() {
+    // Strip volatile / non-data fields if any. Currently state is all data.
+    return JSON.stringify(state);
+  }
+
+  function pushHistory() {
+    if (suppressHistory) return;
+    // Don't push duplicates
+    const snap = snapshot();
+    if (undoStack.length > 0 && undoStack[undoStack.length - 1] === snap) return;
+    undoStack.push(snap);
+    if (undoStack.length > HISTORY_LIMIT) undoStack.shift();
+    // Any new action invalidates redo history
+    redoStack.length = 0;
+    updateUndoRedoButtons();
+  }
+
+  function undo() {
+    if (undoStack.length < 2) {
+      toast('되돌릴 내용 없음', 'info', { duration: 1200 });
+      return;
+    }
+    const current = undoStack.pop();
+    redoStack.push(current);
+    const previous = undoStack[undoStack.length - 1];
+    applySnapshot(previous);
+    updateUndoRedoButtons();
+    toast('실행 취소됨', 'info', { duration: 1400, icon: '↶' });
+  }
+
+  function redo() {
+    if (redoStack.length === 0) {
+      toast('다시 실행할 내용 없음', 'info', { duration: 1200 });
+      return;
+    }
+    const next = redoStack.pop();
+    undoStack.push(next);
+    applySnapshot(next);
+    updateUndoRedoButtons();
+    toast('다시 실행됨', 'info', { duration: 1400, icon: '↷' });
+  }
+
+  function updateUndoRedoButtons() {
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    if (undoBtn) undoBtn.disabled = undoStack.length < 2;
+    if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+  }
+
+  function applySnapshot(snap) {
+    suppressHistory = true;
+    try {
+      const parsed = JSON.parse(snap);
+      if (parsed && Array.isArray(parsed.tabs) && Array.isArray(parsed.notes)) {
+        state = parsed;
+        if (!Array.isArray(state.tapes)) state.tapes = [];
+        if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
+          state.activeTab = state.tabs[0]?.id || 'all';
+        }
+        saveLocal();
+        applyBoard();
+        render();
+      }
+    } finally {
+      suppressHistory = false;
+    }
+  }
+
+  // Save + user-visible confirmation (use for meaningful events, not keystrokes)
+  function announceSave(msg = '저장됨') {
+    saveLocal();
+    pushHistory();
+    toast(msg, 'success', { duration: 1400, key: 'save' });
+  }
+
+  // Manual save: cancel any pending debounce and push now
+  function forcePush() {
+    saveLocal(); // ensures latest localStorage write
+    if (!token || !state.gistId) {
+      toast('로컬에 저장됨 (Gist 미설정)', 'success', { duration: 1800, key: 'save' });
+      return;
+    }
+    clearTimeout(pushTimer);
+    pushToGist();
+  }
+
+  // ===== Gist sync =====
+  let pushTimer = null;
+  function setSyncStatus(txt, cls) {
+    const el = $('#syncStatus');
+    el.textContent = txt ? '· ' + txt : '';
+    el.className = 'sync-status' + (cls ? ' ' + cls : '');
+  }
+
+  function scheduleGistPush() {
+    if (!token || !state.gistId) { setSyncStatus('로컬만', ''); return; }
+    clearTimeout(pushTimer);
+    setSyncStatus('대기중...');
+    pushTimer = setTimeout(pushToGist, 1500);
+  }
+
+  async function pushToGist() {
+    if (!token || !state.gistId) return;
+    setSyncStatus('동기화중...');
+    toast('Gist에 동기화 중...', 'info', { duration: 3000, key: 'sync', icon: '☁' });
+    try {
+      const res = await fetch(`https://api.github.com/gists/${state.gistId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          files: { 'sticky-memo.json': { content: JSON.stringify(state, null, 2) } }
+        })
+      });
+      if (!res.ok) {
+        let detail = '';
+        try {
+          const errJson = await res.json();
+          detail = errJson.message || '';
+        } catch {}
+        throw new Error(`HTTP ${res.status}${detail ? ' · ' + detail : ''}`);
+      }
+      const json = await res.json();
+      state.lastSyncedAt = new Date(json.updated_at).getTime();
+      localStorage.setItem(LS_DATA, JSON.stringify(state));
+      setSyncStatus('동기화됨 ✓', 'ok');
+      toast('Gist에 동기화 완료', 'success', { duration: 2000, key: 'sync' });
+    } catch (e) {
+      const msg = e && e.message ? e.message : '알 수 없음';
+      setSyncStatus('동기화 실패', 'err');
+      toast(`동기화 실패 · ${msg}`, 'error', { duration: 6000, key: 'sync' });
+      console.error('[Gist push failed]', e);
+    }
+  }
+
+  async function createGist() {
+    if (!token) throw new Error('토큰이 없습니다');
+    const res = await fetch('https://api.github.com/gists', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        description: 'Sticky Memo Sync',
+        public: false,
+        files: { 'sticky-memo.json': { content: JSON.stringify(state, null, 2) } }
+      })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    return json.id;
+  }
+
+  async function pullFromGist() {
+    if (!token || !state.gistId) return false;
+    setSyncStatus('불러오는중...');
+    toast('Gist에서 불러오는 중...', 'info', { duration: 3000, key: 'sync', icon: '⬇' });
+    try {
+      const res = await fetch(`https://api.github.com/gists/${state.gistId}`, {
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github+json',
+        }
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      const content = json.files?.['sticky-memo.json']?.content;
+      if (!content) throw new Error('파일이 없습니다');
+      const remote = JSON.parse(content);
+      if (remote && Array.isArray(remote.tabs) && Array.isArray(remote.notes)) {
+        state = remote;
+        if (!Array.isArray(state.tapes)) state.tapes = [];
+        state.lastSyncedAt = new Date(json.updated_at).getTime();
+        if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
+          state.activeTab = state.tabs[0]?.id || 'all';
+        }
+        localStorage.setItem(LS_DATA, JSON.stringify(state));
+        setSyncStatus('불러옴 ✓', 'ok');
+        toast(`Gist에서 불러옴 (메모 ${state.notes.length}개)`, 'success', { duration: 2500, key: 'sync' });
+        render();
+        // Reset undo history after full state replacement
+        undoStack.length = 0;
+        redoStack.length = 0;
+        pushHistory();
+        return true;
+      }
+    } catch (e) {
+      setSyncStatus('불러오기 실패', 'err');
+      toast('불러오기 실패', 'error', { duration: 4000, key: 'sync' });
+    }
+    return false;
+  }
+
+  // On init: if remote is newer than our last sync, auto-pull
+  async function autoSyncOnLoad() {
+    if (!token || !state.gistId) return;
+    setSyncStatus('확인중...');
+    try {
+      const res = await fetch(`https://api.github.com/gists/${state.gistId}`, {
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github+json',
+        }
+      });
+      if (!res.ok) { setSyncStatus('연결 오류', 'err'); return; }
+      const json = await res.json();
+      const remoteUpdated = new Date(json.updated_at).getTime();
+      const localSynced = state.lastSyncedAt || 0;
+
+      // Remote is meaningfully newer → auto-pull
+      if (remoteUpdated > localSynced + 2000) {
+        const content = json.files?.['sticky-memo.json']?.content;
+        if (content) {
+          const remote = JSON.parse(content);
+          if (remote && Array.isArray(remote.tabs) && Array.isArray(remote.notes)) {
+            state = remote;
+            if (!Array.isArray(state.tapes)) state.tapes = [];
+            state.lastSyncedAt = remoteUpdated;
+            if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
+              state.activeTab = state.tabs[0]?.id || 'all';
+            }
+            localStorage.setItem(LS_DATA, JSON.stringify(state));
+            render();
+            // Reset undo history since state fully replaced from remote
+            undoStack.length = 0;
+            redoStack.length = 0;
+            pushHistory();
+            setSyncStatus('최신으로 동기화됨 ✓', 'ok');
+            return;
+          }
+        }
+      }
+      setSyncStatus('동기화됨 ✓', 'ok');
+    } catch (e) {
+      setSyncStatus('확인 실패', 'err');
+    }
+  }
+
+  // ===== Tabs =====
+  function renderTabs() {
+    const bar = $('#tabbar');
+    bar.innerHTML = '';
+
+    // All
+    const all = document.createElement('button');
+    all.className = 'tab' + (state.activeTab === 'all' ? ' active' : '');
+    all.dataset.tabId = 'all';
+    all.innerHTML = `<span class="tab-name">전체</span><span class="tab-count">${state.notes.length}</span>`;
+    all.onclick = () => { state.activeTab = 'all'; saveLocal(); render(); };
+    bar.appendChild(all);
+
+    // Custom tabs
+    state.tabs.forEach(tab => {
+      const count = state.notes.filter(n => n.tabId === tab.id).length;
+      const btn = document.createElement('button');
+      btn.className = 'tab' + (state.activeTab === tab.id ? ' active' : '');
+      btn.dataset.tabId = tab.id;
+      btn.style.setProperty('--swatch', tab.color);
+      btn.innerHTML = `
+        <span class="tab-swatch"></span>
+        <span class="tab-name">${esc(tab.name)}</span>
+        <span class="tab-count">${count}</span>
+      `;
+
+      // Long-press state (shared between touch handlers and click)
+      let longPressTimer = null;
+      let longPressed = false;
+      let touchStartX = 0, touchStartY = 0;
+
+      btn.onclick = () => {
+        if (longPressed) { longPressed = false; return; }
+        state.activeTab = tab.id; saveLocal(); render();
+      };
+
+      // Desktop: right-click
+      btn.oncontextmenu = (e) => {
+        e.preventDefault();
+        showTabMenu(e.clientX, e.clientY, tab.id);
+      };
+
+      // Mobile: long-press (500ms)
+      btn.addEventListener('touchstart', (e) => {
+        longPressed = false;
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        longPressTimer = setTimeout(() => {
+          longPressed = true;
+          if (navigator.vibrate) { try { navigator.vibrate(30); } catch {} }
+          showTabMenu(touchStartX, touchStartY, tab.id);
+        }, 500);
+      }, { passive: true });
+
+      btn.addEventListener('touchmove', (e) => {
+        // Cancel if finger moves too much
+        const t = e.touches[0];
+        if (Math.hypot(t.clientX - touchStartX, t.clientY - touchStartY) > 10) {
+          clearTimeout(longPressTimer);
+        }
+      }, { passive: true });
+
+      btn.addEventListener('touchend', () => clearTimeout(longPressTimer));
+      btn.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
+
+      bar.appendChild(btn);
+    });
+
+    // Add
+    const add = document.createElement('button');
+    add.className = 'tab-add';
+    add.textContent = '＋ 탭 추가';
+    add.onclick = addTab;
+    bar.appendChild(add);
+  }
+
+  function addTab() {
+    const name = prompt('새 탭 이름');
+    if (!name || !name.trim()) return;
+    const usedColors = state.tabs.map(t => t.color);
+    const color = COLORS.find(c => !usedColors.includes(c)) || COLORS[state.tabs.length % COLORS.length];
+    const tab = { id: uid('t'), name: name.trim(), color };
+    state.tabs.push(tab);
+    state.activeTab = tab.id;
+    announceSave(`"${tab.name}" 탭 추가됨`);
+    render();
+  }
+
+  // Tab context menu
+  let menuTabId = null;
+  function showTabMenu(x, y, tabId) {
+    menuTabId = tabId;
+    const m = $('#tabMenu');
+    m.style.left = Math.min(x, window.innerWidth - 160) + 'px';
+    m.style.top = Math.min(y, window.innerHeight - 130) + 'px';
+    m.style.display = 'block';
+  }
+  $('#tabMenu').addEventListener('click', (e) => {
+    const action = e.target.dataset.action;
+    if (!action) return;
+    const tab = state.tabs.find(t => t.id === menuTabId);
+    if (!tab) return;
+    if (action === 'rename') {
+      const name = prompt('탭 이름', tab.name);
+      if (name && name.trim()) { tab.name = name.trim(); announceSave('탭 이름 변경됨'); render(); }
+    } else if (action === 'color') {
+      const rect = e.target.getBoundingClientRect();
+      showColorPicker(rect.right + 4, rect.top, tab.color, (c) => {
+        if (c) { tab.color = c; announceSave('탭 색상 변경됨'); render(); }
+      });
+    } else if (action === 'delete') {
+      const tabName = tab.name;
+      const n = state.notes.filter(nn => nn.tabId === tab.id).length;
+      state.notes = state.notes.filter(nn => nn.tabId !== tab.id);
+      state.tabs = state.tabs.filter(t => t.id !== tab.id);
+      if (state.activeTab === tab.id) state.activeTab = state.tabs[0]?.id || 'all';
+      announceSave(n > 0 ? `"${tabName}" 탭 + 메모 ${n}개 삭제됨` : `"${tabName}" 탭 삭제됨`);
+      render();
+    }
+    $('#tabMenu').style.display = 'none';
+  });
+
+  function showColorPicker(x, y, currentColor, onPick, { includeReset = false, resetLabel = '기본' } = {}) {
+    const p = $('#colorPicker');
+    let html = COLORS.map(c => `<button class="swatch${c === currentColor ? ' selected' : ''}" style="background: ${c}" data-color="${c}"></button>`).join('');
+    if (includeReset) {
+      html += `<button class="swatch swatch-reset" data-color="" title="${esc(resetLabel)}">↺</button>`;
+    }
+    p.innerHTML = html;
+    p.style.left = Math.min(x, window.innerWidth - 180) + 'px';
+    p.style.top = Math.min(y, window.innerHeight - 90) + 'px';
+    p.classList.add('open');
+    // Swallow the current click event that opened us (prevents the outside-click
+    // handler from closing this picker on the same tick)
+    p._justOpened = true;
+    setTimeout(() => { p._justOpened = false; }, 0);
+    p.onclick = (e) => {
+      e.stopPropagation();
+      const btn = e.target.closest('[data-color]');
+      if (!btn) return;
+      const c = btn.dataset.color || null;
+      onPick(c);
+      p.classList.remove('open');
+    };
+  }
+
+  document.addEventListener('click', (e) => {
+    const menu = $('#tabMenu');
+    const picker = $('#colorPicker');
+    if (!menu.contains(e.target)) menu.style.display = 'none';
+    if (!picker._justOpened && !picker.contains(e.target)) picker.classList.remove('open');
+  });
+
+  // ===== Canvas (scatter / list) =====
+  // Track which sections are expanded in list view (session-only, defaults to collapsed)
+  const expandedSections = new Set();
+
+  function renderCanvas() {
+    const canvas = $('#canvas');
+    canvas.innerHTML = '';
+
+    if (state.activeTab === 'all') {
+      renderListView(canvas);
+    } else {
+      renderScatterView(canvas);
+    }
+  }
+
+  function renderListView(canvas) {
+    if (state.notes.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'list-empty';
+      empty.innerHTML = '아직 메모가 없어요.<br>우측 하단 <b>＋</b> 버튼으로 추가해보세요.';
+      canvas.appendChild(empty);
+      return;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'list-view';
+
+    state.tabs.forEach(tab => {
+      const notes = state.notes.filter(n => n.tabId === tab.id);
+      if (notes.length === 0) return;
+
+      const section = document.createElement('section');
+      section.className = 'list-section';
+      const isExpanded = expandedSections.has(tab.id);
+      if (isExpanded) section.classList.add('expanded');
+
+      const header = document.createElement('div');
+      header.className = 'list-header';
+      header.innerHTML = `
+        <span class="list-chevron">▸</span>
+        <span class="list-swatch" style="background: ${tab.color}"></span>
+        <span class="list-title">${esc(tab.name)}</span>
+        <span class="list-count">${notes.length}</span>
+        <button class="list-go" title="${esc(tab.name)} 탭 열기">열기 →</button>
+      `;
+      // Click on header (excluding 열기 button) = toggle expand
+      header.onclick = (e) => {
+        if (e.target.closest('.list-go')) return;
+        if (expandedSections.has(tab.id)) expandedSections.delete(tab.id);
+        else expandedSections.add(tab.id);
+        render();
+      };
+      header.querySelector('.list-go').onclick = (e) => {
+        e.stopPropagation();
+        state.activeTab = tab.id;
+        saveLocal();
+        render();
+      };
+      section.appendChild(header);
+
+      const ul = document.createElement('ul');
+      ul.className = 'list-items';
+      if (!isExpanded) ul.style.display = 'none';
+      notes.forEach(note => {
+        const noteColor = tab.color;
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.innerHTML = `<span class="bullet" style="background: ${noteColor}; opacity: 1; width: 8px; height: 8px; border: 1px solid rgba(0,0,0,0.15);"></span><span>${esc(note.title || '(제목 없음)')}</span>`;
+        li.onclick = () => {
+          state.activeTab = tab.id;
+          saveLocal();
+          render();
+          // Flash the note
+          setTimeout(() => {
+            const el = document.querySelector(`[data-note-id="${note.id}"]`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.style.zIndex = ++maxZ;
+              el.animate([
+                { filter: 'brightness(1)' },
+                { filter: 'brightness(1.15)' },
+                { filter: 'brightness(1)' },
+              ], { duration: 700 });
+            }
+          }, 60);
+        };
+        ul.appendChild(li);
+      });
+      section.appendChild(ul);
+      wrap.appendChild(section);
+    });
+
+    canvas.appendChild(wrap);
+  }
+
+  function renderScatterView(canvas) {
+    const tab = state.tabs.find(t => t.id === state.activeTab);
+    if (!tab) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.innerHTML = '탭이 없습니다.<br>위에서 <b>＋ 탭 추가</b>로 시작하세요.';
+      canvas.appendChild(empty);
+      return;
+    }
+
+    const notes = state.notes.filter(n => n.tabId === tab.id);
+    const tapes = state.tapes.filter(t => t.tabId === tab.id);
+
+    if (notes.length === 0 && tapes.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.innerHTML = '이 탭에 메모가 없어요.<br>우측 하단 <b>＋</b> 버튼으로 추가하세요.';
+      canvas.appendChild(empty);
+      return;
+    }
+
+    // Auto-nudge legacy notes whose tape would be hidden behind the topbar
+    const minY = getMinY();
+    let nudged = false;
+    notes.forEach(n => {
+      if (typeof n.y !== 'number' || n.y < minY) {
+        n.y = minY + Math.random() * 20;
+        nudged = true;
+      }
+    });
+    tapes.forEach(t => {
+      if (typeof t.y !== 'number' || t.y < minY) {
+        t.y = minY + Math.random() * 20;
+        nudged = true;
+      }
+    });
+    if (nudged) saveLocal();
+
+    // Render tapes first (lower z-index baseline)
+    tapes.forEach((tape) => {
+      canvas.appendChild(makeTapeEl(tape));
+    });
+
+    notes.forEach((note, i) => {
+      canvas.appendChild(makeNoteEl(note, tab.color, i + 10));
+    });
+  }
+
+  let maxZ = 10;
+  function makeNoteEl(note, tabColor, z) {
+    // Always use tab color (individual note color feature removed)
+    if (note.color) { delete note.color; }
+    const color = tabColor;
+    const el = document.createElement('div');
+    const hasCustomSize = typeof note.width === 'number' || typeof note.height === 'number';
+    el.className = 'postit-note' + (note.locked ? ' locked' : '') + (hasCustomSize ? ' custom-size' : '');
+    el.dataset.noteId = note.id;
+    el.style.left = (note.x || 40) + 'px';
+    el.style.top = (note.y || 30) + 'px';
+    if (typeof note.width === 'number') el.style.width = note.width + 'px';
+    if (typeof note.height === 'number') el.style.height = note.height + 'px';
+    el.style.setProperty('--rot', (note.rotation || 0) + 'deg');
+    el.style.setProperty('--paper', color);
+    el.style.zIndex = z;
+    maxZ = Math.max(maxZ, z);
+
+    const lockIconOpen = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="8" height="6" rx="1"/><path d="M 5.5 8 V 6 A 2.5 2.5 0 0 1 10.5 5.5"/></svg>`;
+    const lockIconClosed = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="8" height="6" rx="1"/><path d="M 5.5 8 V 6 A 2.5 2.5 0 0 1 10.5 6 V 8"/></svg>`;
+
+    el.innerHTML = `
+      <div class="note-tape" title="여기를 잡고 드래그"></div>
+      <div class="note-head">
+        <div class="note-title" spellcheck="false">${esc(note.title)}</div>
+        <div class="note-actions">
+          <button class="note-btn note-btn-lock ${note.locked ? 'active' : ''}" data-action="lock" title="${note.locked ? '고정 해제' : '위치 고정'}">${note.locked ? lockIconClosed : lockIconOpen}</button>
+          <button class="note-btn note-btn-edit" data-action="edit" title="수정">✏</button>
+          <button class="note-btn" data-action="delete" title="삭제">×</button>
+        </div>
+      </div>
+      <div class="note-body-wrap">
+        <div class="note-body" data-mode="view"></div>
+      </div>
+      <div class="note-resize" data-action="resize" title="크기 조절"></div>
+    `;
+
+    // Resize handle (works even when locked — lock only blocks position drag)
+    const resizeEl = el.querySelector('[data-action="resize"]');
+    resizeEl.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      startResize(e.clientX, e.clientY, el, note);
+    });
+    resizeEl.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      e.stopPropagation();
+      startResize(t.clientX, t.clientY, el, note);
+    }, { passive: true });
+
+    // Lock toggle
+    el.querySelector('[data-action="lock"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      note.locked = !note.locked;
+      announceSave(note.locked ? '메모 고정됨' : '고정 해제됨');
+      render();
+    });
+
+    const titleEl = el.querySelector('.note-title');
+    const bodyEl = el.querySelector('.note-body');
+
+    renderBody(bodyEl, note.body);
+
+    // Unified edit button — opens both title and body editors
+    el.querySelector('[data-action="edit"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Open body editor first (without stealing focus)
+      if (bodyEl.dataset.mode !== 'edit') {
+        enterBodyEdit(bodyEl, note, { focusFirstRow: false });
+      }
+      // Then focus title for editing
+      if (titleEl.contentEditable !== 'true') {
+        titleEl.contentEditable = 'true';
+        titleEl.focus();
+        const r = document.createRange();
+        r.selectNodeContents(titleEl);
+        const sel = getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
+      }
+    });
+
+    titleEl.addEventListener('blur', () => {
+      titleEl.contentEditable = 'false';
+      const newTitle = titleEl.textContent.trim();
+      if (newTitle !== note.title) {
+        note.title = newTitle || '(제목 없음)';
+        titleEl.textContent = note.title;
+        note.updatedAt = Date.now();
+        announceSave();
+        renderTabs();
+      }
+    });
+    titleEl.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + Enter → commit title (body editor's capture handler also runs and closes body)
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        titleEl.blur();
+        return;
+      }
+      if (e.key === 'Enter') { e.preventDefault(); titleEl.blur(); return; }
+      if (e.key === 'Escape') { titleEl.textContent = note.title; titleEl.blur(); return; }
+      if (e.key === 'Tab' && !e.shiftKey) {
+        e.preventDefault();
+        // Commit title first
+        titleEl.blur();
+        // Open body editor and focus textarea
+        if (bodyEl.dataset.mode !== 'edit') {
+          enterBodyEdit(bodyEl, note);
+        } else {
+          const ta = bodyEl.querySelector('.body-edit-textarea');
+          if (ta) ta.focus();
+        }
+      }
+    });
+
+    // Copy body content (shared by title and body clicks in view mode)
+    function copyNoteBody(clickX, clickY) {
+      const text = cleanBodyForCopy(note.body);
+      if (!text) {
+        toast('복사할 내용이 없어요', 'info', { duration: 1500 });
+        return;
+      }
+      // Spawn ripple immediately — don't wait for clipboard promise
+      spawnRipple(el, clickX, clickY);
+      // Clipboard write in parallel
+      copyToClipboard(text).then((ok) => {
+        if (ok) {
+          toast('본문 복사됨', 'success', { duration: 1800 });
+        } else {
+          toast('복사 실패', 'error');
+        }
+      });
+    }
+
+    // Title double-click in view mode → enter edit mode
+    titleEl.addEventListener('dblclick', (e) => {
+      if (titleEl.contentEditable === 'true') return;
+      e.stopPropagation();
+      e.preventDefault();
+      // Clear any text selection from the dblclick
+      const sel = getSelection();
+      if (sel) sel.removeAllRanges();
+      // Open body editor first (no focus steal)
+      if (bodyEl.dataset.mode !== 'edit') {
+        enterBodyEdit(bodyEl, note, { focusFirstRow: false });
+      }
+      // Focus title
+      titleEl.contentEditable = 'true';
+      titleEl.focus();
+      const r = document.createRange();
+      r.selectNodeContents(titleEl);
+      const newSel = getSelection();
+      newSel.removeAllRanges();
+      newSel.addRange(r);
+    });
+
+    // Body: single click (delayed) = copy, double click = enter edit mode
+    let bodyClickTimer = null;
+    bodyEl.addEventListener('click', (e) => {
+      if (bodyEl.dataset.mode === 'edit') return;
+      const sel = getSelection();
+      if (sel && sel.toString().length > 0) return;
+      if (e.target.closest('.note-btn, .note-lock')) return;
+      const cx = e.clientX, cy = e.clientY;
+      // Delay copy so dblclick can cancel it
+      clearTimeout(bodyClickTimer);
+      bodyClickTimer = setTimeout(() => {
+        copyNoteBody(cx, cy);
+        bodyClickTimer = null;
+      }, 220);
+    });
+    bodyEl.addEventListener('dblclick', (e) => {
+      if (bodyEl.dataset.mode === 'edit') return;
+      e.stopPropagation();
+      e.preventDefault();
+      // Cancel the pending single-click copy
+      clearTimeout(bodyClickTimer);
+      bodyClickTimer = null;
+      // Clear any text selection from dblclick
+      const sel = getSelection();
+      if (sel) sel.removeAllRanges();
+      // Enter full edit mode (title + body, same as ✏)
+      if (titleEl.contentEditable !== 'true') {
+        titleEl.contentEditable = 'true';
+        titleEl.focus();
+        const r = document.createRange();
+        r.selectNodeContents(titleEl);
+        const newSel = getSelection();
+        newSel.removeAllRanges();
+        newSel.addRange(r);
+      }
+      enterBodyEdit(bodyEl, note);
+    });
+
+    // Delete button (immediate — use Ctrl+Z to undo)
+    el.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.notes = state.notes.filter(n => n.id !== note.id);
+      announceSave('메모 삭제됨');
+      render();
+    });
+
+    return el;
+  }
+
+  function renderBody(container, body) {
+    container.dataset.mode = 'view';
+    const trimmed = (body || '').trim();
+    if (!trimmed) {
+      container.innerHTML = `<div class="body-line line-text" style="opacity:0.45;font-style:italic;">비어있음 — ✏ 버튼으로 작성</div>`;
+      return;
+    }
+    const lines = (body || '').split('\n');
+    container.innerHTML = lines.map(line => {
+      if (line.trim() === '') {
+        return `<div class="body-line line-empty"></div>`;
+      }
+      return `<div class="body-line line-text"><span class="line-text">${esc(line)}</span></div>`;
+    }).join('');
+  }
+
+  function enterBodyEdit(container, note, opts = {}) {
+    const { focusFirstRow = true } = opts;
+    container.dataset.mode = 'edit';
+
+    // Measure current view dimensions so edit textarea matches visually
+    const viewHeight = Math.max(container.offsetHeight, 60);
+
+    // Build simple textarea
+    container.innerHTML = `
+      <textarea class="body-edit-textarea" spellcheck="false"></textarea>
+    `;
+    const ta = container.querySelector('textarea');
+    ta.value = note.body || '';
+    ta.style.minHeight = viewHeight + 'px';
+
+    const noteEl = container.closest('.postit-note');
+
+    function commit(silent = false) {
+      const newBody = ta.value;
+      if (newBody !== note.body) {
+        note.body = newBody;
+        note.updatedAt = Date.now();
+        if (!silent) announceSave();
+      }
+    }
+
+    function exitEdit() {
+      commit();
+      document.removeEventListener('mousedown', onOutsideDown, true);
+      document.removeEventListener('keydown', onGlobalKey, true);
+      // Also blur title if it was being edited
+      const titleEl = noteEl && noteEl.querySelector('.note-title');
+      if (titleEl && titleEl.contentEditable === 'true') titleEl.blur();
+      renderBody(container, note.body);
+    }
+
+    function onOutsideDown(e) {
+      if (container.contains(e.target)) return;
+      // Allow clicks on the same note's title (so title + body co-edit works)
+      if (noteEl && noteEl.contains(e.target) && e.target.closest('.note-title')) return;
+      exitEdit();
+    }
+
+    function onGlobalKey(e) {
+      if (container.dataset.mode !== 'edit') return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        exitEdit();
+      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        exitEdit();
+      }
+    }
+
+    if (focusFirstRow) {
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = ta.value.length;
+    }
+
+    document.addEventListener('keydown', onGlobalKey, true);
+    setTimeout(() => {
+      document.addEventListener('mousedown', onOutsideDown, true);
+    }, 0);
+  }
+
+  function autoResize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(Math.max(ta.scrollHeight, 60), 240) + 'px';
+  }
+
+  // ===== Add note =====
+  function addNote() {
+    if (state.tabs.length === 0) {
+      alert('먼저 탭을 추가해주세요.');
+      return;
+    }
+    if (state.activeTab === 'all') {
+      state.activeTab = state.tabs[0].id;
+    }
+    const canvas = $('#canvas');
+    const cRect = canvas.getBoundingClientRect();
+    const minY = getMinY();
+    const note = {
+      id: uid('n'),
+      tabId: state.activeTab,
+      title: '',
+      body: '',
+      x: 40 + Math.random() * Math.max(200, cRect.width - 320),
+      y: minY + Math.random() * 100,
+      rotation: (Math.random() - 0.5) * 5,
+      updatedAt: Date.now()
+    };
+    state.notes.push(note);
+    announceSave('메모 추가됨');
+    render();
+    // Autofocus body editor (title stays empty)
+    setTimeout(() => {
+      const noteEl = document.querySelector(`[data-note-id="${note.id}"]`);
+      if (!noteEl) return;
+      const bodyEl = noteEl.querySelector('.note-body');
+      if (bodyEl && bodyEl.dataset.mode !== 'edit') {
+        enterBodyEdit(bodyEl, note);
+      }
+    }, 80);
+  }
+  $('#addNoteBtn').addEventListener('click', addNote);
+
+  // ===== Add tape (label) =====
+  $('#addTapeBtn').addEventListener('click', (e) => {
+    if (state.tabs.length === 0) {
+      alert('먼저 탭을 추가해주세요.');
+      return;
+    }
+    if (state.activeTab === 'all') {
+      state.activeTab = state.tabs[0].id;
+    }
+    // Show color picker first; create tape only after color selected
+    const btnRect = e.currentTarget.getBoundingClientRect();
+    showTapeColorPicker(btnRect.left - 100, btnRect.top - 54, null, (chosenColor) => {
+      if (!chosenColor) return;
+      const canvas = $('#canvas');
+      const cRect = canvas.getBoundingClientRect();
+      const minY = getMinY();
+      const tape = {
+        id: uid('tp'),
+        tabId: state.activeTab,
+        text: '라벨',
+        color: chosenColor,
+        x: 60 + Math.random() * Math.max(200, cRect.width - 300),
+        y: minY + Math.random() * 140,
+        rotation: (Math.random() - 0.5) * 6,
+        locked: false,
+        updatedAt: Date.now()
+      };
+      state.tapes.push(tape);
+      announceSave('테이프 추가됨');
+      render();
+      // Autofocus text
+      setTimeout(() => {
+        const el = document.querySelector(`[data-tape-id="${tape.id}"] .label-tape-text`);
+        if (el) {
+          el.contentEditable = 'true';
+          el.focus();
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      }, 80);
+    });
+  });
+
+  // ===== makeTapeEl =====
+  function makeTapeEl(tape) {
+    const el = document.createElement('div');
+    el.className = 'label-tape' + (tape.locked ? ' locked' : '');
+    el.dataset.tapeId = tape.id;
+    el.style.left = (tape.x || 60) + 'px';
+    el.style.top = (tape.y || 60) + 'px';
+    el.style.setProperty('--rot', (tape.rotation || 0) + 'deg');
+    el.style.setProperty('--tape-color', tape.color || TAPE_COLORS[0]);
+
+    const lockIconOpen = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="8" height="6" rx="1"/><path d="M 5.5 8 V 6 A 2.5 2.5 0 0 1 10.5 5.5"/></svg>`;
+    const lockIconClosed = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="8" height="6" rx="1"/><path d="M 5.5 8 V 6 A 2.5 2.5 0 0 1 10.5 6 V 8"/></svg>`;
+
+    el.innerHTML = `
+      <span class="label-tape-text" spellcheck="false">${esc(tape.text || '')}</span>
+      <div class="label-tape-actions">
+        <button class="label-tape-btn label-tape-btn-lock ${tape.locked ? 'active' : ''}" data-action="lock" title="${tape.locked ? '고정 해제' : '위치 고정'}">${tape.locked ? lockIconClosed : lockIconOpen}</button>
+      </div>
+    `;
+
+    const textEl = el.querySelector('.label-tape-text');
+
+    // Double-click text to edit
+    textEl.addEventListener('dblclick', (e) => {
+      if (textEl.contentEditable === 'true') return;
+      e.stopPropagation();
+      e.preventDefault();
+      const sel = getSelection();
+      if (sel) sel.removeAllRanges();
+      textEl.contentEditable = 'true';
+      textEl.focus();
+      const r = document.createRange();
+      r.selectNodeContents(textEl);
+      const newSel = getSelection();
+      newSel.removeAllRanges();
+      newSel.addRange(r);
+    });
+    textEl.addEventListener('blur', () => {
+      textEl.contentEditable = 'false';
+      const newText = textEl.textContent.trim();
+      if (newText !== tape.text) {
+        tape.text = newText || '라벨';
+        textEl.textContent = tape.text;
+        tape.updatedAt = Date.now();
+        announceSave();
+      }
+    });
+    textEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); textEl.blur(); }
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); textEl.blur(); }
+      if (e.key === 'Escape') { textEl.textContent = tape.text; textEl.blur(); }
+    });
+
+    // Lock
+    el.querySelector('[data-action="lock"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      tape.locked = !tape.locked;
+      announceSave(tape.locked ? '테이프 고정됨' : '고정 해제됨');
+      render();
+    });
+
+    return el;
+  }
+
+  function showTapeColorPicker(x, y, currentColor, onPick) {
+    const p = $('#colorPicker');
+    p.innerHTML = TAPE_COLORS.map(c =>
+      `<button class="swatch${c === currentColor ? ' selected' : ''}" style="background: ${c}" data-color="${c}"></button>`
+    ).join('');
+    p.style.left = Math.min(x, window.innerWidth - 180) + 'px';
+    p.style.top = Math.min(y, window.innerHeight - 90) + 'px';
+    p.classList.add('open');
+    p._justOpened = true;
+    setTimeout(() => { p._justOpened = false; }, 0);
+    p.onclick = (e) => {
+      e.stopPropagation();
+      const btn = e.target.closest('[data-color]');
+      if (!btn) return;
+      onPick(btn.dataset.color);
+      p.classList.remove('open');
+    };
+  }
+
+  // ===== Selection & Drag =====
+  // Session-only selection state (not persisted)
+  const selectedIds = new Set(); // stores 'note:<id>' or 'tape:<id>'
+  let drag = null;
+  let rubberband = null;
+  let resize = null;
+
+  // ===== Resize =====
+  function startResize(clientX, clientY, el, note) {
+    const rect = el.getBoundingClientRect();
+    // getBoundingClientRect returns size affected by rotation; use offsetWidth/Height for pre-transform size
+    const startW = el.offsetWidth;
+    const startH = el.offsetHeight;
+    resize = {
+      el, note,
+      startX: clientX,
+      startY: clientY,
+      startW, startH,
+    };
+    el.classList.add('resizing', 'custom-size');
+    document.body.style.userSelect = 'none';
+    if (document.activeElement) document.activeElement.blur();
+  }
+
+  function moveResize(clientX, clientY) {
+    if (!resize) return;
+    const dx = clientX - resize.startX;
+    const dy = clientY - resize.startY;
+    const newW = Math.max(160, Math.min(600, resize.startW + dx));
+    const newH = Math.max(80, Math.min(700, resize.startH + dy));
+    resize.el.style.width = newW + 'px';
+    resize.el.style.height = newH + 'px';
+  }
+
+  function endResize() {
+    if (!resize) return;
+    document.body.style.userSelect = '';
+    resize.el.classList.remove('resizing');
+    const newW = parseFloat(resize.el.style.width);
+    const newH = parseFloat(resize.el.style.height);
+    if (!Number.isNaN(newW)) resize.note.width = Math.round(newW);
+    if (!Number.isNaN(newH)) resize.note.height = Math.round(newH);
+    resize.note.updatedAt = Date.now();
+    announceSave('크기 저장됨');
+    resize = null;
+  }
+
+  function keyOf(kind, id) { return kind + ':' + id; }
+  function isSelected(kind, id) { return selectedIds.has(keyOf(kind, id)); }
+
+  function ensureCornerMarkers(el, isSelected) {
+    const existing = el.querySelectorAll(':scope > .corner-marker');
+    if (isSelected) {
+      if (existing.length === 4) return;
+      // Remove any stale and re-add 4
+      existing.forEach(e => e.remove());
+      const positions = [
+        { cls: 'tl', d: 'M 11 1 L 1 1 L 1 11' },
+        { cls: 'tr', d: 'M 1 1 L 11 1 L 11 11' },
+        { cls: 'bl', d: 'M 1 1 L 1 11 L 11 11' },
+        { cls: 'br', d: 'M 11 1 L 11 11 L 1 11' },
+      ];
+      positions.forEach(p => {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'corner-marker ' + p.cls);
+        svg.setAttribute('viewBox', '0 0 12 12');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', p.d);
+        svg.appendChild(path);
+        el.appendChild(svg);
+      });
+    } else {
+      existing.forEach(e => e.remove());
+    }
+  }
+
+  function updateSelectionUI() {
+    // Apply .selected class to all items in DOM
+    document.querySelectorAll('.postit-note').forEach(el => {
+      const sel = selectedIds.has('note:' + el.dataset.noteId);
+      el.classList.toggle('selected', sel);
+      ensureCornerMarkers(el, sel);
+    });
+    document.querySelectorAll('.label-tape').forEach(el => {
+      const sel = selectedIds.has('tape:' + el.dataset.tapeId);
+      el.classList.toggle('selected', sel);
+      ensureCornerMarkers(el, sel);
+    });
+    // Show/hide selection indicator
+    const count = selectedIds.size;
+    const indicator = $('#selectionIndicator');
+    if (count > 0) {
+      indicator.textContent = `${count}개 선택됨 · Delete로 삭제 · Esc로 해제`;
+      indicator.classList.add('visible');
+    } else {
+      indicator.classList.remove('visible');
+    }
+  }
+
+  function clearSelection() {
+    if (selectedIds.size === 0) return;
+    selectedIds.clear();
+    updateSelectionUI();
+  }
+
+  function toggleItemSelection(kind, id) {
+    const k = keyOf(kind, id);
+    if (selectedIds.has(k)) selectedIds.delete(k);
+    else selectedIds.add(k);
+    updateSelectionUI();
+  }
+
+  // ===== Rubber-band selection =====
+  function startRubberband(clientX, clientY, additive) {
+    const canvasRect = $('#canvas').getBoundingClientRect();
+    if (!additive) clearSelection();
+    // Snapshot existing selection so we can restore/merge during drag
+    const baseSelection = new Set(selectedIds);
+    const box = document.createElement('div');
+    box.className = 'rubberband';
+    $('#canvas').appendChild(box);
+    rubberband = {
+      startX: clientX,
+      startY: clientY,
+      canvasLeft: canvasRect.left,
+      canvasTop: canvasRect.top,
+      box,
+      baseSelection,
+      additive,
+      moved: false,
+    };
+    // Prevent text selection while rubberband is active
+    document.body.classList.add('rubberband-active');
+  }
+
+  function moveRubberband(clientX, clientY) {
+    if (!rubberband) return;
+    const dx = clientX - rubberband.startX;
+    const dy = clientY - rubberband.startY;
+    if (!rubberband.moved && Math.hypot(dx, dy) < 4) return;
+    rubberband.moved = true;
+
+    // Clear any text the browser tried to select while we were dragging
+    const textSel = window.getSelection && window.getSelection();
+    if (textSel && textSel.rangeCount > 0) textSel.removeAllRanges();
+
+    // Rectangle in viewport coords
+    const vx1 = Math.min(rubberband.startX, clientX);
+    const vy1 = Math.min(rubberband.startY, clientY);
+    const vx2 = Math.max(rubberband.startX, clientX);
+    const vy2 = Math.max(rubberband.startY, clientY);
+
+    // Position box in canvas-relative coords
+    rubberband.box.style.left = (vx1 - rubberband.canvasLeft) + 'px';
+    rubberband.box.style.top = (vy1 - rubberband.canvasTop) + 'px';
+    rubberband.box.style.width = (vx2 - vx1) + 'px';
+    rubberband.box.style.height = (vy2 - vy1) + 'px';
+
+    // Reset selection to base, then add anything intersecting
+    selectedIds.clear();
+    rubberband.baseSelection.forEach(id => selectedIds.add(id));
+
+    document.querySelectorAll('.postit-note').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (rectsIntersect(vx1, vy1, vx2, vy2, r.left, r.top, r.right, r.bottom)) {
+        selectedIds.add('note:' + el.dataset.noteId);
+      }
+    });
+    document.querySelectorAll('.label-tape').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (rectsIntersect(vx1, vy1, vx2, vy2, r.left, r.top, r.right, r.bottom)) {
+        selectedIds.add('tape:' + el.dataset.tapeId);
+      }
+    });
+    updateSelectionUI();
+  }
+
+  function endRubberband() {
+    if (!rubberband) return;
+    if (rubberband.box) rubberband.box.remove();
+    rubberband = null;
+    document.body.classList.remove('rubberband-active');
+  }
+
+  function rectsIntersect(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {
+    return !(ax2 < bx1 || bx2 < ax1 || ay2 < by1 || by2 < ay1);
+  }
+
+  function pickDragTarget(e, target) {
+    // Check if target is within a selected note/tape — if so, anywhere on it becomes a drag handle
+    const selectedNote = target.closest('.postit-note.selected');
+    if (selectedNote) {
+      if (selectedNote.classList.contains('locked')) return null;
+      return { el: selectedNote, kind: 'note', id: selectedNote.dataset.noteId };
+    }
+    const selectedTape = target.closest('.label-tape.selected');
+    if (selectedTape) {
+      if (selectedTape.classList.contains('locked')) return null;
+      return { el: selectedTape, kind: 'tape', id: selectedTape.dataset.tapeId };
+    }
+
+    // Action buttons / resize handle should never trigger drag
+    if (target.closest('.note-btn, .note-lock, .label-tape-btn, .note-resize')) return null;
+    if (target.closest('[contenteditable="true"]')) return null;
+
+    // Post-it: drag by tape only
+    const postitTape = target.closest('.note-tape');
+    if (postitTape) {
+      const note = postitTape.closest('.postit-note');
+      if (!note) return null;
+      if (note.classList.contains('locked')) return null;
+      return { el: note, kind: 'note', id: note.dataset.noteId };
+    }
+
+    // Label tape: drag by anywhere
+    const labelTape = target.closest('.label-tape');
+    if (labelTape) {
+      if (labelTape.classList.contains('locked')) return null;
+      return { el: labelTape, kind: 'tape', id: labelTape.dataset.tapeId };
+    }
+
+    return null;
+  }
+
+  function startDrag(clientX, clientY, pick) {
+    const canvasRect = $('#canvas').getBoundingClientRect();
+
+    // If the picked item is part of the current selection and there's more than one,
+    // we do a group drag. Otherwise, single-item drag and clear any selection.
+    let items = [];
+    const pickKey = keyOf(pick.kind, pick.id);
+
+    if (selectedIds.has(pickKey) && selectedIds.size > 1) {
+      // Group drag
+      selectedIds.forEach(k => {
+        const [kind, id] = k.split(':');
+        const el = kind === 'note'
+          ? document.querySelector(`[data-note-id="${id}"]`)
+          : document.querySelector(`[data-tape-id="${id}"]`);
+        if (!el) return;
+        if (el.classList.contains('locked')) return; // skip locked
+        const r = el.getBoundingClientRect();
+        items.push({
+          el, kind, id,
+          startLeft: parseFloat(el.style.left) || 0,
+          startTop: parseFloat(el.style.top) || 0,
+        });
+      });
+      // Raise all selected to top together (keep relative order)
+      items.forEach(it => it.el.style.zIndex = ++maxZ);
+    } else {
+      // Single drag — clear selection if the pick isn't already in it
+      if (!selectedIds.has(pickKey)) clearSelection();
+      const r = pick.el.getBoundingClientRect();
+      items = [{
+        el: pick.el,
+        kind: pick.kind,
+        id: pick.id,
+        startLeft: parseFloat(pick.el.style.left) || 0,
+        startTop: parseFloat(pick.el.style.top) || 0,
+      }];
+      pick.el.style.zIndex = ++maxZ;
+    }
+
+    drag = {
+      items,
+      startX: clientX,
+      startY: clientY,
+      canvasLeft: canvasRect.left,
+      canvasTop: canvasRect.top,
+      moved: false,
+      group: items.length > 1,
+    };
+  }
+
+  function moveDrag(clientX, clientY) {
+    if (!drag) return;
+    const dx = clientX - drag.startX;
+    const dy = clientY - drag.startY;
+    if (!drag.moved) {
+      if (Math.hypot(dx, dy) < 4) return;
+      drag.moved = true;
+      drag.items.forEach(it => it.el.classList.add('dragging'));
+      if (document.activeElement) document.activeElement.blur();
+      document.body.style.userSelect = 'none';
+    }
+
+    const minY = getMinY();
+    drag.items.forEach(it => {
+      const newLeft = Math.max(0, it.startLeft + dx);
+      const newTop = Math.max(minY, it.startTop + dy);
+      it.el.style.left = newLeft + 'px';
+      it.el.style.top = newTop + 'px';
+    });
+  }
+
+  function endDrag() {
+    if (!drag) return;
+    document.body.style.userSelect = '';
+    if (drag.moved) {
+      drag.items.forEach(it => {
+        it.el.classList.remove('dragging');
+        const item = it.kind === 'note'
+          ? state.notes.find(n => n.id === it.id)
+          : state.tapes.find(t => t.id === it.id);
+        if (item) {
+          item.x = parseFloat(it.el.style.left);
+          item.y = parseFloat(it.el.style.top);
+          item.updatedAt = Date.now();
+        }
+      });
+      announceSave(drag.group ? `${drag.items.length}개 위치 저장됨` : '위치 저장됨');
+    }
+    drag = null;
+  }
+
+  // ===== Constrain text selection to a single note =====
+  // When user starts a text drag inside a note body/title, any selection
+  // that extends to another note should be collapsed back to this note.
+  let textDragOriginNote = null;
+
+  document.addEventListener('mousedown', (e) => {
+    // Remember which note a text drag originated from (if any)
+    // This is recorded before the main mousedown handler so even if the click
+    // is consumed elsewhere, we know the source note.
+    textDragOriginNote = null;
+    const note = e.target.closest('.postit-note');
+    if (note && (e.target.closest('.note-body, .note-title'))) {
+      // Only track when it's a likely text drag (not on a button/tape/resize/etc)
+      if (!e.target.closest('.note-btn, .note-lock, .note-tape, .note-resize')) {
+        textDragOriginNote = note;
+      }
+    }
+  }, true);
+
+  document.addEventListener('mouseup', () => {
+    // Clear after any drag completes
+    setTimeout(() => { textDragOriginNote = null; }, 0);
+  }, true);
+
+  // When selection changes, clamp it to the origin note if it strays
+  document.addEventListener('selectionchange', () => {
+    if (!textDragOriginNote) return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    const start = range.startContainer;
+    const end = range.endContainer;
+    const startEl = start.nodeType === 1 ? start : start.parentElement;
+    const endEl = end.nodeType === 1 ? end : end.parentElement;
+    if (!startEl || !endEl) return;
+    const startNote = startEl.closest('.postit-note');
+    const endNote = endEl.closest('.postit-note');
+    // If the selection leaks outside the origin note, collapse it
+    if (startNote !== textDragOriginNote || endNote !== textDragOriginNote) {
+      // Keep whichever end is still inside the origin note
+      if (startNote === textDragOriginNote && endNote !== textDragOriginNote) {
+        // End wandered off — clamp end to a boundary inside origin
+        const body = textDragOriginNote.querySelector('.note-body');
+        const title = textDragOriginNote.querySelector('.note-title');
+        const container = body?.contains(startEl) ? body : (title?.contains(startEl) ? title : textDragOriginNote);
+        const newRange = document.createRange();
+        newRange.setStart(range.startContainer, range.startOffset);
+        // End at the last child node of the container
+        let lastNode = container;
+        while (lastNode.lastChild) lastNode = lastNode.lastChild;
+        const endOffset = lastNode.nodeType === 3 ? (lastNode.nodeValue?.length || 0) : (lastNode.childNodes?.length || 0);
+        newRange.setEnd(lastNode, endOffset);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+      } else if (endNote === textDragOriginNote && startNote !== textDragOriginNote) {
+        // Start wandered off — collapse
+        sel.removeAllRanges();
+      } else {
+        // Both ends outside — clear
+        sel.removeAllRanges();
+      }
+    }
+  });
+
+  // ===== Mouse handlers =====
+  document.addEventListener('mousedown', (e) => {
+    // Ignore if in modal or tabbar etc.
+    if (e.target.closest('.topbar, .modal, .menu, .color-picker')) return;
+
+    // If user clicked on a contenteditable or inside the body editor, don't steal
+    if (e.target.closest('[contenteditable="true"], .body-editor, input, textarea')) return;
+
+    // If resize has already started (the handle's own listener fired first), skip
+    if (resize) return;
+
+    // Raise clicked item to top (unless it's part of a group we're about to drag)
+    const item = e.target.closest('.postit-note, .label-tape');
+    const pick = pickDragTarget(e, e.target);
+
+    if (pick) {
+      // Shift+click on the item itself: toggle selection AND raise to top
+      if (e.shiftKey) {
+        toggleItemSelection(pick.kind, pick.id);
+        if (item) item.style.zIndex = ++maxZ;
+        return;
+      }
+      // Ctrl/Cmd + drag on a note's tape → clone the note (title only, empty body)
+      // and drag the clone instead (Illustrator Alt-drag style)
+      if ((e.ctrlKey || e.metaKey) && pick.kind === 'note' && e.target.closest('.note-tape')) {
+        e.preventDefault();
+        const original = state.notes.find(n => n.id === pick.id);
+        if (original) {
+          const cloneNote = {
+            id: uid('n'),
+            tabId: original.tabId,
+            title: original.title,
+            body: '',
+            x: original.x,
+            y: original.y,
+            width: original.width,
+            height: original.height,
+            rotation: (Math.random() - 0.5) * 5,
+            updatedAt: Date.now(),
+          };
+          state.notes.push(cloneNote);
+          announceSave('메모 복제됨');
+          render();
+          // After render, find the new clone element and start drag on it immediately
+          const cloneEl = document.querySelector(`[data-note-id="${cloneNote.id}"]`);
+          if (cloneEl) {
+            cloneEl.style.zIndex = ++maxZ;
+            startDrag(e.clientX, e.clientY, { el: cloneEl, kind: 'note', id: cloneNote.id });
+          }
+        }
+        return;
+      }
+      if (!item || !(selectedIds.size > 1 && selectedIds.has(keyOf(pick.kind, pick.id)))) {
+        if (item) item.style.zIndex = ++maxZ;
+      }
+      startDrag(e.clientX, e.clientY, pick);
+      return;
+    }
+
+    // Shift+click on an item without tape handle (body/title area): toggle + raise
+    if (e.shiftKey && item) {
+      const kind = item.classList.contains('postit-note') ? 'note' : 'tape';
+      const id = kind === 'note' ? item.dataset.noteId : item.dataset.tapeId;
+      toggleItemSelection(kind, id);
+      item.style.zIndex = ++maxZ;
+      e.preventDefault();
+      return;
+    }
+
+    // Empty canvas click → start rubber-band selection (or clear selection)
+    // Don't start rubberband on note/tape content (title/body/etc) — those have their own click handlers
+    if (e.target.closest('.postit-note, .label-tape')) return;
+    if (e.target.closest('#canvas')) {
+      // Only left click
+      if (e.button !== 0) return;
+      startRubberband(e.clientX, e.clientY, e.shiftKey);
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (resize) moveResize(e.clientX, e.clientY);
+    else if (drag) moveDrag(e.clientX, e.clientY);
+    else if (rubberband) moveRubberband(e.clientX, e.clientY);
+  });
+
+  document.addEventListener('mouseup', (e) => {
+    if (resize) {
+      endResize();
+    } else if (drag) {
+      endDrag();
+    } else if (rubberband) {
+      const wasMoved = rubberband.moved;
+      endRubberband();
+      // If click didn't drag and we weren't shift-clicking, clear selection
+      if (!wasMoved && !e.shiftKey) {
+        clearSelection();
+      }
+    }
+  });
+
+  // ===== Touch handlers =====
+  document.addEventListener('touchstart', (e) => {
+    if (e.target.closest('.topbar, .modal, .menu, .color-picker')) return;
+    const item = e.target.closest('.postit-note, .label-tape');
+    if (item) item.style.zIndex = ++maxZ;
+    const pick = pickDragTarget(e, e.target);
+    if (pick) {
+      const t = e.touches[0];
+      startDrag(t.clientX, t.clientY, pick);
+    }
+    // No rubber-band on touch (would conflict with scrolling)
+  }, { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (resize) {
+      const t = e.touches[0];
+      moveResize(t.clientX, t.clientY);
+      e.preventDefault();
+      return;
+    }
+    if (!drag) return;
+    const t = e.touches[0];
+    moveDrag(t.clientX, t.clientY);
+    if (drag.moved) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchend', () => {
+    if (resize) endResize();
+    else endDrag();
+  });
+
+  // ===== Keyboard =====
+  document.addEventListener('keydown', (e) => {
+    // Don't interfere when editing text
+    if (e.target.closest('[contenteditable="true"], input, textarea')) return;
+
+    if (selectedIds.size === 0) return;
+
+    if (e.key === 'Escape') {
+      clearSelection();
+      e.preventDefault();
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      // Count what will be deleted (excluding locked items)
+      const toDeleteNotes = [];
+      const toDeleteTapes = [];
+      selectedIds.forEach(k => {
+        const [kind, id] = k.split(':');
+        if (kind === 'note') {
+          const n = state.notes.find(x => x.id === id);
+          if (n && !n.locked) toDeleteNotes.push(id);
+        } else {
+          const t = state.tapes.find(x => x.id === id);
+          if (t && !t.locked) toDeleteTapes.push(id);
+        }
+      });
+      const total = toDeleteNotes.length + toDeleteTapes.length;
+      if (total === 0) {
+        toast('삭제할 항목 없음 (전부 고정된 상태)', 'info');
+        return;
+      }
+      state.notes = state.notes.filter(n => !toDeleteNotes.includes(n.id));
+      state.tapes = state.tapes.filter(t => !toDeleteTapes.includes(t.id));
+      clearSelection();
+      announceSave(`${total}개 삭제됨`);
+      render();
+    }
+  });
+
+  // ===== Settings modal =====
+  const modal = $('#settingsModal');
+
+  // ===== Guide modal =====
+  const guideModal = $('#guideModal');
+  $('#guideBtn').onclick = () => guideModal.classList.add('open');
+  $('#guideCloseBtn').onclick = () => guideModal.classList.remove('open');
+  guideModal.addEventListener('click', (e) => {
+    if (e.target === guideModal) guideModal.classList.remove('open');
+  });
+
+  function renderBoardPicker() {
+    const picker = $('#boardPicker');
+    const current = state.boardColor || '#f4ebd8';
+    picker.innerHTML = BOARDS.map(b => `
+      <button class="board-swatch${b.color === current ? ' selected' : ''}"
+              style="background: ${b.color}"
+              data-color="${b.color}"
+              title="${esc(b.name)}">
+        <span class="board-swatch-label">${esc(b.name)}</span>
+      </button>
+    `).join('');
+    picker.onclick = (e) => {
+      const btn = e.target.closest('.board-swatch');
+      if (!btn) return;
+      const c = btn.dataset.color;
+      if (c && c !== state.boardColor) {
+        state.boardColor = c;
+        applyBoard();
+        announceSave('메모판 색상 변경됨');
+        renderBoardPicker();
+      }
+    };
+  }
+
+  $('#settingsBtn').onclick = () => {
+    $('#tokenInput').value = token;
+    $('#gistIdInput').value = state.gistId || '';
+    renderBoardPicker();
+    setSettingsStatus('', '');
+    modal.classList.add('open');
+  };
+  $('#closeSettingsBtn').onclick = () => modal.classList.remove('open');
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('open');
+  });
+
+  function setSettingsStatus(msg, cls) {
+    const el = $('#settingsStatus');
+    el.textContent = msg;
+    el.className = 'setting-status' + (cls ? ' ' + cls : '');
+  }
+
+  $('#saveSettingsBtn').onclick = () => {
+    const newToken = $('#tokenInput').value.trim();
+    const newGistId = $('#gistIdInput').value.trim() || null;
+    token = newToken;
+    state.gistId = newGistId;
+    if (token) localStorage.setItem(LS_TOKEN, token);
+    else localStorage.removeItem(LS_TOKEN);
+    saveLocal();
+    setSettingsStatus('저장되었습니다.', 'ok');
+    toast('설정 저장됨', 'success');
+    if (token && state.gistId) pushToGist();
+    else setSyncStatus('로컬만', '');
+  };
+
+  $('#createGistBtn').onclick = async () => {
+    const newToken = $('#tokenInput').value.trim();
+    if (!newToken) { setSettingsStatus('토큰을 먼저 입력하세요.', 'err'); return; }
+    token = newToken;
+    localStorage.setItem(LS_TOKEN, token);
+    setSettingsStatus('Gist 생성 중...', '');
+    toast('Gist 생성 중...', 'info', { icon: '☁', duration: 3000, key: 'sync' });
+    try {
+      const id = await createGist();
+      state.gistId = id;
+      $('#gistIdInput').value = id;
+      saveLocal();
+      setSettingsStatus('Gist 생성 완료: ' + id, 'ok');
+      toast('Gist 생성 완료', 'success', { key: 'sync' });
+      setSyncStatus('동기화됨 ✓', 'ok');
+    } catch (e) {
+      setSettingsStatus('실패: 토큰을 확인해주세요.', 'err');
+      toast('Gist 생성 실패 — 토큰을 확인하세요', 'error', { key: 'sync' });
+    }
+  };
+
+  $('#pullGistBtn').onclick = async () => {
+    const newToken = $('#tokenInput').value.trim();
+    const newGistId = $('#gistIdInput').value.trim();
+    if (!newToken || !newGistId) { setSettingsStatus('토큰과 Gist ID를 입력하세요.', 'err'); return; }
+    if (!confirm('현재 로컬 데이터를 덮어쓰고 Gist에서 불러옵니다. 계속할까요?')) return;
+    token = newToken;
+    state.gistId = newGistId;
+    localStorage.setItem(LS_TOKEN, token);
+    setSettingsStatus('불러오는 중...', '');
+    const ok = await pullFromGist();
+    if (ok) setSettingsStatus('불러오기 완료.', 'ok');
+    else setSettingsStatus('불러오기 실패. Gist ID와 토큰을 확인하세요.', 'err');
+  };
+
+  // ===== Save button + Ctrl/Cmd+S =====
+  const saveBtn = $('#saveBtn');
+
+  // Undo/Redo buttons
+  $('#undoBtn').addEventListener('click', () => {
+    if (document.activeElement && document.activeElement.blur) {
+      try { document.activeElement.blur(); } catch {}
+    }
+    undo();
+  });
+  $('#redoBtn').addEventListener('click', () => {
+    if (document.activeElement && document.activeElement.blur) {
+      try { document.activeElement.blur(); } catch {}
+    }
+    redo();
+  });
+  function doManualSave() {
+    saveBtn.classList.remove('pulse');
+    // force reflow to restart animation
+    void saveBtn.offsetWidth;
+    saveBtn.classList.add('pulse');
+    // Blur any active editor so its latest changes get committed to state first
+    if (document.activeElement && document.activeElement.blur) {
+      try { document.activeElement.blur(); } catch {}
+    }
+    forcePush();
+  }
+  saveBtn.addEventListener('click', doManualSave);
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      doManualSave();
+    }
+  });
+
+  // Undo/Redo + Ctrl+N shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const key = e.key.toLowerCase();
+
+    // Skip if we're inside an editable field — let browser handle native behavior
+    if (e.target.closest('[contenteditable="true"], input, textarea')) return;
+
+    // Ctrl+N → new note
+    if (key === 'n') {
+      e.preventDefault();
+      addNote();
+      return;
+    }
+
+    // Ctrl+Z (without shift) → undo
+    if (key === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      if (drag || resize) return;
+      undo();
+    }
+    // Ctrl+Y or Ctrl+Shift+Z → redo
+    else if (key === 'y' || (key === 'z' && e.shiftKey)) {
+      e.preventDefault();
+      if (drag || resize) return;
+      redo();
+    }
+  });
+
+  // ESC to close modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (modal.classList.contains('open')) modal.classList.remove('open');
+    if (guideModal.classList.contains('open')) guideModal.classList.remove('open');
+  });
+
+  // ===== Board color =====
+  function applyBoard() {
+    const c = state.boardColor || '#f4ebd8';
+    document.body.style.setProperty('--board', c);
+  }
+
+  // ===== Render =====
+  function render() {
+    applyBoard();
+    renderTabs();
+    renderCanvas();
+    updateSelectionUI();
+  }
+
+  // ===== Init =====
+  applyBoard();
+  render();
+  pushHistory(); // baseline snapshot for undo
+  if (token && state.gistId) {
+    autoSyncOnLoad();
+  } else {
+    setSyncStatus('로컬만', '');
+  }
+
+})();
+</script>
+
+</body>
+</html>
