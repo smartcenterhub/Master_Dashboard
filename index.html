@@ -743,6 +743,20 @@
     background: rgba(255,255,255,0.95);
     color: rgba(60, 40, 20, 1);
   }
+  .label-tape-btn-lock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .label-tape-btn-lock svg {
+    width: 11px;
+    height: 11px;
+    display: block;
+  }
+  .label-tape-btn-lock.active {
+    background: rgba(255,255,255,0.95);
+    color: rgba(60, 40, 20, 1);
+  }
 
   /* Lock button (in note-actions) */
   .note-btn-lock svg {
@@ -1324,7 +1338,7 @@
 
       <h3><span class="guide-num">1</span>메모</h3>
       <ul>
-        <li><b>＋ 검정 버튼</b> — 새 메모 추가</li>
+        <li><b>＋ 검정 버튼</b> 또는 <span class="kbd">Ctrl+N</span> — 새 메모 추가</li>
         <li><b>테이프</b>(상단 가운데) 드래그 — 메모 이동</li>
         <li><b>테이프</b> <span class="kbd">Ctrl</span>+드래그 — 제목 복사된 새 메모 생성</li>
         <li><b>본문 클릭</b> — 본문 전체 복사 + 리플 애니메이션</li>
@@ -1359,9 +1373,11 @@
 
       <h3><span class="guide-num">5</span>테이프 라벨 (구역 표시)</h3>
       <ul>
-        <li><b>＋ 베이지 버튼</b> — 새 라벨 추가</li>
-        <li>라벨 어디든 드래그로 이동, 클릭해서 이름 편집</li>
-        <li>현재 탭에만 보임, 8색 형광펜 팔레트</li>
+        <li><b>＋ 베이지 버튼</b> — 색 선택 팝업 → 색 고르면 라벨 생성</li>
+        <li>라벨 어디든 드래그로 이동</li>
+        <li><b>더블클릭</b>으로 이름 편집, 외부 클릭 또는 <span class="kbd">Esc</span>로 저장</li>
+        <li><b>🔒 자물쇠</b>로 위치 고정 · <span class="kbd">Shift</span>+클릭 후 <span class="kbd">Delete</span>로 삭제</li>
+        <li>현재 탭에만 보임, 8색 형광펜 팔레트 (생성 후 색 변경 불가)</li>
       </ul>
 
       <h3><span class="guide-num">6</span>저장 · 동기화</h3>
@@ -1724,15 +1740,24 @@
           files: { 'sticky-memo.json': { content: JSON.stringify(state, null, 2) } }
         })
       });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) {
+        let detail = '';
+        try {
+          const errJson = await res.json();
+          detail = errJson.message || '';
+        } catch {}
+        throw new Error(`HTTP ${res.status}${detail ? ' · ' + detail : ''}`);
+      }
       const json = await res.json();
       state.lastSyncedAt = new Date(json.updated_at).getTime();
       localStorage.setItem(LS_DATA, JSON.stringify(state));
       setSyncStatus('동기화됨 ✓', 'ok');
       toast('Gist에 동기화 완료', 'success', { duration: 2000, key: 'sync' });
     } catch (e) {
+      const msg = e && e.message ? e.message : '알 수 없음';
       setSyncStatus('동기화 실패', 'err');
-      toast('동기화 실패 — 로컬 저장은 안전함', 'error', { duration: 4500, key: 'sync' });
+      toast(`동기화 실패 · ${msg}`, 'error', { duration: 6000, key: 'sync' });
+      console.error('[Gist push failed]', e);
     }
   }
 
@@ -2431,7 +2456,7 @@
   }
 
   // ===== Add note =====
-  $('#addNoteBtn').addEventListener('click', () => {
+  function addNote() {
     if (state.tabs.length === 0) {
       alert('먼저 탭을 추가해주세요.');
       return;
@@ -2445,8 +2470,8 @@
     const note = {
       id: uid('n'),
       tabId: state.activeTab,
-      title: '새 메모',
-      body: '[ ] 할 일\n',
+      title: '',
+      body: '',
       x: 40 + Math.random() * Math.max(200, cRect.width - 320),
       y: minY + Math.random() * 100,
       rotation: (Math.random() - 0.5) * 5,
@@ -2455,23 +2480,20 @@
     state.notes.push(note);
     announceSave('메모 추가됨');
     render();
-    // Autofocus title
+    // Autofocus body editor (title stays empty)
     setTimeout(() => {
-      const el = document.querySelector(`[data-note-id="${note.id}"] .note-title`);
-      if (el) {
-        el.contentEditable = 'true';
-        el.focus();
-        const r = document.createRange();
-        r.selectNodeContents(el);
-        const sel = getSelection();
-        sel.removeAllRanges();
-        sel.addRange(r);
+      const noteEl = document.querySelector(`[data-note-id="${note.id}"]`);
+      if (!noteEl) return;
+      const bodyEl = noteEl.querySelector('.note-body');
+      if (bodyEl && bodyEl.dataset.mode !== 'edit') {
+        enterBodyEdit(bodyEl, note);
       }
     }, 80);
-  });
+  }
+  $('#addNoteBtn').addEventListener('click', addNote);
 
   // ===== Add tape (label) =====
-  $('#addTapeBtn').addEventListener('click', () => {
+  $('#addTapeBtn').addEventListener('click', (e) => {
     if (state.tabs.length === 0) {
       alert('먼저 탭을 추가해주세요.');
       return;
@@ -2479,36 +2501,41 @@
     if (state.activeTab === 'all') {
       state.activeTab = state.tabs[0].id;
     }
-    const canvas = $('#canvas');
-    const cRect = canvas.getBoundingClientRect();
-    const minY = getMinY();
-    const tape = {
-      id: uid('tp'),
-      tabId: state.activeTab,
-      text: '라벨',
-      color: TAPE_COLORS[0],
-      x: 60 + Math.random() * Math.max(200, cRect.width - 300),
-      y: minY + Math.random() * 140,
-      rotation: (Math.random() - 0.5) * 6,
-      locked: false,
-      updatedAt: Date.now()
-    };
-    state.tapes.push(tape);
-    announceSave('테이프 추가됨');
-    render();
-    // Autofocus text
-    setTimeout(() => {
-      const el = document.querySelector(`[data-tape-id="${tape.id}"] .label-tape-text`);
-      if (el) {
-        el.contentEditable = 'true';
-        el.focus();
-        const r = document.createRange();
-        r.selectNodeContents(el);
-        const sel = getSelection();
-        sel.removeAllRanges();
-        sel.addRange(r);
-      }
-    }, 80);
+    // Show color picker first; create tape only after color selected
+    const btnRect = e.currentTarget.getBoundingClientRect();
+    showTapeColorPicker(btnRect.left - 100, btnRect.top - 54, null, (chosenColor) => {
+      if (!chosenColor) return;
+      const canvas = $('#canvas');
+      const cRect = canvas.getBoundingClientRect();
+      const minY = getMinY();
+      const tape = {
+        id: uid('tp'),
+        tabId: state.activeTab,
+        text: '라벨',
+        color: chosenColor,
+        x: 60 + Math.random() * Math.max(200, cRect.width - 300),
+        y: minY + Math.random() * 140,
+        rotation: (Math.random() - 0.5) * 6,
+        locked: false,
+        updatedAt: Date.now()
+      };
+      state.tapes.push(tape);
+      announceSave('테이프 추가됨');
+      render();
+      // Autofocus text
+      setTimeout(() => {
+        const el = document.querySelector(`[data-tape-id="${tape.id}"] .label-tape-text`);
+        if (el) {
+          el.contentEditable = 'true';
+          el.focus();
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      }, 80);
+    });
   });
 
   // ===== makeTapeEl =====
@@ -2521,28 +2548,32 @@
     el.style.setProperty('--rot', (tape.rotation || 0) + 'deg');
     el.style.setProperty('--tape-color', tape.color || TAPE_COLORS[0]);
 
+    const lockIconOpen = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="8" height="6" rx="1"/><path d="M 5.5 8 V 6 A 2.5 2.5 0 0 1 10.5 5.5"/></svg>`;
+    const lockIconClosed = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="8" height="6" rx="1"/><path d="M 5.5 8 V 6 A 2.5 2.5 0 0 1 10.5 6 V 8"/></svg>`;
+
     el.innerHTML = `
       <span class="label-tape-text" spellcheck="false">${esc(tape.text || '')}</span>
       <div class="label-tape-actions">
-        <button class="label-tape-btn" data-action="lock" title="${tape.locked ? '고정 해제' : '위치 고정'}">${tape.locked ? '🔒' : '🔓'}</button>
-        <button class="label-tape-btn" data-action="color" title="색상 변경">◐</button>
-        <button class="label-tape-btn" data-action="delete" title="삭제">×</button>
+        <button class="label-tape-btn label-tape-btn-lock ${tape.locked ? 'active' : ''}" data-action="lock" title="${tape.locked ? '고정 해제' : '위치 고정'}">${tape.locked ? lockIconClosed : lockIconOpen}</button>
       </div>
     `;
 
     const textEl = el.querySelector('.label-tape-text');
 
-    // Click text to edit
-    textEl.addEventListener('click', (e) => {
+    // Double-click text to edit
+    textEl.addEventListener('dblclick', (e) => {
       if (textEl.contentEditable === 'true') return;
       e.stopPropagation();
+      e.preventDefault();
+      const sel = getSelection();
+      if (sel) sel.removeAllRanges();
       textEl.contentEditable = 'true';
       textEl.focus();
       const r = document.createRange();
       r.selectNodeContents(textEl);
-      const sel = getSelection();
-      sel.removeAllRanges();
-      sel.addRange(r);
+      const newSel = getSelection();
+      newSel.removeAllRanges();
+      newSel.addRange(r);
     });
     textEl.addEventListener('blur', () => {
       textEl.contentEditable = 'false';
@@ -2555,7 +2586,8 @@
       }
     });
     textEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); textEl.blur(); }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); textEl.blur(); }
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); textEl.blur(); }
       if (e.key === 'Escape') { textEl.textContent = tape.text; textEl.blur(); }
     });
 
@@ -2564,28 +2596,6 @@
       e.stopPropagation();
       tape.locked = !tape.locked;
       announceSave(tape.locked ? '테이프 고정됨' : '고정 해제됨');
-      render();
-    });
-
-    // Color
-    el.querySelector('[data-action="color"]').addEventListener('click', (e) => {
-      e.stopPropagation();
-      const rect = e.currentTarget.getBoundingClientRect();
-      showTapeColorPicker(rect.left - 80, rect.bottom + 6, tape.color, (c) => {
-        if (c) {
-          tape.color = c;
-          tape.updatedAt = Date.now();
-          announceSave('테이프 색상 변경됨');
-          render();
-        }
-      });
-    });
-
-    // Delete
-    el.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
-      e.stopPropagation();
-      state.tapes = state.tapes.filter(t => t.id !== tape.id);
-      announceSave('테이프 삭제됨');
       render();
     });
 
@@ -3296,17 +3306,24 @@
     }
   });
 
-  // Undo/Redo shortcuts (only when not editing text)
+  // Undo/Redo + Ctrl+N shortcuts
   document.addEventListener('keydown', (e) => {
     if (!(e.ctrlKey || e.metaKey)) return;
-    // Skip if we're inside an editable field — let browser handle native text undo
+    const key = e.key.toLowerCase();
+
+    // Skip if we're inside an editable field — let browser handle native behavior
     if (e.target.closest('[contenteditable="true"], input, textarea')) return;
 
-    const key = e.key.toLowerCase();
+    // Ctrl+N → new note
+    if (key === 'n') {
+      e.preventDefault();
+      addNote();
+      return;
+    }
+
     // Ctrl+Z (without shift) → undo
     if (key === 'z' && !e.shiftKey) {
       e.preventDefault();
-      // Don't undo mid-drag/resize
       if (drag || resize) return;
       undo();
     }
