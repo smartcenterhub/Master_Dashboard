@@ -169,6 +169,13 @@
     color: var(--ink);
     font-weight: 600;
   }
+  .tab.tab-dragging {
+    opacity: 0.35;
+    cursor: grabbing;
+  }
+  .tab.tab-drag-over {
+    box-shadow: inset 3px 0 0 #d4a441;
+  }
   .tab-swatch {
     width: 9px; height: 9px;
     border-radius: 50%;
@@ -197,9 +204,185 @@
   }
   .tab-add:hover { color: var(--ink); border-color: var(--ink-dim); }
 
+  /* ===== Sidebar (sub-tabs) ===== */
+  .main-area {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+  }
+  .sidebar {
+    width: 150px;
+    flex-shrink: 0;
+    padding: 100px 0 20px;
+    background: rgba(240, 228, 194, 0.4);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(139, 111, 71, 0.05) 0 18px, transparent 18px 19px);
+    border-right: 3px double rgba(120, 90, 50, 0.3);
+    font-family: 'Georgia', serif;
+    transition: width 0.3s cubic-bezier(0.34, 1, 0.64, 1), padding 0.3s ease, opacity 0.2s ease;
+    z-index: 3;
+    position: relative;
+  }
+  .sidebar.collapsed {
+    width: 8px;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+    border-right-width: 2px;
+  }
+  .sidebar.collapsed > * {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+  .sidebar-head {
+    padding: 0 16px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(58, 46, 31, 0.7);
+    font-style: italic;
+    border-bottom: 1px solid rgba(139, 111, 71, 0.25);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+  .sidebar-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sub-tab {
+    position: relative;
+    padding: 7px 14px 7px 22px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    cursor: pointer;
+    line-height: 18px;
+    transition: all 0.12s ease;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    font-family: 'Georgia', serif;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sub-tab::before {
+    content: '';
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    width: 8px; height: 1.5px;
+    background: var(--ink-soft);
+    border-radius: 1px;
+  }
+  .sub-tab:hover {
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--ink);
+  }
+  .sub-tab.active {
+    background: #fffef2;
+    color: var(--ink);
+    font-weight: 700;
+    border-top: 1px solid rgba(139, 111, 71, 0.2);
+    border-bottom: 1px solid rgba(139, 111, 71, 0.2);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.5),
+      -3px 0 0 #d4a441;
+  }
+  .sub-tab.active::before {
+    background: #d4a441; width: 10px; height: 2px;
+  }
+  .sub-tab.dragging {
+    opacity: 0.35;
+  }
+  .sub-tab.drag-over {
+    border-top: 2px solid #d4a441;
+  }
+  .sub-tab-count {
+    float: right;
+    font-size: 9px;
+    color: var(--ink-soft);
+    font-family: ui-monospace, Menlo, monospace;
+    font-weight: 400;
+    opacity: 0.7;
+    margin-left: 6px;
+  }
+  .sub-tab-add {
+    margin: 10px 14px 0;
+    padding: 6px;
+    font-size: 11px;
+    text-align: center;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    border-top: 1px dashed rgba(139, 111, 71, 0.3);
+    padding-top: 10px;
+  }
+  .sub-tab-add:hover { color: var(--ink); }
+
+  /* Sub-tab context menu trigger on right-click */
+
+  /* ===== Sidebar handle (mini post-it flag) ===== */
+  .sidebar-handle {
+    position: fixed;
+    top: 50%;
+    left: 150px;
+    transform: translate(-10px, -50%);
+    width: 32px;
+    height: 14px;
+    background: #fff06a;
+    border: none;
+    cursor: pointer;
+    z-index: 60;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(58, 46, 31, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 4px;
+    box-shadow:
+      1px 1px 3px rgba(0,0,0,0.15),
+      inset 0 -1px 0 rgba(200,160,30,0.3);
+    transition: left 0.3s cubic-bezier(0.34, 1, 0.64, 1), transform 0.2s ease, filter 0.2s ease;
+  }
+  .sidebar-handle::before {
+    /* 접착 부분 미묘한 그림자 */
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 12px;
+    background: linear-gradient(90deg,
+      rgba(220, 180, 60, 0.25) 0%,
+      transparent 100%);
+  }
+  .sidebar-handle:hover {
+    transform: translate(-4px, -50%);
+    filter: brightness(1.05);
+  }
+  .sidebar.collapsed + * .sidebar-handle,
+  .sidebar-collapsed .sidebar-handle {
+    left: 0;
+  }
+  body.sidebar-collapsed .sidebar-handle {
+    left: 8px;
+    transform: translate(-18px, -50%);
+  }
+  body.sidebar-collapsed .sidebar-handle:hover {
+    transform: translate(-10px, -50%);
+  }
+
+  /* Tab in "전체" mode: hide sidebar entirely */
+  body.tab-all .sidebar,
+  body.tab-all .sidebar-handle {
+    display: none;
+  }
+
   /* ===== Canvas ===== */
   .canvas {
     position: relative;
+    flex: 1;
     min-height: 100vh;
     padding-top: 100px;
     padding-bottom: 80px;
@@ -666,6 +849,154 @@
   }
   .add-tape:hover { transform: scale(1.1); }
   .add-tape:active { transform: scale(0.94); }
+
+  .add-link {
+    position: fixed;
+    bottom: 20px;
+    right: 134px; /* left of add-tape */
+    z-index: 50;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(120, 90, 30, 0.4);
+    background:
+      linear-gradient(145deg, #d4b76a 0%, #a68547 40%, #c9a25b 75%, #8b6f2e 100%);
+    color: #3a2e1f;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.4),
+      inset 0 -1px 0 rgba(0,0,0,0.2),
+      0 2px 8px rgba(80,50,20,0.2);
+    transition: transform 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .add-link:hover { transform: scale(1.1); }
+  .add-link:active { transform: scale(0.94); }
+
+  /* ===== Brass link plate ===== */
+  .link-plate {
+    position: absolute;
+    padding: 12px 18px;
+    min-width: 140px;
+    max-width: 220px;
+    background:
+      linear-gradient(145deg, #d4b76a 0%, #a68547 40%, #c9a25b 75%, #8b6f2e 100%);
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.4),
+      inset 0 -1px 0 rgba(0,0,0,0.2),
+      0 2px 4px rgba(0,0,0,0.15),
+      0 6px 14px rgba(80,50,20,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .link-plate:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.5),
+      inset 0 -1px 0 rgba(0,0,0,0.2),
+      0 4px 8px rgba(0,0,0,0.18),
+      0 10px 22px rgba(80,50,20,0.25);
+  }
+  .link-plate::before,
+  .link-plate::after {
+    content: '';
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #6b5620, #3a2e1f);
+    top: 50%; transform: translateY(-50%);
+  }
+  .link-plate::before { left: 5px; }
+  .link-plate::after { right: 5px; }
+  .link-plate-title {
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #3a2e1f;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.3;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+    word-break: break-word;
+  }
+  .link-plate-sub {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: rgba(58, 46, 31, 0.7);
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .link-plate.dragging { transition: none; cursor: grabbing !important; }
+  .link-plate.copied-flash {
+    animation: copied-shadow-flash 1.5s ease-out;
+  }
+
+  /* Link edit modal */
+  .link-modal-form label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    margin-bottom: 4px;
+    margin-top: 14px;
+  }
+  .link-modal-form label:first-child { margin-top: 0; }
+  .link-modal-form input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--ink);
+  }
+  .link-modal-form input:focus {
+    outline: 2px solid rgba(212, 164, 65, 0.5);
+    outline-offset: -1px;
+  }
+  .link-modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .link-modal-actions button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    border: 1px solid var(--line);
+    background: white;
+    color: var(--ink);
+  }
+  .link-modal-actions button.primary {
+    background: var(--ink);
+    color: #fff9e8;
+    border-color: var(--ink);
+  }
+  .link-modal-actions button.primary:hover { background: #4a3820; }
+  .link-modal-actions button.danger {
+    color: #a04040;
+    border-color: rgba(160, 64, 64, 0.3);
+    margin-right: auto;
+  }
+  .link-modal-actions button:hover { background: #f5efe0; }
 
   /* ===== Label tape (highlighter style) ===== */
   .label-tape {
@@ -1187,13 +1518,15 @@
   /* When selected (corner markers visible), the whole surface becomes a drag handle.
      Child elements cannot receive clicks — all interaction blocked except drag. */
   .postit-note.selected > *:not(.corner-marker),
-  .label-tape.selected > *:not(.corner-marker) {
+  .label-tape.selected > *:not(.corner-marker),
+  .link-plate.selected > *:not(.corner-marker) {
     pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
   }
   .postit-note.selected,
-  .label-tape.selected {
+  .label-tape.selected,
+  .link-plate.selected {
     cursor: move;
   }
 
@@ -1257,6 +1590,7 @@
   }
 
   @media (max-width: 500px) {
+    .sidebar, .sidebar-handle { display: none !important; }
     .postit-note {
       position: relative !important;
       width: calc(100% - 30px) !important;
@@ -1312,13 +1646,39 @@
   <div class="tabbar" id="tabbar"></div>
 </div>
 
-<main class="canvas" id="canvas"></main>
+<div class="main-area">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="canvas" id="canvas"></main>
+</div>
+<button class="sidebar-handle" id="sidebarHandle" title="사이드바 접기/펼치기">◂</button>
 
 <div class="status-line" id="statusLine"></div>
 <div class="selection-indicator" id="selectionIndicator"></div>
 
+<button class="add-link" id="addLinkBtn" title="새 바로가기">＋</button>
 <button class="add-tape" id="addTapeBtn" title="새 테이프 라벨">＋</button>
 <button class="add-note" id="addNoteBtn" title="새 메모">＋</button>
+
+<!-- Link Edit Modal -->
+<div class="modal" id="linkModal">
+  <div class="modal-content">
+    <h2 id="linkModalTitle">바로가기 편집</h2>
+    <div class="subtitle">제목은 자유, URL은 클릭 시 복사됩니다.</div>
+    <div class="link-modal-form">
+      <label>제목</label>
+      <input type="text" id="linkTitleInput" placeholder="Archive, Studio, Library..." maxlength="40">
+      <label>URL</label>
+      <input type="text" id="linkUrlInput" placeholder="https://...">
+      <label>부가 텍스트 (선택, 밑에 작게)</label>
+      <input type="text" id="linkSubInput" placeholder="est. 2024" maxlength="30">
+    </div>
+    <div class="link-modal-actions">
+      <button class="danger" id="linkDeleteBtn">삭제</button>
+      <button id="linkCancelBtn">취소</button>
+      <button class="primary" id="linkSaveBtn">저장</button>
+    </div>
+  </div>
+</div>
 
 <!-- Guide Modal -->
 <div class="modal" id="guideModal">
@@ -1361,6 +1721,7 @@
         <li><b>빈 공간 드래그</b> — Rubber-band 선택</li>
         <li><b>Shift + 클릭</b> — 개별 선택 + 맨 위로 올리기</li>
         <li>선택된 항목 드래그 — 전부 같이 이동</li>
+        <li><span class="kbd">Ctrl+C</span> / <span class="kbd">Ctrl+V</span> — 선택 항목 복제 (메모·라벨·황동)</li>
         <li><span class="kbd">Delete</span> — 일괄 삭제 · <span class="kbd">Esc</span> — 해제</li>
       </ul>
 
@@ -1368,7 +1729,11 @@
       <ul>
         <li><b>＋ 탭 추가</b> — 새 주제</li>
         <li>탭 <b>우클릭 / 길게 터치</b> — 이름·색·삭제 메뉴</li>
+        <li>탭 <b>드래그</b> — 순서 변경</li>
         <li><b>전체 탭</b> — 모든 메모 제목 목록 (헤더 클릭해 펼치기)</li>
+        <li><b>하위탭 (사이드바)</b> — 왼쪽 사이드바에서 세부 분류 · 항목 클릭해 전환</li>
+        <li>사이드바 <b>＋ 하위탭 추가</b> · 하위탭 우클릭으로 이름/삭제</li>
+        <li>하위탭 드래그로 순서 변경 · 노란 포스트잇 핸들로 사이드바 접기/펼치기</li>
       </ul>
 
       <h3><span class="guide-num">5</span>테이프 라벨 (구역 표시)</h3>
@@ -1380,7 +1745,15 @@
         <li>현재 탭에만 보임, 8색 형광펜 팔레트 (생성 후 색 변경 불가)</li>
       </ul>
 
-      <h3><span class="guide-num">6</span>저장 · 동기화</h3>
+      <h3><span class="guide-num">6</span>바로가기 (황동 명패)</h3>
+      <ul>
+        <li><b>＋ 황동 버튼</b> — 제목 + URL 입력해서 생성</li>
+        <li><b>단일 클릭</b> — URL 클립보드에 복사 (+ 초록 플래시)</li>
+        <li><b>더블클릭</b> — 제목·URL·부가 텍스트 편집 (삭제 버튼도 있음)</li>
+        <li>드래그로 이동, <span class="kbd">Shift</span>+클릭 → <span class="kbd">Delete</span>로도 삭제</li>
+      </ul>
+
+      <h3><span class="guide-num">7</span>저장 · 동기화</h3>
       <ul>
         <li>모든 변경 <b>자동 저장</b> (localStorage)</li>
         <li><b>💾 또는 <span class="kbd">Ctrl+S</span></b> — 수동 저장</li>
@@ -1528,8 +1901,33 @@
   if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
     state.activeTab = state.tabs[0]?.id || 'all';
   }
-  // Migration: ensure tapes array exists
+  // Migration: ensure tapes + links arrays exist
   if (!Array.isArray(state.tapes)) state.tapes = [];
+  if (!Array.isArray(state.links)) state.links = [];
+
+  // Migration: sub-tabs (each top tab gets at least "기본" sub-tab)
+  const uidSub = () => 's_' + Math.random().toString(36).slice(2, 10);
+  state.tabs.forEach(tab => {
+    if (!Array.isArray(tab.subTabs)) tab.subTabs = [];
+    if (tab.subTabs.length === 0) {
+      tab.subTabs.push({ id: uidSub(), name: '기본' });
+    }
+    if (typeof tab.sidebarCollapsed !== 'boolean') tab.sidebarCollapsed = false;
+  });
+  // Assign subTabId to existing items that lack one (→ first sub-tab of their tab)
+  function ensureSubTabId(item) {
+    if (item.subTabId) return;
+    const tab = state.tabs.find(t => t.id === item.tabId);
+    if (tab && tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+  }
+  state.notes.forEach(ensureSubTabId);
+  state.tapes.forEach(ensureSubTabId);
+  state.links.forEach(ensureSubTabId);
+  // activeSubTab default: first sub-tab of active top tab
+  if (!state.activeSubTab && state.activeTab && state.activeTab !== 'all') {
+    const t = state.tabs.find(t => t.id === state.activeTab);
+    if (t) state.activeSubTab = t.subTabs[0]?.id;
+  }
 
   // ===== Helpers =====
   const $ = (s, el = document) => el.querySelector(s);
@@ -1679,6 +2077,7 @@
       if (parsed && Array.isArray(parsed.tabs) && Array.isArray(parsed.notes)) {
         state = parsed;
         if (!Array.isArray(state.tapes)) state.tapes = [];
+        if (!Array.isArray(state.links)) state.links = [];
         if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
           state.activeTab = state.tabs[0]?.id || 'all';
         }
@@ -1800,6 +2199,7 @@
       if (remote && Array.isArray(remote.tabs) && Array.isArray(remote.notes)) {
         state = remote;
         if (!Array.isArray(state.tapes)) state.tapes = [];
+        if (!Array.isArray(state.links)) state.links = [];
         state.lastSyncedAt = new Date(json.updated_at).getTime();
         if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
           state.activeTab = state.tabs[0]?.id || 'all';
@@ -1845,6 +2245,8 @@
           if (remote && Array.isArray(remote.tabs) && Array.isArray(remote.notes)) {
             state = remote;
             if (!Array.isArray(state.tapes)) state.tapes = [];
+            if (!Array.isArray(state.links)) state.links = [];
+        if (!Array.isArray(state.links)) state.links = [];
             state.lastSyncedAt = remoteUpdated;
             if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
               state.activeTab = state.tabs[0]?.id || 'all';
@@ -1885,12 +2287,41 @@
       const btn = document.createElement('button');
       btn.className = 'tab' + (state.activeTab === tab.id ? ' active' : '');
       btn.dataset.tabId = tab.id;
+      btn.draggable = true;
       btn.style.setProperty('--swatch', tab.color);
       btn.innerHTML = `
         <span class="tab-swatch"></span>
         <span class="tab-name">${esc(tab.name)}</span>
         <span class="tab-count">${count}</span>
       `;
+
+      // Drag to reorder
+      btn.addEventListener('dragstart', (e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', tab.id);
+        btn.classList.add('tab-dragging');
+      });
+      btn.addEventListener('dragend', () => {
+        btn.classList.remove('tab-dragging');
+        document.querySelectorAll('.tab.tab-drag-over').forEach(el => el.classList.remove('tab-drag-over'));
+      });
+      btn.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.tab.tab-drag-over').forEach(el => el.classList.remove('tab-drag-over'));
+        btn.classList.add('tab-drag-over');
+      });
+      btn.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const draggedId = e.dataTransfer.getData('text/plain');
+        if (!draggedId || draggedId === tab.id) return;
+        const fromIdx = state.tabs.findIndex(t => t.id === draggedId);
+        const toIdx = state.tabs.findIndex(t => t.id === tab.id);
+        if (fromIdx < 0 || toIdx < 0) return;
+        const [moved] = state.tabs.splice(fromIdx, 1);
+        state.tabs.splice(toIdx, 0, moved);
+        announceSave('탭 순서 변경됨');
+        render();
+      });
 
       // Long-press state (shared between touch handlers and click)
       let longPressTimer = null;
@@ -1899,7 +2330,10 @@
 
       btn.onclick = () => {
         if (longPressed) { longPressed = false; return; }
-        state.activeTab = tab.id; saveLocal(); render();
+        state.activeTab = tab.id;
+        // Auto-select first sub-tab of the new top tab
+        state.activeSubTab = tab.subTabs?.[0]?.id || null;
+        saveLocal(); render();
       };
 
       // Desktop: right-click
@@ -2125,10 +2559,14 @@
       return;
     }
 
-    const notes = state.notes.filter(n => n.tabId === tab.id);
-    const tapes = state.tapes.filter(t => t.tabId === tab.id);
+    // Filter by current sub-tab (fallback: all sub-tabs if no active sub-tab)
+    const sub = state.activeSubTab;
+    const matchSub = (item) => !sub || item.subTabId === sub;
+    const notes = state.notes.filter(n => n.tabId === tab.id && matchSub(n));
+    const tapes = state.tapes.filter(t => t.tabId === tab.id && matchSub(t));
+    const links = state.links.filter(l => l.tabId === tab.id && matchSub(l));
 
-    if (notes.length === 0 && tapes.length === 0) {
+    if (notes.length === 0 && tapes.length === 0 && links.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'empty-state';
       empty.innerHTML = '이 탭에 메모가 없어요.<br>우측 하단 <b>＋</b> 버튼으로 추가하세요.';
@@ -2136,7 +2574,7 @@
       return;
     }
 
-    // Auto-nudge legacy notes whose tape would be hidden behind the topbar
+    // Auto-nudge legacy items whose position would be hidden behind the topbar
     const minY = getMinY();
     let nudged = false;
     notes.forEach(n => {
@@ -2151,11 +2589,22 @@
         nudged = true;
       }
     });
+    links.forEach(l => {
+      if (typeof l.y !== 'number' || l.y < minY) {
+        l.y = minY + Math.random() * 20;
+        nudged = true;
+      }
+    });
     if (nudged) saveLocal();
 
     // Render tapes first (lower z-index baseline)
     tapes.forEach((tape) => {
       canvas.appendChild(makeTapeEl(tape));
+    });
+
+    // Links render mid-layer (between tapes and notes)
+    links.forEach((link, i) => {
+      canvas.appendChild(makeLinkEl(link, i + 5));
     });
 
     notes.forEach((note, i) => {
@@ -2470,6 +2919,7 @@
     const note = {
       id: uid('n'),
       tabId: state.activeTab,
+      subTabId: state.activeSubTab,
       title: '',
       body: '',
       x: 40 + Math.random() * Math.max(200, cRect.width - 320),
@@ -2511,6 +2961,7 @@
       const tape = {
         id: uid('tp'),
         tabId: state.activeTab,
+      subTabId: state.activeSubTab,
         text: '라벨',
         color: chosenColor,
         x: 60 + Math.random() * Math.max(200, cRect.width - 300),
@@ -2602,6 +3053,165 @@
     return el;
   }
 
+  // ===== makeLinkEl (brass plate shortcut) =====
+  function makeLinkEl(link, z) {
+    const el = document.createElement('div');
+    el.className = 'link-plate';
+    el.dataset.linkId = link.id;
+    el.style.left = (link.x || 80) + 'px';
+    el.style.top = (link.y || 80) + 'px';
+    el.style.zIndex = z || 5;
+    el.innerHTML = `
+      <div class="link-plate-title">${esc(link.title || '(제목 없음)')}</div>
+      ${link.sub ? `<div class="link-plate-sub">${esc(link.sub)}</div>` : ''}
+    `;
+
+    // Single click → copy URL (like note body copy)
+    let linkClickTimer = null;
+    el.addEventListener('click', (e) => {
+      // Skip if drag just happened or editing
+      if (drag && drag.moved) return;
+      const sel = getSelection();
+      if (sel && sel.toString().length > 0) return;
+      // Delay to allow dblclick to cancel
+      clearTimeout(linkClickTimer);
+      linkClickTimer = setTimeout(() => {
+        if (!link.url) {
+          toast('URL이 비어있어요', 'info', { duration: 1500 });
+          linkClickTimer = null;
+          return;
+        }
+        spawnRipple(el);
+        copyToClipboard(link.url).then((ok) => {
+          if (ok) {
+            toast('링크 복사됨', 'success', { duration: 1800 });
+          } else {
+            toast('복사 실패', 'error');
+          }
+        });
+        linkClickTimer = null;
+      }, 220);
+    });
+
+    // Double-click → open edit modal
+    el.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      clearTimeout(linkClickTimer);
+      linkClickTimer = null;
+      openLinkEditModal(link);
+    });
+
+    return el;
+  }
+
+  // ===== Link edit modal =====
+  const linkModal = $('#linkModal');
+  let editingLinkId = null;
+
+  function openLinkEditModal(link) {
+    editingLinkId = link.id;
+    $('#linkModalTitle').textContent = '바로가기 편집';
+    $('#linkTitleInput').value = link.title || '';
+    $('#linkUrlInput').value = link.url || '';
+    $('#linkSubInput').value = link.sub || '';
+    $('#linkDeleteBtn').style.display = '';
+    linkModal.classList.add('open');
+    setTimeout(() => $('#linkTitleInput').focus(), 50);
+  }
+
+  function openLinkCreateModal() {
+    editingLinkId = null;
+    $('#linkModalTitle').textContent = '새 바로가기';
+    $('#linkTitleInput').value = '';
+    $('#linkUrlInput').value = '';
+    $('#linkSubInput').value = '';
+    $('#linkDeleteBtn').style.display = 'none';
+    linkModal.classList.add('open');
+    setTimeout(() => $('#linkTitleInput').focus(), 50);
+  }
+
+  function closeLinkModal() {
+    linkModal.classList.remove('open');
+    editingLinkId = null;
+  }
+
+  $('#linkCancelBtn').addEventListener('click', closeLinkModal);
+  linkModal.addEventListener('click', (e) => {
+    if (e.target === linkModal) closeLinkModal();
+  });
+
+  $('#linkSaveBtn').addEventListener('click', () => {
+    const title = $('#linkTitleInput').value.trim();
+    const url = $('#linkUrlInput').value.trim();
+    const sub = $('#linkSubInput').value.trim();
+    if (!title && !url) {
+      toast('제목 또는 URL을 입력해주세요', 'error');
+      return;
+    }
+    if (editingLinkId) {
+      const link = state.links.find(l => l.id === editingLinkId);
+      if (link) {
+        link.title = title || '(제목 없음)';
+        link.url = url;
+        link.sub = sub;
+        link.updatedAt = Date.now();
+        announceSave('바로가기 저장됨');
+        render();
+      }
+    } else {
+      // Create
+      if (state.tabs.length === 0) {
+        toast('먼저 탭을 추가해주세요', 'error');
+        return;
+      }
+      if (state.activeTab === 'all') state.activeTab = state.tabs[0].id;
+      const canvas = $('#canvas');
+      const cRect = canvas.getBoundingClientRect();
+      const minY = getMinY();
+      const newLink = {
+        id: uid('l'),
+        tabId: state.activeTab,
+      subTabId: state.activeSubTab,
+        title: title || '(제목 없음)',
+        url: url,
+        sub: sub,
+        x: 60 + Math.random() * Math.max(200, cRect.width - 300),
+        y: minY + Math.random() * 140,
+        updatedAt: Date.now()
+      };
+      state.links.push(newLink);
+      announceSave('바로가기 추가됨');
+      render();
+    }
+    closeLinkModal();
+  });
+
+  $('#linkDeleteBtn').addEventListener('click', () => {
+    if (!editingLinkId) return;
+    state.links = state.links.filter(l => l.id !== editingLinkId);
+    announceSave('바로가기 삭제됨');
+    render();
+    closeLinkModal();
+  });
+
+  // Enter in any link modal input → save
+  ['#linkTitleInput', '#linkUrlInput', '#linkSubInput'].forEach(sel => {
+    $(sel).addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); $('#linkSaveBtn').click(); }
+      if (e.key === 'Escape') { e.preventDefault(); closeLinkModal(); }
+    });
+  });
+
+  // Add link button
+  $('#addLinkBtn').addEventListener('click', () => {
+    if (state.tabs.length === 0) {
+      alert('먼저 탭을 추가해주세요.');
+      return;
+    }
+    openLinkCreateModal();
+  });
+
   function showTapeColorPicker(x, y, currentColor, onPick) {
     const p = $('#colorPicker');
     p.innerHTML = TAPE_COLORS.map(c =>
@@ -2623,7 +3233,9 @@
 
   // ===== Selection & Drag =====
   // Session-only selection state (not persisted)
-  const selectedIds = new Set(); // stores 'note:<id>' or 'tape:<id>'
+  const selectedIds = new Set(); // stores 'note:<id>' or 'tape:<id>' or 'link:<id>'
+  let clipboardItems = []; // internal clipboard for Ctrl+C/V
+  let pasteOffsetMultiplier = 0; // increments with each consecutive paste for cascading effect
   let drag = null;
   let rubberband = null;
   let resize = null;
@@ -2709,6 +3321,11 @@
       el.classList.toggle('selected', sel);
       ensureCornerMarkers(el, sel);
     });
+    document.querySelectorAll('.link-plate').forEach(el => {
+      const sel = selectedIds.has('link:' + el.dataset.linkId);
+      el.classList.toggle('selected', sel);
+      ensureCornerMarkers(el, sel);
+    });
     // Show/hide selection indicator
     const count = selectedIds.size;
     const indicator = $('#selectionIndicator');
@@ -2730,6 +3347,94 @@
     const k = keyOf(kind, id);
     if (selectedIds.has(k)) selectedIds.delete(k);
     else selectedIds.add(k);
+    updateSelectionUI();
+  }
+
+  // ===== Copy / Paste selected items =====
+  function copySelection() {
+    const items = [];
+    selectedIds.forEach(k => {
+      const [kind, id] = k.split(':');
+      let src;
+      if (kind === 'note') src = state.notes.find(n => n.id === id);
+      else if (kind === 'tape') src = state.tapes.find(t => t.id === id);
+      else if (kind === 'link') src = state.links.find(l => l.id === id);
+      if (!src) return;
+      items.push({ kind, data: JSON.parse(JSON.stringify(src)) });
+    });
+    if (items.length === 0) return;
+    clipboardItems = items;
+    pasteOffsetMultiplier = 0;
+    toast(`${items.length}개 복사됨`, 'success', { duration: 1400 });
+  }
+
+  function pasteClipboard() {
+    if (clipboardItems.length === 0) return;
+    if (state.tabs.length === 0) return;
+    if (state.activeTab === 'all') state.activeTab = state.tabs[0].id;
+
+    pasteOffsetMultiplier++;
+    const offset = 18 * pasteOffsetMultiplier;
+    const newIds = [];
+
+    clipboardItems.forEach(item => {
+      if (item.kind === 'note') {
+        const n = item.data;
+        const clone = {
+          id: uid('n'),
+          tabId: state.activeTab,
+      subTabId: state.activeSubTab,
+          title: n.title || '',
+          body: n.body || '',
+          x: (n.x || 60) + offset,
+          y: (n.y || 60) + offset,
+          width: n.width,
+          height: n.height,
+          rotation: (Math.random() - 0.5) * 5,
+          locked: false,
+          updatedAt: Date.now()
+        };
+        state.notes.push(clone);
+        newIds.push(keyOf('note', clone.id));
+      } else if (item.kind === 'tape') {
+        const t = item.data;
+        const clone = {
+          id: uid('tp'),
+          tabId: state.activeTab,
+      subTabId: state.activeSubTab,
+          text: t.text || '라벨',
+          color: t.color,
+          x: (t.x || 60) + offset,
+          y: (t.y || 60) + offset,
+          rotation: (Math.random() - 0.5) * 6,
+          locked: false,
+          updatedAt: Date.now()
+        };
+        state.tapes.push(clone);
+        newIds.push(keyOf('tape', clone.id));
+      } else if (item.kind === 'link') {
+        const l = item.data;
+        const clone = {
+          id: uid('l'),
+          tabId: state.activeTab,
+      subTabId: state.activeSubTab,
+          title: l.title || '',
+          url: l.url || '',
+          sub: l.sub || '',
+          x: (l.x || 60) + offset,
+          y: (l.y || 60) + offset,
+          updatedAt: Date.now()
+        };
+        state.links.push(clone);
+        newIds.push(keyOf('link', clone.id));
+      }
+    });
+
+    announceSave(`${newIds.length}개 붙여넣음`);
+    render();
+    // Select the newly pasted items
+    selectedIds.clear();
+    newIds.forEach(k => selectedIds.add(k));
     updateSelectionUI();
   }
 
@@ -2795,6 +3500,12 @@
         selectedIds.add('tape:' + el.dataset.tapeId);
       }
     });
+    document.querySelectorAll('.link-plate').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (rectsIntersect(vx1, vy1, vx2, vy2, r.left, r.top, r.right, r.bottom)) {
+        selectedIds.add('link:' + el.dataset.linkId);
+      }
+    });
     updateSelectionUI();
   }
 
@@ -2810,7 +3521,7 @@
   }
 
   function pickDragTarget(e, target) {
-    // Check if target is within a selected note/tape — if so, anywhere on it becomes a drag handle
+    // Check if target is within a selected item — if so, anywhere on it becomes a drag handle
     const selectedNote = target.closest('.postit-note.selected');
     if (selectedNote) {
       if (selectedNote.classList.contains('locked')) return null;
@@ -2820,6 +3531,10 @@
     if (selectedTape) {
       if (selectedTape.classList.contains('locked')) return null;
       return { el: selectedTape, kind: 'tape', id: selectedTape.dataset.tapeId };
+    }
+    const selectedLink = target.closest('.link-plate.selected');
+    if (selectedLink) {
+      return { el: selectedLink, kind: 'link', id: selectedLink.dataset.linkId };
     }
 
     // Action buttons / resize handle should never trigger drag
@@ -2842,6 +3557,15 @@
       return { el: labelTape, kind: 'tape', id: labelTape.dataset.tapeId };
     }
 
+    // Link plate: do NOT drag on normal click — click is for copy.
+    // Drag only via selection mode (handled by .selected check above)
+    // Actually, to allow movement, enable drag threshold: if user holds mouse
+    // and moves >4px, start drag; otherwise pass to click.
+    const linkPlate = target.closest('.link-plate');
+    if (linkPlate) {
+      return { el: linkPlate, kind: 'link', id: linkPlate.dataset.linkId };
+    }
+
     return null;
   }
 
@@ -2859,7 +3583,9 @@
         const [kind, id] = k.split(':');
         const el = kind === 'note'
           ? document.querySelector(`[data-note-id="${id}"]`)
-          : document.querySelector(`[data-tape-id="${id}"]`);
+          : kind === 'tape'
+            ? document.querySelector(`[data-tape-id="${id}"]`)
+            : document.querySelector(`[data-link-id="${id}"]`);
         if (!el) return;
         if (el.classList.contains('locked')) return; // skip locked
         const r = el.getBoundingClientRect();
@@ -2925,7 +3651,9 @@
         it.el.classList.remove('dragging');
         const item = it.kind === 'note'
           ? state.notes.find(n => n.id === it.id)
-          : state.tapes.find(t => t.id === it.id);
+          : it.kind === 'tape'
+            ? state.tapes.find(t => t.id === it.id)
+            : state.links.find(l => l.id === it.id);
         if (item) {
           item.x = parseFloat(it.el.style.left);
           item.y = parseFloat(it.el.style.top);
@@ -3013,7 +3741,7 @@
     if (resize) return;
 
     // Raise clicked item to top (unless it's part of a group we're about to drag)
-    const item = e.target.closest('.postit-note, .label-tape');
+    const item = e.target.closest(".postit-note, .label-tape, .link-plate");
     const pick = pickDragTarget(e, e.target);
 
     if (pick) {
@@ -3032,6 +3760,7 @@
           const cloneNote = {
             id: uid('n'),
             tabId: original.tabId,
+            subTabId: original.subTabId,
             title: original.title,
             body: '',
             x: original.x,
@@ -3060,19 +3789,23 @@
       return;
     }
 
-    // Shift+click on an item without tape handle (body/title area): toggle + raise
+    // Shift+click on an item without drag handle: toggle + raise
     if (e.shiftKey && item) {
-      const kind = item.classList.contains('postit-note') ? 'note' : 'tape';
-      const id = kind === 'note' ? item.dataset.noteId : item.dataset.tapeId;
-      toggleItemSelection(kind, id);
-      item.style.zIndex = ++maxZ;
-      e.preventDefault();
-      return;
+      let kind, id;
+      if (item.classList.contains('postit-note')) { kind = 'note'; id = item.dataset.noteId; }
+      else if (item.classList.contains('label-tape')) { kind = 'tape'; id = item.dataset.tapeId; }
+      else if (item.classList.contains('link-plate')) { kind = 'link'; id = item.dataset.linkId; }
+      if (kind) {
+        toggleItemSelection(kind, id);
+        item.style.zIndex = ++maxZ;
+        e.preventDefault();
+        return;
+      }
     }
 
     // Empty canvas click → start rubber-band selection (or clear selection)
     // Don't start rubberband on note/tape content (title/body/etc) — those have their own click handlers
-    if (e.target.closest('.postit-note, .label-tape')) return;
+    if (e.target.closest('.postit-note, .label-tape, .link-plate')) return;
     if (e.target.closest('#canvas')) {
       // Only left click
       if (e.button !== 0) return;
@@ -3104,7 +3837,7 @@
   // ===== Touch handlers =====
   document.addEventListener('touchstart', (e) => {
     if (e.target.closest('.topbar, .modal, .menu, .color-picker')) return;
-    const item = e.target.closest('.postit-note, .label-tape');
+    const item = e.target.closest(".postit-note, .label-tape, .link-plate");
     if (item) item.style.zIndex = ++maxZ;
     const pick = pickDragTarget(e, e.target);
     if (pick) {
@@ -3142,26 +3875,29 @@
       e.preventDefault();
     } else if (e.key === 'Delete' || e.key === 'Backspace') {
       e.preventDefault();
-      // Count what will be deleted (excluding locked items)
       const toDeleteNotes = [];
       const toDeleteTapes = [];
+      const toDeleteLinks = [];
       selectedIds.forEach(k => {
         const [kind, id] = k.split(':');
         if (kind === 'note') {
           const n = state.notes.find(x => x.id === id);
           if (n && !n.locked) toDeleteNotes.push(id);
-        } else {
+        } else if (kind === 'tape') {
           const t = state.tapes.find(x => x.id === id);
           if (t && !t.locked) toDeleteTapes.push(id);
+        } else if (kind === 'link') {
+          toDeleteLinks.push(id);
         }
       });
-      const total = toDeleteNotes.length + toDeleteTapes.length;
+      const total = toDeleteNotes.length + toDeleteTapes.length + toDeleteLinks.length;
       if (total === 0) {
         toast('삭제할 항목 없음 (전부 고정된 상태)', 'info');
         return;
       }
       state.notes = state.notes.filter(n => !toDeleteNotes.includes(n.id));
       state.tapes = state.tapes.filter(t => !toDeleteTapes.includes(t.id));
+      state.links = state.links.filter(l => !toDeleteLinks.includes(l.id));
       clearSelection();
       announceSave(`${total}개 삭제됨`);
       render();
@@ -3321,6 +4057,22 @@
       return;
     }
 
+    // Ctrl+C → copy selected items to internal clipboard
+    if (key === 'c') {
+      if (selectedIds.size === 0) return; // nothing selected, let browser handle
+      e.preventDefault();
+      copySelection();
+      return;
+    }
+
+    // Ctrl+V → paste from internal clipboard
+    if (key === 'v') {
+      if (clipboardItems.length === 0) return; // nothing to paste, let browser handle
+      e.preventDefault();
+      pasteClipboard();
+      return;
+    }
+
     // Ctrl+Z (without shift) → undo
     if (key === 'z' && !e.shiftKey) {
       e.preventDefault();
@@ -3352,9 +4104,180 @@
   function render() {
     applyBoard();
     renderTabs();
+    renderSidebar();
     renderCanvas();
     updateSelectionUI();
   }
+
+  // ===== Sidebar (sub-tabs) =====
+  function renderSidebar() {
+    const sidebar = $('#sidebar');
+    const handle = $('#sidebarHandle');
+    if (!sidebar) return;
+
+    const isAll = state.activeTab === 'all';
+    document.body.classList.toggle('tab-all', isAll);
+    if (isAll) {
+      sidebar.innerHTML = '';
+      return;
+    }
+
+    const tab = state.tabs.find(t => t.id === state.activeTab);
+    if (!tab) { sidebar.innerHTML = ''; return; }
+
+    // Ensure activeSubTab is valid for this tab
+    if (!tab.subTabs.find(s => s.id === state.activeSubTab)) {
+      state.activeSubTab = tab.subTabs[0]?.id;
+    }
+
+    // Apply collapsed state from the current top tab
+    document.body.classList.toggle('sidebar-collapsed', !!tab.sidebarCollapsed);
+    sidebar.classList.toggle('collapsed', !!tab.sidebarCollapsed);
+
+    // Count items per sub-tab
+    function countFor(subId) {
+      let n = 0;
+      state.notes.forEach(i => { if (i.tabId === tab.id && i.subTabId === subId) n++; });
+      state.tapes.forEach(i => { if (i.tabId === tab.id && i.subTabId === subId) n++; });
+      state.links.forEach(i => { if (i.tabId === tab.id && i.subTabId === subId) n++; });
+      return n;
+    }
+
+    sidebar.innerHTML = `
+      <div class="sidebar-head">${esc(tab.name || 'Index')}</div>
+      <div class="sidebar-list" id="sidebarList"></div>
+      <div class="sub-tab-add" id="subTabAdd">＋ 하위탭 추가</div>
+    `;
+    const list = $('#sidebarList', sidebar);
+    tab.subTabs.forEach(sub => {
+      const el = document.createElement('div');
+      el.className = 'sub-tab' + (sub.id === state.activeSubTab ? ' active' : '');
+      el.dataset.subId = sub.id;
+      el.draggable = true;
+      el.innerHTML = `${esc(sub.name)}<span class="sub-tab-count">${countFor(sub.id)}</span>`;
+      list.appendChild(el);
+
+      el.addEventListener('click', (e) => {
+        state.activeSubTab = sub.id;
+        saveLocal();
+        render();
+      });
+      el.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        showSubTabMenu(e.clientX, e.clientY, tab, sub);
+      });
+      // Drag to reorder
+      el.addEventListener('dragstart', (e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', sub.id);
+        el.classList.add('dragging');
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+        list.querySelectorAll('.drag-over').forEach(x => x.classList.remove('drag-over'));
+      });
+      el.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        list.querySelectorAll('.drag-over').forEach(x => x.classList.remove('drag-over'));
+        el.classList.add('drag-over');
+      });
+      el.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const draggedId = e.dataTransfer.getData('text/plain');
+        if (!draggedId || draggedId === sub.id) return;
+        const arr = tab.subTabs;
+        const fromIdx = arr.findIndex(s => s.id === draggedId);
+        const toIdx = arr.findIndex(s => s.id === sub.id);
+        if (fromIdx < 0 || toIdx < 0) return;
+        const [moved] = arr.splice(fromIdx, 1);
+        arr.splice(toIdx, 0, moved);
+        announceSave('하위탭 순서 변경됨');
+        render();
+      });
+    });
+
+    $('#subTabAdd', sidebar).addEventListener('click', () => addSubTab(tab));
+  }
+
+  function addSubTab(tab) {
+    const name = prompt('새 하위탭 이름', '');
+    if (!name) return;
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const sub = { id: uidSub(), name: trimmed };
+    tab.subTabs.push(sub);
+    state.activeSubTab = sub.id;
+    announceSave('하위탭 추가됨');
+    render();
+  }
+
+  function showSubTabMenu(x, y, tab, sub) {
+    // Reuse existing menu styles
+    let menu = document.getElementById('subTabMenu');
+    if (menu) menu.remove();
+    menu = document.createElement('div');
+    menu.id = 'subTabMenu';
+    menu.className = 'menu';
+    menu.style.left = Math.min(x, window.innerWidth - 160) + 'px';
+    menu.style.top = Math.min(y, window.innerHeight - 120) + 'px';
+    menu.innerHTML = `
+      <button data-action="rename">이름 변경</button>
+      <button data-action="delete">삭제</button>
+    `;
+    document.body.appendChild(menu);
+    requestAnimationFrame(() => menu.classList.add('open'));
+
+    function close() {
+      menu.classList.remove('open');
+      setTimeout(() => menu.remove(), 150);
+      document.removeEventListener('click', onOutside, true);
+    }
+    function onOutside(e) {
+      if (!menu.contains(e.target)) close();
+    }
+    setTimeout(() => document.addEventListener('click', onOutside, true), 0);
+
+    menu.addEventListener('click', (e) => {
+      const action = e.target.dataset.action;
+      if (!action) return;
+      if (action === 'rename') {
+        const name = prompt('하위탭 이름', sub.name);
+        if (name) {
+          sub.name = name.trim() || sub.name;
+          announceSave('하위탭 이름 변경됨');
+          render();
+        }
+      } else if (action === 'delete') {
+        if (tab.subTabs.length <= 1) {
+          toast('최소 1개 하위탭은 유지되어야 해요', 'info');
+          close();
+          return;
+        }
+        const idx = tab.subTabs.findIndex(s => s.id === sub.id);
+        const fallback = tab.subTabs[idx === 0 ? 1 : idx - 1];
+        // Move items to fallback sub-tab
+        state.notes.forEach(n => { if (n.tabId === tab.id && n.subTabId === sub.id) n.subTabId = fallback.id; });
+        state.tapes.forEach(t => { if (t.tabId === tab.id && t.subTabId === sub.id) t.subTabId = fallback.id; });
+        state.links.forEach(l => { if (l.tabId === tab.id && l.subTabId === sub.id) l.subTabId = fallback.id; });
+        tab.subTabs.splice(idx, 1);
+        if (state.activeSubTab === sub.id) state.activeSubTab = fallback.id;
+        announceSave('하위탭 삭제됨');
+        render();
+      }
+      close();
+    });
+  }
+
+  // Sidebar collapse handle
+  $('#sidebarHandle').addEventListener('click', () => {
+    const tab = state.tabs.find(t => t.id === state.activeTab);
+    if (!tab) return;
+    tab.sidebarCollapsed = !tab.sidebarCollapsed;
+    // Update handle icon
+    $('#sidebarHandle').textContent = tab.sidebarCollapsed ? '▸' : '◂';
+    saveLocal();
+    render();
+  });
 
   // ===== Init =====
   applyBoard();
