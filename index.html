@@ -879,6 +879,70 @@
   .add-link:hover { transform: scale(1.1); }
   .add-link:active { transform: scale(0.94); }
 
+  /* ===== Pin FAB ===== */
+  .add-pin {
+    position: fixed;
+    bottom: 20px;
+    right: 190px; /* left of add-link */
+    z-index: 50;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(120, 30, 30, 0.4);
+    background:
+      radial-gradient(circle at 35% 30%, #ff9898 0%, #e63030 30%, #a01818 70%, #5a0808 100%);
+    color: #fff0f0;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.4),
+      inset 0 -2px 3px rgba(0,0,0,0.3),
+      0 2px 8px rgba(80,20,20,0.25);
+    transition: transform 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .add-pin:hover { transform: scale(1.1); }
+  .add-pin:active { transform: scale(0.94); }
+
+  /* ===== Pin (draggable) ===== */
+  .pin-obj {
+    position: absolute;
+    width: 60px;
+    height: auto;
+    cursor: grab;
+    z-index: 40; /* above notes but below FABs */
+    user-select: none;
+    filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.35));
+    transition: filter 0.15s ease, transform 0.12s ease;
+  }
+  .pin-obj:hover { filter: drop-shadow(3px 4px 6px rgba(0,0,0,0.45)); }
+  .pin-obj:active { cursor: grabbing; }
+  .pin-obj img {
+    width: 100%;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  .pin-obj.selected::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px dashed #d4a441;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
+  /* Note that's locked by a pin gets subtle visual hint */
+  .postit-note.pin-locked .note-tape {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
   /* ===== Brass link plate ===== */
   .link-plate {
     position: absolute;
@@ -1655,6 +1719,7 @@
 <div class="status-line" id="statusLine"></div>
 <div class="selection-indicator" id="selectionIndicator"></div>
 
+<button class="add-pin" id="addPinBtn" title="새 핀 (드래그해서 메모 고정)">📌</button>
 <button class="add-link" id="addLinkBtn" title="새 바로가기">＋</button>
 <button class="add-tape" id="addTapeBtn" title="새 테이프 라벨">＋</button>
 <button class="add-note" id="addNoteBtn" title="새 메모">＋</button>
@@ -1707,13 +1772,13 @@
         <li><b>우측 하단 ↘</b> — 크기 조절 (잠긴 상태에서도 가능)</li>
       </ul>
 
-      <h3><span class="guide-num">2</span>수정 · 잠금 · 삭제</h3>
+      <h3><span class="guide-num">2</span>수정 · 삭제 · 고정</h3>
       <ul>
-        <li><b>🔓 자물쇠</b> — 위치 잠금 (크기·편집은 가능)</li>
         <li><b>✏ 연필</b> — 제목 + 본문 편집 모드</li>
         <li><b>× 닫기</b> — 메모 삭제</li>
         <li>편집 중 <span class="kbd">Tab</span> — 제목 → 본문으로 이동</li>
         <li>편집 중 <span class="kbd">Esc</span> 또는 <span class="kbd">Ctrl+Enter</span> — 편집 종료 (저장)</li>
+        <li><b>📌 빨간 핀 버튼</b> — 핀 추가 → 메모 위로 드래그하면 그 메모 고정됨</li>
       </ul>
 
       <h3><span class="guide-num">3</span>여러 개 선택 · 이동</h3>
@@ -1721,7 +1786,7 @@
         <li><b>빈 공간 드래그</b> — Rubber-band 선택</li>
         <li><b>Shift + 클릭</b> — 개별 선택 + 맨 위로 올리기</li>
         <li>선택된 항목 드래그 — 전부 같이 이동</li>
-        <li><span class="kbd">Ctrl+C</span> / <span class="kbd">Ctrl+V</span> — 선택 항목 복제 (메모·라벨·황동)</li>
+        <li><span class="kbd">Ctrl+C</span> / <span class="kbd">Ctrl+X</span> / <span class="kbd">Ctrl+V</span> — 복사 / 잘라내기 / 붙여넣기</li>
         <li><span class="kbd">Delete</span> — 일괄 삭제 · <span class="kbd">Esc</span> — 해제</li>
       </ul>
 
@@ -1741,7 +1806,7 @@
         <li><b>＋ 베이지 버튼</b> — 색 선택 팝업 → 색 고르면 라벨 생성</li>
         <li>라벨 어디든 드래그로 이동</li>
         <li><b>더블클릭</b>으로 이름 편집, 외부 클릭 또는 <span class="kbd">Esc</span>로 저장</li>
-        <li><b>🔒 자물쇠</b>로 위치 고정 · <span class="kbd">Shift</span>+클릭 후 <span class="kbd">Delete</span>로 삭제</li>
+        <li><span class="kbd">Shift</span>+클릭 후 <span class="kbd">Delete</span>로 삭제</li>
         <li>현재 탭에만 보임, 8색 형광펜 팔레트 (생성 후 색 변경 불가)</li>
       </ul>
 
@@ -1904,6 +1969,7 @@
   // Migration: ensure tapes + links arrays exist
   if (!Array.isArray(state.tapes)) state.tapes = [];
   if (!Array.isArray(state.links)) state.links = [];
+  if (!Array.isArray(state.pins)) state.pins = [];
 
   // Migration: sub-tabs (each top tab gets at least "기본" sub-tab)
   const uidSub = () => 's_' + Math.random().toString(36).slice(2, 10);
@@ -1923,6 +1989,7 @@
   state.notes.forEach(ensureSubTabId);
   state.tapes.forEach(ensureSubTabId);
   state.links.forEach(ensureSubTabId);
+  state.pins.forEach(ensureSubTabId);
   // activeSubTab default: first sub-tab of active top tab
   if (!state.activeSubTab && state.activeTab && state.activeTab !== 'all') {
     const t = state.tabs.find(t => t.id === state.activeTab);
@@ -2415,8 +2482,14 @@
       const tabName = tab.name;
       const n = state.notes.filter(nn => nn.tabId === tab.id).length;
       state.notes = state.notes.filter(nn => nn.tabId !== tab.id);
+      state.tapes = state.tapes.filter(t => t.tabId !== tab.id);
+      state.links = state.links.filter(l => l.tabId !== tab.id);
+      state.pins = state.pins.filter(p => p.tabId !== tab.id);
       state.tabs = state.tabs.filter(t => t.id !== tab.id);
-      if (state.activeTab === tab.id) state.activeTab = state.tabs[0]?.id || 'all';
+      if (state.activeTab === tab.id) {
+        state.activeTab = state.tabs[0]?.id || 'all';
+        state.activeSubTab = state.tabs[0]?.subTabs?.[0]?.id || null;
+      }
       announceSave(n > 0 ? `"${tabName}" 탭 + 메모 ${n}개 삭제됨` : `"${tabName}" 탭 삭제됨`);
       render();
     }
@@ -2565,8 +2638,9 @@
     const notes = state.notes.filter(n => n.tabId === tab.id && matchSub(n));
     const tapes = state.tapes.filter(t => t.tabId === tab.id && matchSub(t));
     const links = state.links.filter(l => l.tabId === tab.id && matchSub(l));
+    const pins = state.pins.filter(p => p.tabId === tab.id && matchSub(p));
 
-    if (notes.length === 0 && tapes.length === 0 && links.length === 0) {
+    if (notes.length === 0 && tapes.length === 0 && links.length === 0 && pins.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'empty-state';
       empty.innerHTML = '이 탭에 메모가 없어요.<br>우측 하단 <b>＋</b> 버튼으로 추가하세요.';
@@ -2595,7 +2669,16 @@
         nudged = true;
       }
     });
+    pins.forEach(p => {
+      if (typeof p.y !== 'number' || p.y < minY) {
+        p.y = minY + Math.random() * 20;
+        nudged = true;
+      }
+    });
     if (nudged) saveLocal();
+
+    // Compute which notes are pin-locked (any pin overlaps them)
+    const pinLocked = computePinLocks(pins, notes);
 
     // Render tapes first (lower z-index baseline)
     tapes.forEach((tape) => {
@@ -2608,7 +2691,14 @@
     });
 
     notes.forEach((note, i) => {
-      canvas.appendChild(makeNoteEl(note, tab.color, i + 10));
+      const el = makeNoteEl(note, tab.color, i + 10);
+      if (pinLocked.has(note.id)) el.classList.add('pin-locked');
+      canvas.appendChild(el);
+    });
+
+    // Pins on top
+    pins.forEach((pin, i) => {
+      canvas.appendChild(makePinEl(pin, i + 200));
     });
   }
 
@@ -2638,7 +2728,6 @@
       <div class="note-head">
         <div class="note-title" spellcheck="false">${esc(note.title)}</div>
         <div class="note-actions">
-          <button class="note-btn note-btn-lock ${note.locked ? 'active' : ''}" data-action="lock" title="${note.locked ? '고정 해제' : '위치 고정'}">${note.locked ? lockIconClosed : lockIconOpen}</button>
           <button class="note-btn note-btn-edit" data-action="edit" title="수정">✏</button>
           <button class="note-btn" data-action="delete" title="삭제">×</button>
         </div>
@@ -2649,7 +2738,7 @@
       <div class="note-resize" data-action="resize" title="크기 조절"></div>
     `;
 
-    // Resize handle (works even when locked — lock only blocks position drag)
+    // Resize handle (works even when pin-locked — pin only blocks position drag)
     const resizeEl = el.querySelector('[data-action="resize"]');
     resizeEl.addEventListener('mousedown', (e) => {
       e.stopPropagation();
@@ -2661,14 +2750,6 @@
       e.stopPropagation();
       startResize(t.clientX, t.clientY, el, note);
     }, { passive: true });
-
-    // Lock toggle
-    el.querySelector('[data-action="lock"]').addEventListener('click', (e) => {
-      e.stopPropagation();
-      note.locked = !note.locked;
-      announceSave(note.locked ? '메모 고정됨' : '고정 해제됨');
-      render();
-    });
 
     const titleEl = el.querySelector('.note-title');
     const bodyEl = el.querySelector('.note-body');
@@ -3004,9 +3085,6 @@
 
     el.innerHTML = `
       <span class="label-tape-text" spellcheck="false">${esc(tape.text || '')}</span>
-      <div class="label-tape-actions">
-        <button class="label-tape-btn label-tape-btn-lock ${tape.locked ? 'active' : ''}" data-action="lock" title="${tape.locked ? '고정 해제' : '위치 고정'}">${tape.locked ? lockIconClosed : lockIconOpen}</button>
-      </div>
     `;
 
     const textEl = el.querySelector('.label-tape-text');
@@ -3040,14 +3118,6 @@
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); textEl.blur(); }
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); textEl.blur(); }
       if (e.key === 'Escape') { textEl.textContent = tape.text; textEl.blur(); }
-    });
-
-    // Lock
-    el.querySelector('[data-action="lock"]').addEventListener('click', (e) => {
-      e.stopPropagation();
-      tape.locked = !tape.locked;
-      announceSave(tape.locked ? '테이프 고정됨' : '고정 해제됨');
-      render();
     });
 
     return el;
@@ -3326,6 +3396,10 @@
       el.classList.toggle('selected', sel);
       ensureCornerMarkers(el, sel);
     });
+    document.querySelectorAll('.pin-obj').forEach(el => {
+      const sel = selectedIds.has('pin:' + el.dataset.pinId);
+      el.classList.toggle('selected', sel);
+    });
     // Show/hide selection indicator
     const count = selectedIds.size;
     const indicator = $('#selectionIndicator');
@@ -3359,6 +3433,7 @@
       if (kind === 'note') src = state.notes.find(n => n.id === id);
       else if (kind === 'tape') src = state.tapes.find(t => t.id === id);
       else if (kind === 'link') src = state.links.find(l => l.id === id);
+      else if (kind === 'pin') src = state.pins.find(p => p.id === id);
       if (!src) return;
       items.push({ kind, data: JSON.parse(JSON.stringify(src)) });
     });
@@ -3366,6 +3441,33 @@
     clipboardItems = items;
     pasteOffsetMultiplier = 0;
     toast(`${items.length}개 복사됨`, 'success', { duration: 1400 });
+  }
+
+  function cutSelection() {
+    // First copy to clipboard
+    const items = [];
+    const toDeleteNotes = [], toDeleteTapes = [], toDeleteLinks = [], toDeletePins = [];
+    selectedIds.forEach(k => {
+      const [kind, id] = k.split(':');
+      let src;
+      if (kind === 'note') { src = state.notes.find(n => n.id === id); if (src) toDeleteNotes.push(id); }
+      else if (kind === 'tape') { src = state.tapes.find(t => t.id === id); if (src) toDeleteTapes.push(id); }
+      else if (kind === 'link') { src = state.links.find(l => l.id === id); if (src) toDeleteLinks.push(id); }
+      else if (kind === 'pin') { src = state.pins.find(p => p.id === id); if (src) toDeletePins.push(id); }
+      if (src) items.push({ kind, data: JSON.parse(JSON.stringify(src)) });
+    });
+    if (items.length === 0) return;
+    clipboardItems = items;
+    // Reset offset so paste appears at same position as original
+    pasteOffsetMultiplier = -1;
+    // Delete originals
+    state.notes = state.notes.filter(n => !toDeleteNotes.includes(n.id));
+    state.tapes = state.tapes.filter(t => !toDeleteTapes.includes(t.id));
+    state.links = state.links.filter(l => !toDeleteLinks.includes(l.id));
+    state.pins = state.pins.filter(p => !toDeletePins.includes(p.id));
+    clearSelection();
+    announceSave(`${items.length}개 잘라냄`);
+    render();
   }
 
   function pasteClipboard() {
@@ -3427,6 +3529,18 @@
         };
         state.links.push(clone);
         newIds.push(keyOf('link', clone.id));
+      } else if (item.kind === 'pin') {
+        const p = item.data;
+        const clone = {
+          id: uid('p'),
+          tabId: state.activeTab,
+          subTabId: state.activeSubTab,
+          x: (p.x || 60) + offset,
+          y: (p.y || 60) + offset,
+          updatedAt: Date.now()
+        };
+        state.pins.push(clone);
+        newIds.push(keyOf('pin', clone.id));
       }
     });
 
@@ -3506,6 +3620,12 @@
         selectedIds.add('link:' + el.dataset.linkId);
       }
     });
+    document.querySelectorAll('.pin-obj').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (rectsIntersect(vx1, vy1, vx2, vy2, r.left, r.top, r.right, r.bottom)) {
+        selectedIds.add('pin:' + el.dataset.pinId);
+      }
+    });
     updateSelectionUI();
   }
 
@@ -3524,43 +3644,50 @@
     // Check if target is within a selected item — if so, anywhere on it becomes a drag handle
     const selectedNote = target.closest('.postit-note.selected');
     if (selectedNote) {
-      if (selectedNote.classList.contains('locked')) return null;
+      // Notes that are pin-locked cannot be dragged
+      if (selectedNote.classList.contains('pin-locked')) return null;
       return { el: selectedNote, kind: 'note', id: selectedNote.dataset.noteId };
     }
     const selectedTape = target.closest('.label-tape.selected');
     if (selectedTape) {
-      if (selectedTape.classList.contains('locked')) return null;
       return { el: selectedTape, kind: 'tape', id: selectedTape.dataset.tapeId };
     }
     const selectedLink = target.closest('.link-plate.selected');
     if (selectedLink) {
       return { el: selectedLink, kind: 'link', id: selectedLink.dataset.linkId };
     }
+    const selectedPin = target.closest('.pin-obj.selected');
+    if (selectedPin) {
+      return { el: selectedPin, kind: 'pin', id: selectedPin.dataset.pinId };
+    }
 
     // Action buttons / resize handle should never trigger drag
-    if (target.closest('.note-btn, .note-lock, .label-tape-btn, .note-resize')) return null;
+    if (target.closest('.note-btn, .label-tape-btn, .note-resize')) return null;
     if (target.closest('[contenteditable="true"]')) return null;
+
+    // Pin: drag by anywhere (highest priority above notes)
+    const pinEl = target.closest('.pin-obj');
+    if (pinEl) {
+      return { el: pinEl, kind: 'pin', id: pinEl.dataset.pinId };
+    }
 
     // Post-it: drag by tape only
     const postitTape = target.closest('.note-tape');
     if (postitTape) {
       const note = postitTape.closest('.postit-note');
       if (!note) return null;
-      if (note.classList.contains('locked')) return null;
+      // Pin-locked notes can't be dragged
+      if (note.classList.contains('pin-locked')) return null;
       return { el: note, kind: 'note', id: note.dataset.noteId };
     }
 
     // Label tape: drag by anywhere
     const labelTape = target.closest('.label-tape');
     if (labelTape) {
-      if (labelTape.classList.contains('locked')) return null;
       return { el: labelTape, kind: 'tape', id: labelTape.dataset.tapeId };
     }
 
-    // Link plate: do NOT drag on normal click — click is for copy.
-    // Drag only via selection mode (handled by .selected check above)
-    // Actually, to allow movement, enable drag threshold: if user holds mouse
-    // and moves >4px, start drag; otherwise pass to click.
+    // Link plate: drag via threshold
     const linkPlate = target.closest('.link-plate');
     if (linkPlate) {
       return { el: linkPlate, kind: 'link', id: linkPlate.dataset.linkId };
@@ -3585,9 +3712,12 @@
           ? document.querySelector(`[data-note-id="${id}"]`)
           : kind === 'tape'
             ? document.querySelector(`[data-tape-id="${id}"]`)
-            : document.querySelector(`[data-link-id="${id}"]`);
+            : kind === 'pin'
+              ? document.querySelector(`[data-pin-id="${id}"]`)
+              : document.querySelector(`[data-link-id="${id}"]`);
         if (!el) return;
-        if (el.classList.contains('locked')) return; // skip locked
+        // Skip pin-locked notes from group drag
+        if (el.classList.contains('pin-locked')) return;
         const r = el.getBoundingClientRect();
         items.push({
           el, kind, id,
@@ -3653,7 +3783,9 @@
           ? state.notes.find(n => n.id === it.id)
           : it.kind === 'tape'
             ? state.tapes.find(t => t.id === it.id)
-            : state.links.find(l => l.id === it.id);
+            : it.kind === 'pin'
+              ? state.pins.find(p => p.id === it.id)
+              : state.links.find(l => l.id === it.id);
         if (item) {
           item.x = parseFloat(it.el.style.left);
           item.y = parseFloat(it.el.style.top);
@@ -3661,6 +3793,10 @@
         }
       });
       announceSave(drag.group ? `${drag.items.length}개 위치 저장됨` : '위치 저장됨');
+      // Re-render to update pin-lock states on notes if any pin moved
+      if (drag.items.some(it => it.kind === 'pin')) {
+        render();
+      }
     }
     drag = null;
   }
@@ -3741,7 +3877,7 @@
     if (resize) return;
 
     // Raise clicked item to top (unless it's part of a group we're about to drag)
-    const item = e.target.closest(".postit-note, .label-tape, .link-plate");
+    const item = e.target.closest(".postit-note, .label-tape, .link-plate, .pin-obj");
     const pick = pickDragTarget(e, e.target);
 
     if (pick) {
@@ -3795,6 +3931,7 @@
       if (item.classList.contains('postit-note')) { kind = 'note'; id = item.dataset.noteId; }
       else if (item.classList.contains('label-tape')) { kind = 'tape'; id = item.dataset.tapeId; }
       else if (item.classList.contains('link-plate')) { kind = 'link'; id = item.dataset.linkId; }
+      else if (item.classList.contains('pin-obj')) { kind = 'pin'; id = item.dataset.pinId; }
       if (kind) {
         toggleItemSelection(kind, id);
         item.style.zIndex = ++maxZ;
@@ -3804,8 +3941,7 @@
     }
 
     // Empty canvas click → start rubber-band selection (or clear selection)
-    // Don't start rubberband on note/tape content (title/body/etc) — those have their own click handlers
-    if (e.target.closest('.postit-note, .label-tape, .link-plate')) return;
+    if (e.target.closest('.postit-note, .label-tape, .link-plate, .pin-obj')) return;
     if (e.target.closest('#canvas')) {
       // Only left click
       if (e.button !== 0) return;
@@ -3837,7 +3973,7 @@
   // ===== Touch handlers =====
   document.addEventListener('touchstart', (e) => {
     if (e.target.closest('.topbar, .modal, .menu, .color-picker')) return;
-    const item = e.target.closest(".postit-note, .label-tape, .link-plate");
+    const item = e.target.closest(".postit-note, .label-tape, .link-plate, .pin-obj");
     if (item) item.style.zIndex = ++maxZ;
     const pick = pickDragTarget(e, e.target);
     if (pick) {
@@ -3878,26 +4014,25 @@
       const toDeleteNotes = [];
       const toDeleteTapes = [];
       const toDeleteLinks = [];
+      const toDeletePins = [];
       selectedIds.forEach(k => {
         const [kind, id] = k.split(':');
         if (kind === 'note') {
-          const n = state.notes.find(x => x.id === id);
-          if (n && !n.locked) toDeleteNotes.push(id);
+          toDeleteNotes.push(id);
         } else if (kind === 'tape') {
-          const t = state.tapes.find(x => x.id === id);
-          if (t && !t.locked) toDeleteTapes.push(id);
+          toDeleteTapes.push(id);
         } else if (kind === 'link') {
           toDeleteLinks.push(id);
+        } else if (kind === 'pin') {
+          toDeletePins.push(id);
         }
       });
-      const total = toDeleteNotes.length + toDeleteTapes.length + toDeleteLinks.length;
-      if (total === 0) {
-        toast('삭제할 항목 없음 (전부 고정된 상태)', 'info');
-        return;
-      }
+      const total = toDeleteNotes.length + toDeleteTapes.length + toDeleteLinks.length + toDeletePins.length;
+      if (total === 0) return;
       state.notes = state.notes.filter(n => !toDeleteNotes.includes(n.id));
       state.tapes = state.tapes.filter(t => !toDeleteTapes.includes(t.id));
       state.links = state.links.filter(l => !toDeleteLinks.includes(l.id));
+      state.pins = state.pins.filter(p => !toDeletePins.includes(p.id));
       clearSelection();
       announceSave(`${total}개 삭제됨`);
       render();
@@ -4062,6 +4197,14 @@
       if (selectedIds.size === 0) return; // nothing selected, let browser handle
       e.preventDefault();
       copySelection();
+      return;
+    }
+
+    // Ctrl+X → cut (copy + delete)
+    if (key === 'x') {
+      if (selectedIds.size === 0) return;
+      e.preventDefault();
+      cutSelection();
       return;
     }
 
@@ -4276,6 +4419,74 @@
     // Update handle icon
     $('#sidebarHandle').textContent = tab.sidebarCollapsed ? '▸' : '◂';
     saveLocal();
+    render();
+  });
+
+
+  // ===== Pin image (embedded base64) =====
+  const PIN_IMG_SRC = "data:image/png;base64,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";
+  // Natural size of processed image: 200×170 (pin1.png). We'll use width=60 in CSS,
+  // yielding ~60×51 px hitbox. Bounding box used for collision detection.
+  const PIN_W = 60;
+  const PIN_H = 51;
+
+  // ===== Pin: create and render =====
+  function makePinEl(pin, z) {
+    const el = document.createElement('div');
+    el.className = 'pin-obj';
+    el.dataset.pinId = pin.id;
+    el.style.left = (pin.x || 80) + 'px';
+    el.style.top = (pin.y || 80) + 'px';
+    el.style.zIndex = z || 200;
+    if (selectedIds.has('pin:' + pin.id)) el.classList.add('selected');
+    el.innerHTML = '<img src="' + PIN_IMG_SRC + '" alt="pin" draggable="false" />';
+    return el;
+  }
+
+  // ===== Pin-lock detection =====
+  // A note is pin-locked if any pin bounding box overlaps it
+  function computePinLocks(pins, notes) {
+    const locked = new Set();
+    const pinRects = pins.map(p => ({
+      x: p.x, y: p.y,
+      x2: p.x + PIN_W, y2: p.y + PIN_H
+    }));
+    notes.forEach(n => {
+      const noteEl = document.querySelector('.postit-note[data-note-id="' + n.id + '"]');
+      // Use stored note size if available, else default 240x120
+      const nw = n.width || 240;
+      const nh = n.height || 120;
+      const nx = n.x, ny = n.y;
+      const nx2 = nx + nw, ny2 = ny + nh;
+      for (const p of pinRects) {
+        if (p.x < nx2 && p.x2 > nx && p.y < ny2 && p.y2 > ny) {
+          locked.add(n.id);
+          break;
+        }
+      }
+    });
+    return locked;
+  }
+
+  // ===== Add pin FAB handler =====
+  $('#addPinBtn').addEventListener('click', () => {
+    if (state.activeTab === 'all') {
+      toast('전체 탭에서는 핀을 추가할 수 없어요', 'info');
+      return;
+    }
+    const canvasEl = $('#canvas');
+    const cRect = canvasEl.getBoundingClientRect();
+    const minY = getMinY();
+    const pin = {
+      id: uid('p'),
+      tabId: state.activeTab,
+      subTabId: state.activeSubTab,
+      x: 100 + Math.random() * Math.max(200, cRect.width - 300),
+      y: minY + Math.random() * 100,
+      updatedAt: Date.now()
+    };
+    state.pins.push(pin);
+    announceSave('핀 추가됨');
     render();
   });
 
