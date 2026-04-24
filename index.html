@@ -213,7 +213,7 @@
   .sidebar {
     width: 150px;
     flex-shrink: 0;
-    padding: 100px 0 20px;
+    padding: var(--topbar-h, 100px) 0 20px;
     background: rgba(240, 228, 194, 0.4);
     background-image:
       repeating-linear-gradient(0deg, rgba(139, 111, 71, 0.05) 0 18px, transparent 18px 19px);
@@ -384,7 +384,7 @@
     position: relative;
     flex: 1;
     min-height: 100vh;
-    padding-top: 100px;
+    padding-top: var(--topbar-h, 100px);
     padding-bottom: 80px;
     z-index: 2;
   }
@@ -1907,6 +1907,22 @@
     const h = topbar ? topbar.getBoundingClientRect().height : 90;
     return h + 15; // topbar height + margin so tape is clearly visible
   }
+
+  // Update --topbar-h CSS var to match actual topbar height (so sidebar/canvas padding adjusts)
+  function updateTopbarHeight() {
+    const topbar = document.querySelector('.topbar');
+    if (!topbar) return;
+    const h = topbar.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--topbar-h', (h + 10) + 'px');
+  }
+  // Observe topbar size changes (wrapped tabs change height)
+  const _topbarEl = document.querySelector('.topbar');
+  if (_topbarEl && window.ResizeObserver) {
+    new ResizeObserver(updateTopbarHeight).observe(_topbarEl);
+  }
+  window.addEventListener('resize', updateTopbarHeight);
+  // Initial measurement
+  setTimeout(updateTopbarHeight, 0);
 
   // ===== Default state =====
   const uid = (p) => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
