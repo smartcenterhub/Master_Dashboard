@@ -2281,12 +2281,42 @@
       const remote = JSON.parse(content);
       if (remote && Array.isArray(remote.tabs) && Array.isArray(remote.notes)) {
         state = remote;
+        // Migration: ensure all arrays exist
         if (!Array.isArray(state.tapes)) state.tapes = [];
         if (!Array.isArray(state.links)) state.links = [];
+        if (!Array.isArray(state.pins)) state.pins = [];
+        // Migration: subTabs for each tab
+        const _uidSub = () => 's_' + Math.random().toString(36).slice(2, 10);
+        state.tabs.forEach(tab => {
+          if (!Array.isArray(tab.subTabs)) tab.subTabs = [];
+          if (tab.subTabs.length === 0) {
+            tab.subTabs.push({ id: _uidSub(), name: '기본' });
+          }
+          if (typeof tab.sidebarCollapsed !== 'boolean') tab.sidebarCollapsed = false;
+        });
+        // Migration: assign subTabId where missing
+        function _ensureSub(item) {
+          if (item.subTabId) return;
+          const tab = state.tabs.find(t => t.id === item.tabId);
+          if (tab && tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+        }
+        state.notes.forEach(_ensureSub);
+        state.tapes.forEach(_ensureSub);
+        state.links.forEach(_ensureSub);
+        state.pins.forEach(_ensureSub);
+
         state.lastSyncedAt = new Date(json.updated_at).getTime();
         if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
           state.activeTab = state.tabs[0]?.id || 'all';
         }
+        // activeSubTab fallback
+        if (state.activeTab !== 'all') {
+          const t = state.tabs.find(tt => tt.id === state.activeTab);
+          if (t && (!state.activeSubTab || !t.subTabs.find(s => s.id === state.activeSubTab))) {
+            state.activeSubTab = t.subTabs[0]?.id;
+          }
+        }
+
         localStorage.setItem(LS_DATA, JSON.stringify(state));
         setSyncStatus('불러옴 ✓', 'ok');
         toast(`Gist에서 불러옴 (메모 ${state.notes.length}개)`, 'success', { duration: 2500, key: 'sync' });
@@ -2298,8 +2328,9 @@
         return true;
       }
     } catch (e) {
+      console.error('[pullFromGist]', e);
       setSyncStatus('불러오기 실패', 'err');
-      toast('불러오기 실패', 'error', { duration: 4000, key: 'sync' });
+      toast('불러오기 실패: ' + (e.message || 'unknown'), 'error', { duration: 5000, key: 'sync' });
     }
     return false;
   }
