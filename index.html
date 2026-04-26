@@ -2274,11 +2274,26 @@
           'Accept': 'application/vnd.github+json',
         }
       });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
       const json = await res.json();
-      const content = json.files?.['sticky-memo.json']?.content;
-      if (!content) throw new Error('파일이 없습니다');
-      const remote = JSON.parse(content);
+      console.log('[pullFromGist] gist files:', Object.keys(json.files || {}));
+      // Try sticky-memo.json first, fall back to any .json file
+      let content = json.files?.['sticky-memo.json']?.content;
+      if (!content && json.files) {
+        const jsonFile = Object.values(json.files).find(f => f.filename?.endsWith('.json'));
+        if (jsonFile) {
+          console.log('[pullFromGist] using fallback file:', jsonFile.filename);
+          content = jsonFile.content;
+        }
+      }
+      if (!content) throw new Error('JSON 파일이 없습니다 (찾은 파일: ' + Object.keys(json.files || {}).join(', ') + ')');
+      let remote;
+      try {
+        remote = JSON.parse(content);
+      } catch (parseErr) {
+        throw new Error('JSON 파싱 실패: ' + parseErr.message);
+      }
+      console.log('[pullFromGist] parsed:', { tabs: remote?.tabs?.length, notes: remote?.notes?.length });
       if (remote && Array.isArray(remote.tabs) && Array.isArray(remote.notes)) {
         state = remote;
         // Migration: ensure all arrays exist
@@ -2328,7 +2343,8 @@
         return true;
       }
     } catch (e) {
-      console.error('[pullFromGist]', e);
+      console.error('[pullFromGist] Error:', e);
+      console.error('[pullFromGist] Stack:', e.stack);
       setSyncStatus('불러오기 실패', 'err');
       toast('불러오기 실패: ' + (e.message || 'unknown'), 'error', { duration: 5000, key: 'sync' });
     }
@@ -2353,17 +2369,43 @@
 
       // Remote is meaningfully newer → auto-pull
       if (remoteUpdated > localSynced + 2000) {
-        const content = json.files?.['sticky-memo.json']?.content;
+        let content = json.files?.['sticky-memo.json']?.content;
+        if (!content && json.files) {
+          const jf = Object.values(json.files).find(f => f.filename?.endsWith('.json'));
+          if (jf) content = jf.content;
+        }
         if (content) {
           const remote = JSON.parse(content);
           if (remote && Array.isArray(remote.tabs) && Array.isArray(remote.notes)) {
             state = remote;
+            // Full migration
             if (!Array.isArray(state.tapes)) state.tapes = [];
             if (!Array.isArray(state.links)) state.links = [];
-        if (!Array.isArray(state.links)) state.links = [];
+            if (!Array.isArray(state.pins)) state.pins = [];
+            const _uidSub2 = () => 's_' + Math.random().toString(36).slice(2, 10);
+            state.tabs.forEach(tab => {
+              if (!Array.isArray(tab.subTabs)) tab.subTabs = [];
+              if (tab.subTabs.length === 0) tab.subTabs.push({ id: _uidSub2(), name: '기본' });
+              if (typeof tab.sidebarCollapsed !== 'boolean') tab.sidebarCollapsed = false;
+            });
+            function _ens(item) {
+              if (item.subTabId) return;
+              const tab = state.tabs.find(t => t.id === item.tabId);
+              if (tab && tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+            }
+            state.notes.forEach(_ens);
+            state.tapes.forEach(_ens);
+            state.links.forEach(_ens);
+            state.pins.forEach(_ens);
             state.lastSyncedAt = remoteUpdated;
             if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
               state.activeTab = state.tabs[0]?.id || 'all';
+            }
+            if (state.activeTab !== 'all') {
+              const t = state.tabs.find(tt => tt.id === state.activeTab);
+              if (t && (!state.activeSubTab || !t.subTabs.find(s => s.id === state.activeSubTab))) {
+                state.activeSubTab = t.subTabs[0]?.id;
+              }
             }
             localStorage.setItem(LS_DATA, JSON.stringify(state));
             render();
@@ -2581,6 +2623,11 @@
   function renderCanvas() {
     const canvas = $('#canvas');
     canvas.innerHTML = '';
+
+    // Defensive: ensure all arrays exist (in case migration was missed somewhere)
+    if (!Array.isArray(state.tapes)) state.tapes = [];
+    if (!Array.isArray(state.links)) state.links = [];
+    if (!Array.isArray(state.pins)) state.pins = [];
 
     if (state.activeTab === 'all') {
       renderListView(canvas);
@@ -4292,11 +4339,30 @@
 
   // ===== Render =====
   function render() {
-    applyBoard();
-    renderTabs();
-    renderSidebar();
-    renderCanvas();
-    updateSelectionUI();
+    try {
+      applyBoard();
+      renderTabs();
+      renderSidebar();
+      renderCanvas();
+      updateSelectionUI();
+    } catch (e) {
+      console.error('[render] error:', e);
+      console.error('[render] stack:', e.stack);
+      console.error('[render] state snapshot:', {
+        tabs: state.tabs?.length,
+        notes: state.notes?.length,
+        tapes: state.tapes?.length,
+        links: state.links?.length,
+        pins: state.pins?.length,
+        activeTab: state.activeTab,
+        activeSubTab: state.activeSubTab
+      });
+      // Show error to user so they know what's happening
+      const canvas = document.getElementById('canvas');
+      if (canvas) {
+        canvas.innerHTML = '<div style="padding: 100px 30px; color: #a02020; max-width: 600px; line-height: 1.6;"><b>⚠ 렌더링 오류</b><br><br>' + (e.message || e) + '<br><br>F12 콘솔에서 상세 내용 확인하세요.</div>';
+      }
+    }
   }
 
   // ===== Sidebar (sub-tabs) =====
