@@ -890,6 +890,36 @@
   .add-link:hover { transform: scale(1.1); }
   .add-link:active { transform: scale(0.94); }
 
+  /* ===== Silver shortcut FAB ===== */
+  .add-shortcut {
+    position: fixed;
+    bottom: 20px;
+    right: 246px; /* left of pin FAB */
+    z-index: 50;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(80, 80, 90, 0.4);
+    background:
+      radial-gradient(circle at 35% 30%, #f5f5f8 0%, #c8c8cd 30%, #888892 70%, #4a4a52 100%);
+    color: #2a2a30;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.5),
+      inset 0 -2px 3px rgba(0,0,0,0.25),
+      0 2px 8px rgba(60,60,70,0.25);
+    transition: transform 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .add-shortcut:hover { transform: scale(1.1); }
+  .add-shortcut:active { transform: scale(0.94); }
+
   /* ===== Pin FAB ===== */
   .add-pin {
     position: fixed;
@@ -1017,6 +1047,76 @@
   .link-plate.dragging { transition: none; cursor: grabbing !important; }
   .link-plate.copied-flash {
     animation: copied-shadow-flash 1.5s ease-out;
+  }
+
+  /* ===== Silver shortcut plate (internal tab jump) ===== */
+  .shortcut-plate {
+    position: absolute;
+    padding: 12px 18px;
+    min-width: 140px;
+    max-width: 220px;
+    background:
+      linear-gradient(145deg, #e8e8ec 0%, #b8b8bd 40%, #d8d8dc 75%, #88888c 100%);
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.5),
+      inset 0 -1px 0 rgba(0,0,0,0.18),
+      0 2px 4px rgba(0,0,0,0.15),
+      0 6px 14px rgba(60,60,70,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .shortcut-plate:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.6),
+      inset 0 -1px 0 rgba(0,0,0,0.18),
+      0 4px 8px rgba(0,0,0,0.18),
+      0 10px 22px rgba(60,60,70,0.25);
+  }
+  .shortcut-plate::before,
+  .shortcut-plate::after {
+    content: '';
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #5a5a60, #2a2a30);
+    top: 50%; transform: translateY(-50%);
+  }
+  .shortcut-plate::before { left: 5px; }
+  .shortcut-plate::after { right: 5px; }
+  .shortcut-plate-title {
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2a2a30;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.3;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+    word-break: break-word;
+  }
+  .shortcut-plate-sub {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: rgba(42, 42, 48, 0.7);
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .shortcut-plate.dragging { transition: none; cursor: grabbing !important; }
+  .shortcut-plate.jumping {
+    animation: shortcut-jump-flash 0.6s ease-out;
+  }
+  @keyframes shortcut-jump-flash {
+    0% { transform: scale(1); filter: brightness(1); }
+    30% { transform: scale(1.05); filter: brightness(1.4); box-shadow: 0 0 24px rgba(212, 164, 65, 0.7); }
+    100% { transform: scale(1); filter: brightness(1); }
   }
 
   /* Link edit modal */
@@ -1594,14 +1694,16 @@
      Child elements cannot receive clicks — all interaction blocked except drag. */
   .postit-note.selected > *:not(.corner-marker),
   .label-tape.selected > *:not(.corner-marker),
-  .link-plate.selected > *:not(.corner-marker) {
+  .link-plate.selected > *:not(.corner-marker),
+  .shortcut-plate.selected > *:not(.corner-marker) {
     pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
   }
   .postit-note.selected,
   .label-tape.selected,
-  .link-plate.selected {
+  .link-plate.selected,
+  .shortcut-plate.selected {
     cursor: move;
   }
 
@@ -1730,6 +1832,7 @@
 <div class="status-line" id="statusLine"></div>
 <div class="selection-indicator" id="selectionIndicator"></div>
 
+<button class="add-shortcut" id="addShortcutBtn" title="새 은판 (탭 바로가기)">⊞</button>
 <button class="add-pin" id="addPinBtn" title="새 핀 (드래그해서 메모 고정)">📌</button>
 <button class="add-link" id="addLinkBtn" title="새 바로가기">＋</button>
 <button class="add-tape" id="addTapeBtn" title="새 테이프 라벨">＋</button>
@@ -1752,6 +1855,29 @@
       <button class="danger" id="linkDeleteBtn">삭제</button>
       <button id="linkCancelBtn">취소</button>
       <button class="primary" id="linkSaveBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shortcut Modal (silver plate) -->
+<div class="modal" id="shortcutModal">
+  <div class="modal-content">
+    <h2 id="shortcutModalTitle">탭 바로가기 편집</h2>
+    <div class="subtitle">클릭하면 해당 탭으로 즉시 이동합니다.</div>
+    <div class="link-modal-form">
+      <label>표시 이름</label>
+      <input type="text" id="shortcutTitleInput" placeholder="공부 - 영어, 회의록..." maxlength="40">
+      <label>상위 탭</label>
+      <select id="shortcutTabSelect" style="width:100%; padding:8px; font-size:14px; font-family:inherit; border:1px solid var(--line); border-radius:4px; background:white; color:var(--ink);"></select>
+      <label>하위 탭</label>
+      <select id="shortcutSubSelect" style="width:100%; padding:8px; font-size:14px; font-family:inherit; border:1px solid var(--line); border-radius:4px; background:white; color:var(--ink);"></select>
+      <label>부가 텍스트 (선택, 밑에 작게)</label>
+      <input type="text" id="shortcutSubText" placeholder="2024년" maxlength="30">
+    </div>
+    <div class="link-modal-actions">
+      <button class="danger" id="shortcutDeleteBtn">삭제</button>
+      <button id="shortcutCancelBtn">취소</button>
+      <button class="primary" id="shortcutSaveBtn">저장</button>
     </div>
   </div>
 </div>
@@ -1821,12 +1947,14 @@
         <li>현재 탭에만 보임, 8색 형광펜 팔레트 (생성 후 색 변경 불가)</li>
       </ul>
 
-      <h3><span class="guide-num">6</span>바로가기 (황동 명패)</h3>
+      <h3><span class="guide-num">6</span>바로가기 (황동 · 은판)</h3>
       <ul>
-        <li><b>＋ 황동 버튼</b> — 제목 + URL 입력해서 생성</li>
-        <li><b>단일 클릭</b> — URL 클립보드에 복사 (+ 초록 플래시)</li>
-        <li><b>더블클릭</b> — 제목·URL·부가 텍스트 편집 (삭제 버튼도 있음)</li>
-        <li>드래그로 이동, <span class="kbd">Shift</span>+클릭 → <span class="kbd">Delete</span>로도 삭제</li>
+        <li><b>＋ 황동 버튼</b> — 외부 URL 바로가기 (구글, 깃허브 등)</li>
+        <li>황동 단일 클릭 → URL 복사 · 더블클릭 → 편집</li>
+        <li><b>＋ 은판 버튼 (⊞)</b> — 앱 내부 탭 바로가기</li>
+        <li>은판 단일 클릭 → 해당 상위탭/하위탭으로 즉시 점프</li>
+        <li>은판 더블클릭 → 대상 탭·이름 편집</li>
+        <li>둘 다 드래그로 이동, <span class="kbd">Shift</span>+클릭 → <span class="kbd">Delete</span>로 삭제</li>
       </ul>
 
       <h3><span class="guide-num">7</span>저장 · 동기화</h3>
@@ -1997,6 +2125,7 @@
   if (!Array.isArray(state.tapes)) state.tapes = [];
   if (!Array.isArray(state.links)) state.links = [];
   if (!Array.isArray(state.pins)) state.pins = [];
+  if (!Array.isArray(state.shortcuts)) state.shortcuts = [];
 
   // Migration: sub-tabs (each top tab gets at least "기본" sub-tab)
   const uidSub = () => 's_' + Math.random().toString(36).slice(2, 10);
@@ -2017,6 +2146,7 @@
   state.tapes.forEach(ensureSubTabId);
   state.links.forEach(ensureSubTabId);
   state.pins.forEach(ensureSubTabId);
+  state.shortcuts.forEach(ensureSubTabId);
   // activeSubTab default: first sub-tab of active top tab
   if (!state.activeSubTab && state.activeTab && state.activeTab !== 'all') {
     const t = state.tabs.find(t => t.id === state.activeTab);
@@ -2311,6 +2441,7 @@
         if (!Array.isArray(state.tapes)) state.tapes = [];
         if (!Array.isArray(state.links)) state.links = [];
         if (!Array.isArray(state.pins)) state.pins = [];
+        if (!Array.isArray(state.shortcuts)) state.shortcuts = [];
         // Migration: subTabs for each tab
         const _uidSub = () => 's_' + Math.random().toString(36).slice(2, 10);
         state.tabs.forEach(tab => {
@@ -2330,6 +2461,7 @@
         state.tapes.forEach(_ensureSub);
         state.links.forEach(_ensureSub);
         state.pins.forEach(_ensureSub);
+        state.shortcuts.forEach(_ensureSub);
 
         state.lastSyncedAt = new Date(json.updated_at).getTime();
         if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
@@ -2393,6 +2525,7 @@
             if (!Array.isArray(state.tapes)) state.tapes = [];
             if (!Array.isArray(state.links)) state.links = [];
             if (!Array.isArray(state.pins)) state.pins = [];
+            if (!Array.isArray(state.shortcuts)) state.shortcuts = [];
             const _uidSub2 = () => 's_' + Math.random().toString(36).slice(2, 10);
             state.tabs.forEach(tab => {
               if (!Array.isArray(tab.subTabs)) tab.subTabs = [];
@@ -2408,6 +2541,7 @@
             state.tapes.forEach(_ens);
             state.links.forEach(_ens);
             state.pins.forEach(_ens);
+            state.shortcuts.forEach(_ens);
             state.lastSyncedAt = remoteUpdated;
             if (!state.activeTab || (state.activeTab !== 'all' && !state.tabs.find(t => t.id === state.activeTab))) {
               state.activeTab = state.tabs[0]?.id || 'all';
@@ -2593,6 +2727,7 @@
       state.tapes = state.tapes.filter(t => t.tabId !== tab.id);
       state.links = state.links.filter(l => l.tabId !== tab.id);
       state.pins = state.pins.filter(p => p.tabId !== tab.id);
+      state.shortcuts = state.shortcuts.filter(s => s.tabId !== tab.id);
       state.tabs = state.tabs.filter(t => t.id !== tab.id);
       if (state.activeTab === tab.id) {
         state.activeTab = state.tabs[0]?.id || 'all';
@@ -2647,6 +2782,7 @@
     if (!Array.isArray(state.tapes)) state.tapes = [];
     if (!Array.isArray(state.links)) state.links = [];
     if (!Array.isArray(state.pins)) state.pins = [];
+    if (!Array.isArray(state.shortcuts)) state.shortcuts = [];
 
     if (state.activeTab === 'all') {
       renderListView(canvas);
@@ -2752,8 +2888,9 @@
     const tapes = state.tapes.filter(t => t.tabId === tab.id && matchSub(t));
     const links = state.links.filter(l => l.tabId === tab.id && matchSub(l));
     const pins = state.pins.filter(p => p.tabId === tab.id && matchSub(p));
+    const shortcuts = state.shortcuts.filter(s => s.tabId === tab.id && matchSub(s));
 
-    if (notes.length === 0 && tapes.length === 0 && links.length === 0 && pins.length === 0) {
+    if (notes.length === 0 && tapes.length === 0 && links.length === 0 && pins.length === 0 && shortcuts.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'empty-state';
       empty.innerHTML = '이 탭에 메모가 없어요.<br>우측 하단 <b>＋</b> 버튼으로 추가하세요.';
@@ -2788,6 +2925,12 @@
         nudged = true;
       }
     });
+    shortcuts.forEach(s => {
+      if (typeof s.y !== 'number' || s.y < minY) {
+        s.y = minY + Math.random() * 20;
+        nudged = true;
+      }
+    });
     if (nudged) saveLocal();
 
     // Compute which notes are pin-locked (any pin overlaps them)
@@ -2801,6 +2944,11 @@
     // Links render mid-layer (between tapes and notes)
     links.forEach((link, i) => {
       canvas.appendChild(makeLinkEl(link, i + 5));
+    });
+
+    // Shortcuts render mid-layer too
+    shortcuts.forEach((sc, i) => {
+      canvas.appendChild(makeShortcutEl(sc, i + 7));
     });
 
     notes.forEach((note, i) => {
@@ -3288,6 +3436,180 @@
     return el;
   }
 
+  // ============================================
+  // ===== Silver shortcut plate (tab jump) =====
+  // ============================================
+  function makeShortcutEl(sc, z) {
+    const el = document.createElement('div');
+    el.className = 'shortcut-plate';
+    el.dataset.shortcutId = sc.id;
+    el.style.left = (sc.x || 80) + 'px';
+    el.style.top = (sc.y || 80) + 'px';
+    el.style.zIndex = z || 5;
+    el.innerHTML = `
+      <div class="shortcut-plate-title">${esc(sc.title || '(제목 없음)')}</div>
+      ${sc.subText ? `<div class="shortcut-plate-sub">${esc(sc.subText)}</div>` : ''}
+    `;
+
+    // Single click → jump to target tab/subTab
+    let scClickTimer = null;
+    el.addEventListener('click', (e) => {
+      if (drag && drag.moved) return;
+      const sel = getSelection();
+      if (sel && sel.toString().length > 0) return;
+      clearTimeout(scClickTimer);
+      scClickTimer = setTimeout(() => {
+        jumpToShortcut(sc, el);
+        scClickTimer = null;
+      }, 220);
+    });
+
+    // Double-click → edit modal
+    el.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      clearTimeout(scClickTimer);
+      scClickTimer = null;
+      openShortcutEditModal(sc);
+    });
+
+    return el;
+  }
+
+  function jumpToShortcut(sc, el) {
+    // Validate target still exists
+    const targetTab = state.tabs.find(t => t.id === sc.targetTabId);
+    if (!targetTab) {
+      toast('대상 탭이 삭제됨', 'error', { duration: 2000 });
+      return;
+    }
+    const targetSub = targetTab.subTabs.find(s => s.id === sc.targetSubTabId);
+    if (!targetSub) {
+      toast('대상 하위탭이 삭제됨', 'error', { duration: 2000 });
+      return;
+    }
+    // Visual feedback before jumping
+    if (el) el.classList.add('jumping');
+    setTimeout(() => {
+      state.activeTab = sc.targetTabId;
+      state.activeSubTab = sc.targetSubTabId;
+      saveLocal();
+      render();
+      toast(`→ ${targetTab.name} · ${targetSub.name}`, 'success', { duration: 1500 });
+    }, 200);
+  }
+
+  // ===== Shortcut modal =====
+  const shortcutModal = $('#shortcutModal');
+  let editingShortcutId = null;
+
+  function populateShortcutDropdowns(selectedTabId, selectedSubId) {
+    const tabSel = $('#shortcutTabSelect');
+    const subSel = $('#shortcutSubSelect');
+    tabSel.innerHTML = state.tabs.map(t =>
+      `<option value="${t.id}"${t.id === selectedTabId ? ' selected' : ''}>${esc(t.name)}</option>`
+    ).join('');
+    function refreshSubs() {
+      const tabId = tabSel.value;
+      const tab = state.tabs.find(t => t.id === tabId);
+      if (!tab) { subSel.innerHTML = ''; return; }
+      subSel.innerHTML = tab.subTabs.map(s =>
+        `<option value="${s.id}"${s.id === selectedSubId ? ' selected' : ''}>${esc(s.name)}</option>`
+      ).join('');
+    }
+    tabSel.onchange = () => { selectedSubId = null; refreshSubs(); };
+    refreshSubs();
+  }
+
+  function openShortcutEditModal(sc) {
+    editingShortcutId = sc.id;
+    $('#shortcutModalTitle').textContent = '탭 바로가기 편집';
+    $('#shortcutTitleInput').value = sc.title || '';
+    $('#shortcutSubText').value = sc.subText || '';
+    populateShortcutDropdowns(sc.targetTabId, sc.targetSubTabId);
+    $('#shortcutDeleteBtn').style.display = '';
+    shortcutModal.classList.add('open');
+    setTimeout(() => $('#shortcutTitleInput').focus(), 50);
+  }
+
+  function openShortcutCreateModal() {
+    editingShortcutId = null;
+    $('#shortcutModalTitle').textContent = '새 탭 바로가기';
+    $('#shortcutTitleInput').value = '';
+    $('#shortcutSubText').value = '';
+    // Default: current tab + sub
+    populateShortcutDropdowns(state.activeTab, state.activeSubTab);
+    $('#shortcutDeleteBtn').style.display = 'none';
+    shortcutModal.classList.add('open');
+    setTimeout(() => $('#shortcutTitleInput').focus(), 50);
+  }
+
+  function closeShortcutModal() {
+    shortcutModal.classList.remove('open');
+    editingShortcutId = null;
+  }
+
+  $('#shortcutSaveBtn').addEventListener('click', () => {
+    const title = $('#shortcutTitleInput').value.trim();
+    const targetTabId = $('#shortcutTabSelect').value;
+    const targetSubTabId = $('#shortcutSubSelect').value;
+    const subText = $('#shortcutSubText').value.trim();
+    if (!title) { toast('표시 이름을 입력해 주세요', 'error', { duration: 1800 }); return; }
+    if (!targetTabId || !targetSubTabId) { toast('대상 탭을 선택해 주세요', 'error', { duration: 1800 }); return; }
+
+    if (editingShortcutId) {
+      const sc = state.shortcuts.find(s => s.id === editingShortcutId);
+      if (sc) {
+        sc.title = title;
+        sc.targetTabId = targetTabId;
+        sc.targetSubTabId = targetSubTabId;
+        sc.subText = subText;
+        sc.updatedAt = Date.now();
+        announceSave('바로가기 저장됨');
+      }
+    } else {
+      const canvasEl = $('#canvas');
+      const cRect = canvasEl.getBoundingClientRect();
+      const minY = getMinY();
+      state.shortcuts.push({
+        id: uid('sc'),
+        tabId: state.activeTab,
+        subTabId: state.activeSubTab,
+        title,
+        targetTabId,
+        targetSubTabId,
+        subText,
+        x: 60 + Math.random() * Math.max(200, cRect.width - 320),
+        y: minY + Math.random() * 100,
+        updatedAt: Date.now()
+      });
+      announceSave('바로가기 추가됨');
+    }
+    closeShortcutModal();
+    render();
+  });
+
+  $('#shortcutDeleteBtn').addEventListener('click', () => {
+    if (!editingShortcutId) return;
+    state.shortcuts = state.shortcuts.filter(s => s.id !== editingShortcutId);
+    announceSave('바로가기 삭제됨');
+    closeShortcutModal();
+    render();
+  });
+
+  $('#shortcutCancelBtn').addEventListener('click', closeShortcutModal);
+  shortcutModal.addEventListener('click', (e) => {
+    if (e.target === shortcutModal) closeShortcutModal();
+  });
+
+  $('#addShortcutBtn').addEventListener('click', () => {
+    if (state.activeTab === 'all') {
+      toast('전체 탭에서는 추가할 수 없어요', 'info');
+      return;
+    }
+    openShortcutCreateModal();
+  });
+
   // ===== Link edit modal =====
   const linkModal = $('#linkModal');
   let editingLinkId = null;
@@ -3509,6 +3831,11 @@
       el.classList.toggle('selected', sel);
       ensureCornerMarkers(el, sel);
     });
+    document.querySelectorAll('.shortcut-plate').forEach(el => {
+      const sel = selectedIds.has('shortcut:' + el.dataset.shortcutId);
+      el.classList.toggle('selected', sel);
+      ensureCornerMarkers(el, sel);
+    });
     document.querySelectorAll('.pin-obj').forEach(el => {
       const sel = selectedIds.has('pin:' + el.dataset.pinId);
       el.classList.toggle('selected', sel);
@@ -3547,6 +3874,7 @@
       else if (kind === 'tape') src = state.tapes.find(t => t.id === id);
       else if (kind === 'link') src = state.links.find(l => l.id === id);
       else if (kind === 'pin') src = state.pins.find(p => p.id === id);
+      else if (kind === 'shortcut') src = state.shortcuts.find(s => s.id === id);
       if (!src) return;
       items.push({ kind, data: JSON.parse(JSON.stringify(src)) });
     });
@@ -3559,7 +3887,7 @@
   function cutSelection() {
     // First copy to clipboard
     const items = [];
-    const toDeleteNotes = [], toDeleteTapes = [], toDeleteLinks = [], toDeletePins = [];
+    const toDeleteNotes = [], toDeleteTapes = [], toDeleteLinks = [], toDeletePins = [], toDeleteShortcuts = [];
     selectedIds.forEach(k => {
       const [kind, id] = k.split(':');
       let src;
@@ -3567,17 +3895,17 @@
       else if (kind === 'tape') { src = state.tapes.find(t => t.id === id); if (src) toDeleteTapes.push(id); }
       else if (kind === 'link') { src = state.links.find(l => l.id === id); if (src) toDeleteLinks.push(id); }
       else if (kind === 'pin') { src = state.pins.find(p => p.id === id); if (src) toDeletePins.push(id); }
+      else if (kind === 'shortcut') { src = state.shortcuts.find(s => s.id === id); if (src) toDeleteShortcuts.push(id); }
       if (src) items.push({ kind, data: JSON.parse(JSON.stringify(src)) });
     });
     if (items.length === 0) return;
     clipboardItems = items;
-    // Reset offset so paste appears at same position as original
     pasteOffsetMultiplier = -1;
-    // Delete originals
     state.notes = state.notes.filter(n => !toDeleteNotes.includes(n.id));
     state.tapes = state.tapes.filter(t => !toDeleteTapes.includes(t.id));
     state.links = state.links.filter(l => !toDeleteLinks.includes(l.id));
     state.pins = state.pins.filter(p => !toDeletePins.includes(p.id));
+    state.shortcuts = state.shortcuts.filter(s => !toDeleteShortcuts.includes(s.id));
     clearSelection();
     announceSave(`${items.length}개 잘라냄`);
     render();
@@ -3654,6 +3982,22 @@
         };
         state.pins.push(clone);
         newIds.push(keyOf('pin', clone.id));
+      } else if (item.kind === 'shortcut') {
+        const s = item.data;
+        const clone = {
+          id: uid('sc'),
+          tabId: state.activeTab,
+          subTabId: state.activeSubTab,
+          title: s.title || '',
+          targetTabId: s.targetTabId,
+          targetSubTabId: s.targetSubTabId,
+          subText: s.subText || '',
+          x: (s.x || 60) + offset,
+          y: (s.y || 60) + offset,
+          updatedAt: Date.now()
+        };
+        state.shortcuts.push(clone);
+        newIds.push(keyOf('shortcut', clone.id));
       }
     });
 
@@ -3733,6 +4077,12 @@
         selectedIds.add('link:' + el.dataset.linkId);
       }
     });
+    document.querySelectorAll('.shortcut-plate').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (rectsIntersect(vx1, vy1, vx2, vy2, r.left, r.top, r.right, r.bottom)) {
+        selectedIds.add('shortcut:' + el.dataset.shortcutId);
+      }
+    });
     document.querySelectorAll('.pin-obj').forEach(el => {
       const r = el.getBoundingClientRect();
       if (rectsIntersect(vx1, vy1, vx2, vy2, r.left, r.top, r.right, r.bottom)) {
@@ -3768,6 +4118,10 @@
     const selectedLink = target.closest('.link-plate.selected');
     if (selectedLink) {
       return { el: selectedLink, kind: 'link', id: selectedLink.dataset.linkId };
+    }
+    const selectedShortcut = target.closest('.shortcut-plate.selected');
+    if (selectedShortcut) {
+      return { el: selectedShortcut, kind: 'shortcut', id: selectedShortcut.dataset.shortcutId };
     }
     const selectedPin = target.closest('.pin-obj.selected');
     if (selectedPin) {
@@ -3806,6 +4160,12 @@
       return { el: linkPlate, kind: 'link', id: linkPlate.dataset.linkId };
     }
 
+    // Shortcut plate: drag via threshold
+    const shortcutPlate = target.closest('.shortcut-plate');
+    if (shortcutPlate) {
+      return { el: shortcutPlate, kind: 'shortcut', id: shortcutPlate.dataset.shortcutId };
+    }
+
     return null;
   }
 
@@ -3827,7 +4187,9 @@
             ? document.querySelector(`[data-tape-id="${id}"]`)
             : kind === 'pin'
               ? document.querySelector(`[data-pin-id="${id}"]`)
-              : document.querySelector(`[data-link-id="${id}"]`);
+              : kind === 'shortcut'
+                ? document.querySelector(`[data-shortcut-id="${id}"]`)
+                : document.querySelector(`[data-link-id="${id}"]`);
         if (!el) return;
         // Skip pin-locked notes from group drag
         if (el.classList.contains('pin-locked')) return;
@@ -3898,7 +4260,9 @@
             ? state.tapes.find(t => t.id === it.id)
             : it.kind === 'pin'
               ? state.pins.find(p => p.id === it.id)
-              : state.links.find(l => l.id === it.id);
+              : it.kind === 'shortcut'
+                ? state.shortcuts.find(s => s.id === it.id)
+                : state.links.find(l => l.id === it.id);
         if (item) {
           item.x = parseFloat(it.el.style.left);
           item.y = parseFloat(it.el.style.top);
@@ -3990,7 +4354,7 @@
     if (resize) return;
 
     // Raise clicked item to top (unless it's part of a group we're about to drag)
-    const item = e.target.closest(".postit-note, .label-tape, .link-plate, .pin-obj");
+    const item = e.target.closest(".postit-note, .label-tape, .link-plate, .pin-obj, .shortcut-plate");
     const pick = pickDragTarget(e, e.target);
 
     if (pick) {
@@ -4044,6 +4408,7 @@
       if (item.classList.contains('postit-note')) { kind = 'note'; id = item.dataset.noteId; }
       else if (item.classList.contains('label-tape')) { kind = 'tape'; id = item.dataset.tapeId; }
       else if (item.classList.contains('link-plate')) { kind = 'link'; id = item.dataset.linkId; }
+      else if (item.classList.contains('shortcut-plate')) { kind = 'shortcut'; id = item.dataset.shortcutId; }
       else if (item.classList.contains('pin-obj')) { kind = 'pin'; id = item.dataset.pinId; }
       if (kind) {
         toggleItemSelection(kind, id);
@@ -4054,7 +4419,7 @@
     }
 
     // Empty canvas click → start rubber-band selection (or clear selection)
-    if (e.target.closest('.postit-note, .label-tape, .link-plate, .pin-obj')) return;
+    if (e.target.closest('.postit-note, .label-tape, .link-plate, .pin-obj, .shortcut-plate')) return;
     if (e.target.closest('#canvas')) {
       // Only left click
       if (e.button !== 0) return;
@@ -4086,7 +4451,7 @@
   // ===== Touch handlers =====
   document.addEventListener('touchstart', (e) => {
     if (e.target.closest('.topbar, .modal, .menu, .color-picker')) return;
-    const item = e.target.closest(".postit-note, .label-tape, .link-plate, .pin-obj");
+    const item = e.target.closest(".postit-note, .label-tape, .link-plate, .pin-obj, .shortcut-plate");
     if (item) item.style.zIndex = ++maxZ;
     const pick = pickDragTarget(e, e.target);
     if (pick) {
@@ -4128,6 +4493,7 @@
       const toDeleteTapes = [];
       const toDeleteLinks = [];
       const toDeletePins = [];
+      const toDeleteShortcuts = [];
       selectedIds.forEach(k => {
         const [kind, id] = k.split(':');
         if (kind === 'note') {
@@ -4138,14 +4504,17 @@
           toDeleteLinks.push(id);
         } else if (kind === 'pin') {
           toDeletePins.push(id);
+        } else if (kind === 'shortcut') {
+          toDeleteShortcuts.push(id);
         }
       });
-      const total = toDeleteNotes.length + toDeleteTapes.length + toDeleteLinks.length + toDeletePins.length;
+      const total = toDeleteNotes.length + toDeleteTapes.length + toDeleteLinks.length + toDeletePins.length + toDeleteShortcuts.length;
       if (total === 0) return;
       state.notes = state.notes.filter(n => !toDeleteNotes.includes(n.id));
       state.tapes = state.tapes.filter(t => !toDeleteTapes.includes(t.id));
       state.links = state.links.filter(l => !toDeleteLinks.includes(l.id));
       state.pins = state.pins.filter(p => !toDeletePins.includes(p.id));
+      state.shortcuts = state.shortcuts.filter(s => !toDeleteShortcuts.includes(s.id));
       clearSelection();
       announceSave(`${total}개 삭제됨`);
       render();
@@ -4437,18 +4806,25 @@
       el.innerHTML = `<span class="sub-tab-name">${esc(sub.name)}</span><span class="sub-tab-count">${countFor(sub.id)}</span>`;
       list.appendChild(el);
 
+      // Click handler delayed slightly so dblclick can cancel it
+      let subClickTimer = null;
       el.addEventListener('click', (e) => {
         // Don't switch tab when clicking on the name being edited
         if (e.target.closest('.sub-tab-name[contenteditable="true"]')) return;
-        state.activeSubTab = sub.id;
-        saveLocal();
-        render();
+        clearTimeout(subClickTimer);
+        subClickTimer = setTimeout(() => {
+          state.activeSubTab = sub.id;
+          saveLocal();
+          render();
+        }, 220);
       });
 
       // Double-click to rename inline
       el.addEventListener('dblclick', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        clearTimeout(subClickTimer); // cancel pending tab switch
+        subClickTimer = null;
         const nameEl = el.querySelector('.sub-tab-name');
         if (!nameEl) return;
         nameEl.contentEditable = 'true';
