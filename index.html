@@ -306,6 +306,17 @@
     opacity: 0.7;
     margin-left: 6px;
   }
+  .sub-tab-name {
+    outline: none;
+  }
+  .sub-tab-name[contenteditable="true"] {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 2px;
+    padding: 1px 3px;
+    margin: -1px -3px;
+    cursor: text;
+    box-shadow: 0 0 0 1px rgba(212, 164, 65, 0.6);
+  }
   .sub-tab-add {
     margin: 10px 14px 0;
     padding: 6px;
@@ -1797,7 +1808,7 @@
         <li>탭 <b>드래그</b> — 순서 변경</li>
         <li><b>전체 탭</b> — 모든 메모 제목 목록 (헤더 클릭해 펼치기)</li>
         <li><b>하위탭 (사이드바)</b> — 왼쪽 사이드바에서 세부 분류 · 항목 클릭해 전환</li>
-        <li>사이드바 <b>＋ 하위탭 추가</b> · 하위탭 우클릭으로 이름/삭제</li>
+        <li>사이드바 <b>＋ 하위탭 추가</b> · <b>더블클릭</b>으로 이름 수정 · 우클릭으로 삭제 메뉴</li>
         <li>하위탭 드래그로 순서 변경 · 노란 포스트잇 핸들로 사이드바 접기/펼치기</li>
       </ul>
 
@@ -2538,9 +2549,17 @@
     if (!name || !name.trim()) return;
     const usedColors = state.tabs.map(t => t.color);
     const color = COLORS.find(c => !usedColors.includes(c)) || COLORS[state.tabs.length % COLORS.length];
-    const tab = { id: uid('t'), name: name.trim(), color };
+    const defaultSub = { id: 's_' + Math.random().toString(36).slice(2, 10), name: '기본' };
+    const tab = {
+      id: uid('t'),
+      name: name.trim(),
+      color,
+      subTabs: [defaultSub],
+      sidebarCollapsed: false
+    };
     state.tabs.push(tab);
     state.activeTab = tab.id;
+    state.activeSubTab = defaultSub.id;
     announceSave(`"${tab.name}" 탭 추가됨`);
     render();
   }
@@ -4381,6 +4400,11 @@
     const tab = state.tabs.find(t => t.id === state.activeTab);
     if (!tab) { sidebar.innerHTML = ''; return; }
 
+    // Defensive: ensure subTabs array exists (for tabs that missed migration)
+    if (!Array.isArray(tab.subTabs) || tab.subTabs.length === 0) {
+      tab.subTabs = [{ id: 's_' + Math.random().toString(36).slice(2, 10), name: '기본' }];
+    }
+
     // Ensure activeSubTab is valid for this tab
     if (!tab.subTabs.find(s => s.id === state.activeSubTab)) {
       state.activeSubTab = tab.subTabs[0]?.id;
@@ -4410,14 +4434,65 @@
       el.className = 'sub-tab' + (sub.id === state.activeSubTab ? ' active' : '');
       el.dataset.subId = sub.id;
       el.draggable = true;
-      el.innerHTML = `${esc(sub.name)}<span class="sub-tab-count">${countFor(sub.id)}</span>`;
+      el.innerHTML = `<span class="sub-tab-name">${esc(sub.name)}</span><span class="sub-tab-count">${countFor(sub.id)}</span>`;
       list.appendChild(el);
 
       el.addEventListener('click', (e) => {
+        // Don't switch tab when clicking on the name being edited
+        if (e.target.closest('.sub-tab-name[contenteditable="true"]')) return;
         state.activeSubTab = sub.id;
         saveLocal();
         render();
       });
+
+      // Double-click to rename inline
+      el.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const nameEl = el.querySelector('.sub-tab-name');
+        if (!nameEl) return;
+        nameEl.contentEditable = 'true';
+        nameEl.spellcheck = false;
+        nameEl.focus();
+        // Select all text
+        const range = document.createRange();
+        range.selectNodeContents(nameEl);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        el.draggable = false; // disable drag while editing
+
+        function commit() {
+          const newName = nameEl.textContent.trim();
+          nameEl.contentEditable = 'false';
+          el.draggable = true;
+          if (newName && newName !== sub.name) {
+            sub.name = newName;
+            announceSave('하위탭 이름 변경됨');
+            render();
+          } else {
+            // No change — restore original (in case spaces were entered)
+            nameEl.textContent = sub.name;
+          }
+        }
+        function cancel() {
+          nameEl.contentEditable = 'false';
+          el.draggable = true;
+          nameEl.textContent = sub.name;
+        }
+        nameEl.addEventListener('blur', commit, { once: true });
+        nameEl.addEventListener('keydown', function onKey(ev) {
+          if (ev.key === 'Enter') {
+            ev.preventDefault();
+            nameEl.blur();
+          } else if (ev.key === 'Escape') {
+            ev.preventDefault();
+            nameEl.removeEventListener('blur', commit);
+            cancel();
+          }
+        });
+      });
+
       el.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         showSubTabMenu(e.clientX, e.clientY, tab, sub);
