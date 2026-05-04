@@ -1509,6 +1509,191 @@
   .setting-status.ok { color: #5a7d4d; }
   .setting-status.err { color: #a55c3e; }
 
+  /* ===== New settings UI sections ===== */
+  .settings-content { max-width: 540px; }
+  .settings-section {
+    margin: 18px 0;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 8px;
+    border: 1px solid rgba(120, 90, 50, 0.12);
+  }
+  .settings-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Sync section: subtle blue tint */
+  .sync-section {
+    background: rgba(180, 210, 235, 0.25);
+    border-color: rgba(80, 130, 180, 0.18);
+  }
+  .sync-status-display {
+    background: rgba(255,255,255,0.5);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .sync-status-line {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .sync-status-line.connected { color: #5a7d4d; }
+  .sync-status-line.disconnected { color: #a55c3e; }
+  .sync-status-detail {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-family: ui-monospace, Menlo, monospace;
+    margin-top: 4px;
+    word-break: break-all;
+  }
+  .sync-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sync-actions .btn { flex: 1; min-width: 110px; }
+  .sync-config-form {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(80, 130, 180, 0.3);
+  }
+  .sync-config-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  /* Backup section: subtle green tint */
+  .backup-section {
+    background: rgba(180, 220, 180, 0.2);
+    border-color: rgba(80, 150, 80, 0.18);
+  }
+  .backup-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .backup-actions .btn { flex: 1; min-width: 130px; }
+
+  /* Danger section: red, collapsed */
+  .danger-section {
+    background: rgba(220, 180, 180, 0.18);
+    border-color: rgba(180, 80, 80, 0.25);
+  }
+  .danger-toggle {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: #a02020;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+  }
+  .danger-toggle:hover { opacity: 0.8; }
+  .danger-toggle-icon {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 10px;
+  }
+  .danger-toggle.expanded .danger-toggle-icon { transform: rotate(90deg); }
+  .danger-content {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(180, 80, 80, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .danger-warning {
+    font-size: 11.5px;
+    color: #8a3a3a;
+    background: rgba(255, 230, 220, 0.5);
+    padding: 8px 10px;
+    border-radius: 4px;
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+  .btn-danger {
+    background: rgba(220, 80, 80, 0.85) !important;
+    color: #fff !important;
+    border-color: rgba(180, 50, 50, 0.6) !important;
+  }
+  .btn-danger:hover {
+    background: rgba(200, 60, 60, 0.95) !important;
+  }
+
+  /* Info icon (?) with hover tooltip */
+  .info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(120, 90, 50, 0.2);
+    color: var(--ink-dim);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: help;
+    line-height: 1;
+    margin-left: 4px;
+    position: relative;
+  }
+  .info-icon:hover { background: rgba(120, 90, 50, 0.35); }
+
+  /* Tooltip on hover (works on any element with data-tooltip) */
+  [data-tooltip] {
+    position: relative;
+  }
+  [data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(40, 30, 20, 0.95);
+    color: #fff8e0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 400;
+    white-space: nowrap;
+    max-width: 280px;
+    white-space: normal;
+    width: max-content;
+    max-width: 260px;
+    z-index: 1000;
+    pointer-events: none;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  [data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(40, 30, 20, 0.95);
+    z-index: 1000;
+    pointer-events: none;
+  }
+  /* On mobile, tooltips trigger on long-tap (or just don't show) */
+  @media (hover: none) {
+    [data-tooltip]:hover::after,
+    [data-tooltip]:hover::before { display: none; }
+  }
+
   /* Context menu */
   .menu {
     display: none;
@@ -2127,42 +2312,120 @@
 
 <!-- Settings Modal -->
 <div class="modal" id="settingsModal">
-  <div class="modal-content">
+  <div class="modal-content settings-content">
     <h2>설정</h2>
-    <div class="subtitle">GitHub Gist에 메모를 저장하면 다른 기기에서도 열어볼 수 있어요.</div>
+    <div class="subtitle">메모판 색상과 동기화 설정을 관리해요.</div>
 
-    <div class="setting-group">
-      <label>메모판 색상</label>
+    <!-- Section: 색상 -->
+    <div class="settings-section">
+      <div class="settings-section-title">🎨 메모판 색상</div>
       <div class="board-picker" id="boardPicker"></div>
     </div>
 
-    <div class="setting-group">
-      <label>GitHub Personal Access Token</label>
-      <input type="password" id="tokenInput" placeholder="ghp_..." autocomplete="off">
-      <div class="hint">
-        <a href="https://github.com/settings/tokens/new?scopes=gist&description=Sticky+Memo" target="_blank" rel="noopener">토큰 발급하기 →</a>
-        &nbsp;필요한 권한: <code>gist</code>
+    <!-- Section: 동기화 상태 -->
+    <div class="settings-section sync-section" id="syncStatusSection">
+      <div class="settings-section-title">
+        ☁️ 동기화 상태
+        <span class="info-icon" data-tooltip="GitHub Gist에 메모를 저장하면 다른 기기에서도 열어볼 수 있어요.">?</span>
+      </div>
+      <div class="sync-status-display" id="syncStatusDisplay">
+        <div class="sync-status-line" id="syncStatusLine">미연결</div>
+        <div class="sync-status-detail" id="syncStatusDetail"></div>
+      </div>
+      <div class="sync-actions">
+        <button class="btn btn-secondary" id="editSyncBtn"
+          data-tooltip="토큰과 Gist ID 입력/수정">
+          ⚙ 설정 수정
+        </button>
+        <button class="btn btn-primary" id="syncNowBtn"
+          data-tooltip="현재 메모를 Gist에 업로드 (저장)">
+          ↑ 지금 동기화
+        </button>
+      </div>
+
+      <!-- Hidden config form (toggled by edit button) -->
+      <div class="sync-config-form" id="syncConfigForm" style="display:none;">
+        <div class="setting-group">
+          <label>GitHub Personal Access Token
+            <span class="info-icon" data-tooltip="GitHub 글쓰기 권한. gist 스코프 필요.">?</span>
+          </label>
+          <input type="password" id="tokenInput" placeholder="ghp_..." autocomplete="off">
+          <div class="hint">
+            <a href="https://github.com/settings/tokens/new?scopes=gist&description=Sticky+Memo" target="_blank" rel="noopener">토큰 발급하기 →</a>
+            &nbsp;필요한 권한: <code>gist</code>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label>Gist ID
+            <span class="info-icon" data-tooltip="메모를 저장할 Gist 주소. 비워두고 '새로 생성' 누르면 자동 생성.">?</span>
+          </label>
+          <div class="gist-row">
+            <input type="text" id="gistIdInput" placeholder="(없으면 새로 생성)">
+            <button class="btn" id="createGistBtn"
+              data-tooltip="새로운 빈 Gist를 만듭니다. 처음 쓰는 분만!">새로 생성</button>
+          </div>
+          <div class="hint">다른 기기에서는 같은 Gist ID를 입력하세요.</div>
+        </div>
+
+        <div class="sync-config-actions">
+          <button class="btn" id="cancelSyncEditBtn">취소</button>
+          <button class="btn btn-primary" id="saveSyncConfigBtn">저장</button>
+        </div>
       </div>
     </div>
 
-    <div class="setting-group">
-      <label>Gist ID</label>
-      <div class="gist-row">
-        <input type="text" id="gistIdInput" placeholder="(없으면 새로 생성)">
-        <button class="btn" id="createGistBtn">새로 생성</button>
+    <!-- Section: 백업 -->
+    <div class="settings-section backup-section">
+      <div class="settings-section-title">
+        💾 백업
+        <span class="info-icon" data-tooltip="JSON 파일로 메모를 내보내거나 불러옵니다.">?</span>
       </div>
-      <div class="hint">비어있으면 "새로 생성" 버튼으로 프라이빗 Gist를 만들어줍니다. 다른 기기에서는 같은 Gist ID를 입력하세요.</div>
+      <div class="backup-actions">
+        <button class="btn" id="downloadBackupBtn"
+          data-tooltip="현재 모든 메모를 JSON 파일로 다운로드. 정기적으로 받아두면 안전합니다.">
+          ⬇ 백업 다운로드
+        </button>
+        <button class="btn" id="restoreBackupBtn"
+          data-tooltip="JSON 파일에서 메모를 복원. 현재 메모는 자동 백업 후 덮어씁니다.">
+          ⬆ 백업에서 복원
+        </button>
+        <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none;">
+      </div>
     </div>
 
-    <div class="setting-group">
-      <button class="btn" id="pullGistBtn">지금 불러오기 (덮어쓰기)</button>
+    <!-- Section: 위험 영역 (접힘) -->
+    <div class="settings-section danger-section">
+      <div class="danger-toggle" id="dangerToggle">
+        <span class="danger-toggle-icon">▶</span>
+        ⚠️ 위험 영역
+      </div>
+      <div class="danger-content" id="dangerContent" style="display:none;">
+        <div class="danger-warning">
+          ⚠️ 아래 동작은 데이터 손실 위험이 있어요. 실행 전에 자동으로 백업이 다운로드돼요.
+        </div>
+
+        <button class="btn btn-danger" id="forceDownloadBtn"
+          data-tooltip="현재 로컬 메모를 Gist에 강제 업로드. Gist의 기존 데이터는 사라집니다.">
+          ↑ Gist에 강제 덮어쓰기
+        </button>
+
+        <button class="btn btn-danger" id="forceUploadBtn"
+          data-tooltip="Gist의 메모를 가져와서 로컬에 덮어씁니다. 현재 로컬 메모는 사라집니다.">
+          ↓ Gist에서 강제 불러오기
+        </button>
+
+        <button class="btn btn-danger" id="resetAllBtn"
+          data-tooltip="모든 메모와 설정을 완전히 삭제합니다. 복구 불가.">
+          🗑 모든 데이터 초기화
+        </button>
+      </div>
     </div>
 
     <div class="setting-status" id="settingsStatus"></div>
 
     <div class="setting-actions">
       <button class="btn" id="closeSettingsBtn">닫기</button>
-      <button class="btn btn-primary" id="saveSettingsBtn">저장</button>
     </div>
   </div>
 </div>
@@ -4730,6 +4993,11 @@
     $('#gistIdInput').value = state.gistId || '';
     renderBoardPicker();
     setSettingsStatus('', '');
+    updateSyncStatusUI();
+    // Always start with config form hidden + danger collapsed
+    $('#syncConfigForm').style.display = 'none';
+    $('#dangerContent').style.display = 'none';
+    $('#dangerToggle').classList.remove('expanded');
     modal.classList.add('open');
   };
   $('#closeSettingsBtn').onclick = () => modal.classList.remove('open');
@@ -4743,7 +5011,44 @@
     el.className = 'setting-status' + (cls ? ' ' + cls : '');
   }
 
-  $('#saveSettingsBtn').onclick = () => {
+  // Update the sync status display in the modal
+  function updateSyncStatusUI() {
+    const line = $('#syncStatusLine');
+    const detail = $('#syncStatusDetail');
+    if (!line || !detail) return;
+    if (token && state.gistId) {
+      line.textContent = '✓ 연결됨';
+      line.className = 'sync-status-line connected';
+      const last = state.lastSyncedAt ? formatRelative(state.lastSyncedAt) : '아직 동기화 안 됨';
+      const idShort = state.gistId.length > 12
+        ? state.gistId.substring(0, 8) + '...' + state.gistId.substring(state.gistId.length - 6)
+        : state.gistId;
+      detail.textContent = `Gist: ${idShort} · ${last}`;
+    } else {
+      line.textContent = '⚠ 미연결';
+      line.className = 'sync-status-line disconnected';
+      detail.textContent = '토큰과 Gist ID를 입력해주세요';
+    }
+  }
+  function formatRelative(ts) {
+    const diff = Date.now() - ts;
+    if (diff < 60000) return '방금 동기화됨';
+    if (diff < 3600000) return Math.floor(diff/60000) + '분 전 동기화';
+    if (diff < 86400000) return Math.floor(diff/3600000) + '시간 전 동기화';
+    return Math.floor(diff/86400000) + '일 전 동기화';
+  }
+
+  // ===== Edit sync config (toggle form) =====
+  $('#editSyncBtn').onclick = () => {
+    const form = $('#syncConfigForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  };
+  $('#cancelSyncEditBtn').onclick = () => {
+    $('#syncConfigForm').style.display = 'none';
+    $('#tokenInput').value = token;
+    $('#gistIdInput').value = state.gistId || '';
+  };
+  $('#saveSyncConfigBtn').onclick = () => {
     const newToken = $('#tokenInput').value.trim();
     const newGistId = $('#gistIdInput').value.trim() || null;
     token = newToken;
@@ -4751,12 +5056,35 @@
     if (token) localStorage.setItem(LS_TOKEN, token);
     else localStorage.removeItem(LS_TOKEN);
     saveLocal();
-    setSettingsStatus('저장되었습니다.', 'ok');
+    setSettingsStatus('동기화 설정 저장됨', 'ok');
     toast('설정 저장됨', 'success');
-    if (token && state.gistId) pushToGist();
-    else setSyncStatus('로컬만', '');
+    $('#syncConfigForm').style.display = 'none';
+    updateSyncStatusUI();
+    if (token && state.gistId) {
+      setSyncStatus('동기화됨 ✓', 'ok');
+    } else {
+      setSyncStatus('로컬만', '');
+    }
   };
 
+  // ===== Sync now (push to Gist) =====
+  $('#syncNowBtn').onclick = async () => {
+    if (!token || !state.gistId) {
+      setSettingsStatus('먼저 토큰과 Gist ID를 설정하세요', 'err');
+      $('#syncConfigForm').style.display = 'block';
+      return;
+    }
+    setSettingsStatus('동기화 중...', '');
+    try {
+      await pushToGist();
+      setSettingsStatus('✓ 동기화 완료', 'ok');
+      updateSyncStatusUI();
+    } catch (e) {
+      setSettingsStatus('동기화 실패: ' + (e.message || ''), 'err');
+    }
+  };
+
+  // ===== Create Gist (in config form) =====
   $('#createGistBtn').onclick = async () => {
     const newToken = $('#tokenInput').value.trim();
     if (!newToken) { setSettingsStatus('토큰을 먼저 입력하세요.', 'err'); return; }
@@ -4772,24 +5100,142 @@
       setSettingsStatus('Gist 생성 완료: ' + id, 'ok');
       toast('Gist 생성 완료', 'success', { key: 'sync' });
       setSyncStatus('동기화됨 ✓', 'ok');
+      updateSyncStatusUI();
     } catch (e) {
       setSettingsStatus('실패: 토큰을 확인해주세요.', 'err');
       toast('Gist 생성 실패 — 토큰을 확인하세요', 'error', { key: 'sync' });
     }
   };
 
-  $('#pullGistBtn').onclick = async () => {
-    const newToken = $('#tokenInput').value.trim();
-    const newGistId = $('#gistIdInput').value.trim();
-    if (!newToken || !newGistId) { setSettingsStatus('토큰과 Gist ID를 입력하세요.', 'err'); return; }
-    if (!confirm('현재 로컬 데이터를 덮어쓰고 Gist에서 불러옵니다. 계속할까요?')) return;
-    token = newToken;
-    state.gistId = newGistId;
-    localStorage.setItem(LS_TOKEN, token);
-    setSettingsStatus('불러오는 중...', '');
+  // ===== Backup: download JSON =====
+  function downloadCurrentBackup(suffix) {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    a.href = url;
+    a.download = `sticky-memo-backup-${ts}${suffix ? '-' + suffix : ''}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  $('#downloadBackupBtn').onclick = () => {
+    downloadCurrentBackup();
+    setSettingsStatus('✓ 백업 다운로드됨', 'ok');
+    toast('백업 다운로드됨', 'success');
+  };
+
+  // ===== Backup: restore from file =====
+  $('#restoreBackupBtn').onclick = () => {
+    $('#backupFileInput').click();
+  };
+  $('#backupFileInput').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!confirm(`"${file.name}" 에서 복원합니다.\n\n현재 메모는 자동으로 백업 다운로드된 후 덮어씌워집니다.\n계속할까요?`)) {
+      e.target.value = '';
+      return;
+    }
+    // Auto-backup current state first
+    downloadCurrentBackup('before-restore');
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const restored = JSON.parse(ev.target.result);
+        if (!Array.isArray(restored.tabs) || !Array.isArray(restored.notes)) {
+          throw new Error('유효하지 않은 백업 파일 (tabs/notes 누락)');
+        }
+        // Migrate
+        if (!Array.isArray(restored.tapes)) restored.tapes = [];
+        if (!Array.isArray(restored.links)) restored.links = [];
+        if (!Array.isArray(restored.pins)) restored.pins = [];
+        if (!Array.isArray(restored.shortcuts)) restored.shortcuts = [];
+        // Disable sync temporarily by clearing gistId so it doesn't auto-overwrite
+        const oldGistId = state.gistId;
+        state = restored;
+        state.gistId = ''; // prevent auto-push
+        state.lastSyncedAt = 0;
+        localStorage.setItem(LS_DATA, JSON.stringify(state));
+        toast(`✓ ${restored.notes.length}개 메모 복원됨`, 'success', { duration: 3000 });
+        setSettingsStatus(`✓ 복원 완료. Gist ID는 비웠으니 필요하면 다시 입력하세요 (이전: ${oldGistId})`, 'ok');
+        // Reset undo history
+        undoStack.length = 0;
+        redoStack.length = 0;
+        render();
+        pushHistory();
+        updateSyncStatusUI();
+      } catch (err) {
+        setSettingsStatus('복원 실패: ' + err.message, 'err');
+        toast('복원 실패: ' + err.message, 'error', { duration: 4000 });
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  // ===== Danger zone: toggle =====
+  $('#dangerToggle').onclick = () => {
+    const content = $('#dangerContent');
+    const toggle = $('#dangerToggle');
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      toggle.classList.add('expanded');
+    } else {
+      content.style.display = 'none';
+      toggle.classList.remove('expanded');
+    }
+  };
+
+  // ===== Danger: force download (push to Gist, overwriting remote) =====
+  $('#forceDownloadBtn').onclick = async () => {
+    if (!token || !state.gistId) {
+      setSettingsStatus('먼저 토큰과 Gist ID를 설정하세요', 'err');
+      return;
+    }
+    if (!confirm('⚠️ Gist의 기존 데이터를 현재 로컬 메모로 덮어씁니다.\n\nGist에 있던 다른 데이터는 사라집니다.\n현재 로컬 데이터는 백업 파일로 다운로드됩니다.\n\n계속할까요?')) return;
+    downloadCurrentBackup('before-force-push');
+    setSettingsStatus('강제 업로드 중...', '');
+    try {
+      await pushToGist();
+      setSettingsStatus('✓ 강제 업로드 완료', 'ok');
+      toast('Gist 덮어쓰기 완료', 'success');
+      updateSyncStatusUI();
+    } catch (e) {
+      setSettingsStatus('실패: ' + (e.message || ''), 'err');
+    }
+  };
+
+  // ===== Danger: force upload (pull from Gist, overwriting local) =====
+  $('#forceUploadBtn').onclick = async () => {
+    if (!token || !state.gistId) {
+      setSettingsStatus('먼저 토큰과 Gist ID를 설정하세요', 'err');
+      return;
+    }
+    if (!confirm('⚠️ Gist에서 데이터를 가져와 현재 로컬 메모를 덮어씁니다.\n\n현재 로컬 메모는 사라집니다.\n현재 데이터는 백업 파일로 다운로드됩니다.\n\n계속할까요?')) return;
+    downloadCurrentBackup('before-force-pull');
+    setSettingsStatus('강제 불러오기 중...', '');
     const ok = await pullFromGist();
-    if (ok) setSettingsStatus('불러오기 완료.', 'ok');
-    else setSettingsStatus('불러오기 실패. Gist ID와 토큰을 확인하세요.', 'err');
+    if (ok) {
+      setSettingsStatus('✓ 강제 불러오기 완료', 'ok');
+      updateSyncStatusUI();
+    } else {
+      setSettingsStatus('불러오기 실패. 토큰/Gist ID를 확인하세요', 'err');
+    }
+  };
+
+  // ===== Danger: reset all =====
+  $('#resetAllBtn').onclick = () => {
+    const confirmText = prompt('⚠️ 모든 데이터(메모/탭/설정)를 삭제합니다.\n\n복구 불가능합니다.\n현재 데이터는 백업 파일로 다운로드됩니다.\n\n계속하려면 RESET 을 입력:');
+    if (confirmText !== 'RESET') {
+      if (confirmText !== null) setSettingsStatus('초기화 취소됨', '');
+      return;
+    }
+    downloadCurrentBackup('before-reset');
+    localStorage.removeItem(LS_DATA);
+    localStorage.removeItem(LS_TOKEN);
+    toast('모든 데이터 초기화됨. 새로고침 중...', 'info', { duration: 2500 });
+    setTimeout(() => location.reload(), 1500);
   };
 
   // ===== Save button + Ctrl/Cmd+S =====
