@@ -1767,25 +1767,166 @@
   }
 
   @media (max-width: 500px) {
-    .sidebar, .sidebar-handle { display: none !important; }
-    .postit-note {
-      position: relative !important;
-      width: calc(100% - 30px) !important;
-      max-width: 340px;
-      max-height: none;
-      margin: 14px auto !important;
-      top: auto !important;
-      left: auto !important;
-      transform: rotate(var(--rot, 0deg));
+    /* Mobile: keep PC layout (free-positioning canvas) but tune for touch */
+    /* Sidebar becomes a drawer (overlay) instead of inline column */
+    .main-area { display: block; }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 220px !important;
+      max-width: 75vw;
+      padding-top: var(--topbar-h, 100px);
+      z-index: 50;
+      transform: translateX(-105%);
+      transition: transform 0.3s cubic-bezier(0.34, 1, 0.64, 1);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+      background: #f0e4c2;
     }
-    .note-tape { display: none; }
+    body.sidebar-mobile-open .sidebar {
+      transform: translateX(0);
+    }
+    body.sidebar-mobile-open::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 40;
+    }
+    .sidebar.collapsed {
+      width: 220px !important;
+      transform: translateX(-105%);
+    }
+    .sidebar-handle {
+      /* Reposition handle so user can grab it on mobile */
+      left: 0 !important;
+      top: 50% !important;
+      transform: translate(0, -50%) !important;
+      z-index: 60;
+    }
+    body.sidebar-mobile-open .sidebar-handle {
+      left: 220px !important;
+      transform: translate(-18px, -50%) !important;
+    }
+
+    /* Notes & objects: keep absolute positioning (free placement) */
+    /* Tape always visible (was hidden on mobile in old design) */
+    .note-tape { display: block; }
     .note-actions { opacity: 1; }
+    .label-tape { display: block; }
     .label-tape-actions { opacity: 1; }
-    .canvas { padding-left: 12px; padding-right: 12px; }
-    .add-note { bottom: 16px; right: 16px; }
+
+    /* Touch-friendly action button sizes */
+    .note-btn,
+    .label-tape-btn {
+      min-width: 28px;
+      min-height: 28px;
+      font-size: 14px;
+    }
+
+    /* FAB button positions: stagger nicely on small screen */
+    .add-note { bottom: 16px; right: 16px; width: 50px; height: 50px; font-size: 24px; }
+    .add-tape { bottom: 16px; right: 76px; width: 50px; height: 50px; font-size: 24px; }
+    .add-link { bottom: 76px; right: 16px; width: 46px; height: 46px; font-size: 22px; }
+    .add-pin  { bottom: 76px; right: 72px; width: 46px; height: 46px; font-size: 18px; }
+    .add-shortcut { bottom: 76px; right: 128px; width: 46px; height: 46px; font-size: 18px; }
+
     .status-line { display: none; }
-    .add-tape { bottom: 16px; right: 70px; }
-    .label-tape { display: none; }
+
+    /* Modals become bottom sheets */
+    .modal-content {
+      max-height: 90vh;
+      overflow-y: auto;
+      width: calc(100% - 24px);
+      margin: 12px;
+    }
+
+    /* Larger touch targets in sub-tab list */
+    .sub-tab {
+      padding: 10px 14px 10px 22px;
+      font-size: 14px;
+      line-height: 22px;
+    }
+    .sub-tab-add {
+      padding: 10px;
+      font-size: 13px;
+    }
+  }
+
+  /* Selection bar for mobile multi-select mode */
+  .selection-bar {
+    position: fixed;
+    top: 0;
+    left: 0; right: 0;
+    background: rgba(58, 46, 31, 0.95);
+    color: #fff8e0;
+    padding: 12px 16px;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    font-size: 14px;
+    backdrop-filter: blur(8px);
+  }
+  body.select-mode .selection-bar { display: flex; }
+  body.select-mode .topbar { display: none; }
+  .selection-bar-count {
+    flex: 1;
+    font-weight: 600;
+  }
+  .selection-bar button {
+    background: rgba(255,255,255,0.15);
+    color: #fff8e0;
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    min-height: 36px;
+  }
+  .selection-bar button:hover { background: rgba(255,255,255,0.25); }
+  .selection-bar button.danger {
+    background: rgba(180, 50, 50, 0.6);
+    border-color: rgba(255,150,150,0.4);
+  }
+  .selection-bar button.primary {
+    background: rgba(212, 164, 65, 0.7);
+    border-color: rgba(255, 220, 150, 0.5);
+  }
+
+  /* Long-press action menu (mobile) */
+  .longpress-menu {
+    position: fixed;
+    background: #fff8e0;
+    border: 1px solid rgba(120, 90, 50, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 220;
+    min-width: 160px;
+    padding: 4px;
+    display: none;
+    flex-direction: column;
+  }
+  .longpress-menu.open { display: flex; }
+  .longpress-menu button {
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .longpress-menu button:hover { background: rgba(212, 164, 65, 0.18); }
+  .longpress-menu button.danger { color: #a02020; }
+  .longpress-menu button.danger:hover { background: rgba(220, 80, 80, 0.12); }
+  .longpress-menu hr {
+    border: none;
+    border-top: 1px solid rgba(120, 90, 50, 0.2);
+    margin: 4px 0;
   }
 </style>
 </head>
@@ -1831,6 +1972,18 @@
 
 <div class="status-line" id="statusLine"></div>
 <div class="selection-indicator" id="selectionIndicator"></div>
+
+<!-- Mobile selection bar (visible during multi-select mode) -->
+<div class="selection-bar" id="selectionBar">
+  <span class="selection-bar-count" id="selectionBarCount">0개 선택됨</span>
+  <button id="selBarCopy">복사</button>
+  <button id="selBarCut">잘라내기</button>
+  <button id="selBarDelete" class="danger">삭제</button>
+  <button id="selBarCancel">취소</button>
+</div>
+
+<!-- Long-press context menu -->
+<div class="longpress-menu" id="longpressMenu"></div>
 
 <button class="add-shortcut" id="addShortcutBtn" title="새 은판 (탭 바로가기)">⊞</button>
 <button class="add-pin" id="addPinBtn" title="새 핀 (드래그해서 메모 고정)">📌</button>
@@ -2136,11 +2289,13 @@
     }
     if (typeof tab.sidebarCollapsed !== 'boolean') tab.sidebarCollapsed = false;
   });
-  // Assign subTabId to existing items that lack one (→ first sub-tab of their tab)
+  // Assign subTabId to items missing one OR with invalid (orphaned) subTabId
   function ensureSubTabId(item) {
-    if (item.subTabId) return;
     const tab = state.tabs.find(t => t.id === item.tabId);
-    if (tab && tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+    if (!tab) return;
+    if (!item.subTabId || !tab.subTabs.find(s => s.id === item.subTabId)) {
+      if (tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+    }
   }
   state.notes.forEach(ensureSubTabId);
   state.tapes.forEach(ensureSubTabId);
@@ -2155,6 +2310,15 @@
 
   // ===== Helpers =====
   const $ = (s, el = document) => el.querySelector(s);
+
+  // Mobile detection (touch + screen width)
+  const IS_MOBILE = (
+    ('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
+    window.matchMedia('(max-width: 500px)').matches
+  );
+  function vibrate(ms = 30) {
+    try { if (navigator.vibrate) navigator.vibrate(ms); } catch {}
+  }
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
@@ -2451,11 +2615,14 @@
           }
           if (typeof tab.sidebarCollapsed !== 'boolean') tab.sidebarCollapsed = false;
         });
-        // Migration: assign subTabId where missing
+        // Migration: assign subTabId where missing or invalid
         function _ensureSub(item) {
-          if (item.subTabId) return;
           const tab = state.tabs.find(t => t.id === item.tabId);
-          if (tab && tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+          if (!tab) return;
+          // If subTabId missing OR doesn't exist in current tab's subTabs → assign first
+          if (!item.subTabId || !tab.subTabs.find(s => s.id === item.subTabId)) {
+            if (tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+          }
         }
         state.notes.forEach(_ensureSub);
         state.tapes.forEach(_ensureSub);
@@ -2533,9 +2700,11 @@
               if (typeof tab.sidebarCollapsed !== 'boolean') tab.sidebarCollapsed = false;
             });
             function _ens(item) {
-              if (item.subTabId) return;
               const tab = state.tabs.find(t => t.id === item.tabId);
-              if (tab && tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+              if (!tab) return;
+              if (!item.subTabId || !tab.subTabs.find(s => s.id === item.subTabId)) {
+                if (tab.subTabs[0]) item.subTabId = tab.subTabs[0].id;
+              }
             }
             state.notes.forEach(_ens);
             state.tapes.forEach(_ens);
@@ -4816,6 +4985,8 @@
           state.activeSubTab = sub.id;
           saveLocal();
           render();
+          // Close mobile drawer after selecting
+          if (IS_MOBILE) document.body.classList.remove('sidebar-mobile-open');
         }, 220);
       });
 
@@ -4977,13 +5148,25 @@
 
   // Sidebar collapse handle
   $('#sidebarHandle').addEventListener('click', () => {
+    if (IS_MOBILE) {
+      // Mobile: toggle drawer overlay
+      document.body.classList.toggle('sidebar-mobile-open');
+      return;
+    }
     const tab = state.tabs.find(t => t.id === state.activeTab);
     if (!tab) return;
     tab.sidebarCollapsed = !tab.sidebarCollapsed;
-    // Update handle icon
     $('#sidebarHandle').textContent = tab.sidebarCollapsed ? '▸' : '◂';
     saveLocal();
     render();
+  });
+
+  // Mobile: tapping outside drawer closes it
+  document.addEventListener('click', (e) => {
+    if (!IS_MOBILE) return;
+    if (!document.body.classList.contains('sidebar-mobile-open')) return;
+    if (e.target.closest('.sidebar') || e.target.closest('.sidebar-handle')) return;
+    document.body.classList.remove('sidebar-mobile-open');
   });
 
 
@@ -5053,6 +5236,331 @@
     announceSave('핀 추가됨');
     render();
   });
+
+  // ============================================
+  // ===== Long-press menu system (mobile) =====
+  // ============================================
+  const longpressMenu = $('#longpressMenu');
+  let longpressTimer = null;
+  let longpressStartXY = null;
+  let longpressTarget = null;
+  let longpressMoved = false;
+
+  function showLongpressMenu(x, y, items) {
+    longpressMenu.innerHTML = '';
+    items.forEach(it => {
+      if (it.divider) {
+        const hr = document.createElement('hr');
+        longpressMenu.appendChild(hr);
+        return;
+      }
+      const btn = document.createElement('button');
+      btn.textContent = it.label;
+      if (it.danger) btn.classList.add('danger');
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeLongpressMenu();
+        try { it.action(); } catch (err) { console.error(err); }
+      });
+      longpressMenu.appendChild(btn);
+    });
+    // Position: clamp inside viewport
+    longpressMenu.classList.add('open');
+    const rect = longpressMenu.getBoundingClientRect();
+    const margin = 10;
+    let lx = Math.min(Math.max(margin, x), window.innerWidth - rect.width - margin);
+    let ly = Math.min(Math.max(margin, y), window.innerHeight - rect.height - margin);
+    longpressMenu.style.left = lx + 'px';
+    longpressMenu.style.top = ly + 'px';
+
+    // Close on outside tap
+    setTimeout(() => {
+      document.addEventListener('click', closeLongpressMenu, { once: true, capture: true });
+    }, 0);
+  }
+  function closeLongpressMenu() {
+    longpressMenu.classList.remove('open');
+  }
+
+  // Build menu items based on object kind
+  function buildMenuItems(kind, id) {
+    const items = [];
+    if (kind === 'note') {
+      const n = state.notes.find(x => x.id === id);
+      if (!n) return items;
+      items.push({
+        label: '✏ 편집',
+        action: () => {
+          const el = document.querySelector('[data-note-id="' + id + '"]');
+          if (el) {
+            const editBtn = el.querySelector('[data-action="edit"]');
+            if (editBtn) editBtn.click();
+          }
+        }
+      });
+      items.push({
+        label: '🎨 색 변경',
+        action: () => {
+          const tab = state.tabs.find(t => t.id === n.tabId);
+          if (tab) {
+            const el = document.querySelector('[data-note-id="' + id + '"]');
+            const r = el ? el.getBoundingClientRect() : { left: 100, bottom: 100 };
+            showColorPicker(r.left, r.bottom + 4, tab.color, (color) => {
+              tab.color = color;
+              announceSave('탭 색 변경됨');
+              render();
+            });
+          }
+        }
+      });
+      items.push({ divider: true });
+      items.push({
+        label: '📋 복사',
+        action: () => { selectedIds.clear(); selectedIds.add('note:' + id); copySelection(); clearSelection(); }
+      });
+      items.push({
+        label: '✂ 잘라내기',
+        action: () => { selectedIds.clear(); selectedIds.add('note:' + id); cutSelection(); }
+      });
+      items.push({
+        label: '☑ 선택 모드 진입',
+        action: () => enterSelectMode(kind, id)
+      });
+      items.push({ divider: true });
+      items.push({
+        label: '🗑 삭제', danger: true,
+        action: () => {
+          state.notes = state.notes.filter(x => x.id !== id);
+          announceSave('메모 삭제됨'); render();
+        }
+      });
+    } else if (kind === 'tape') {
+      const t = state.tapes.find(x => x.id === id);
+      if (!t) return items;
+      items.push({
+        label: '✏ 이름 변경',
+        action: () => {
+          const el = document.querySelector('[data-tape-id="' + id + '"]');
+          if (el) {
+            const txt = el.querySelector('.label-tape-text');
+            if (txt) {
+              txt.contentEditable = 'true';
+              txt.focus();
+              const range = document.createRange();
+              range.selectNodeContents(txt);
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        }
+      });
+      items.push({
+        label: '☑ 선택 모드 진입',
+        action: () => enterSelectMode(kind, id)
+      });
+      items.push({ divider: true });
+      items.push({
+        label: '🗑 삭제', danger: true,
+        action: () => {
+          state.tapes = state.tapes.filter(x => x.id !== id);
+          announceSave('라벨 삭제됨'); render();
+        }
+      });
+    } else if (kind === 'link') {
+      const l = state.links.find(x => x.id === id);
+      if (!l) return items;
+      items.push({ label: '✏ 편집', action: () => openLinkEditModal(l) });
+      items.push({ label: '📋 URL 복사', action: () => {
+        if (l.url) copyToClipboard(l.url).then(() => toast('링크 복사됨', 'success', { duration: 1500 }));
+      } });
+      items.push({ label: '☑ 선택 모드 진입', action: () => enterSelectMode(kind, id) });
+      items.push({ divider: true });
+      items.push({
+        label: '🗑 삭제', danger: true,
+        action: () => {
+          state.links = state.links.filter(x => x.id !== id);
+          announceSave('바로가기 삭제됨'); render();
+        }
+      });
+    } else if (kind === 'shortcut') {
+      const s = state.shortcuts.find(x => x.id === id);
+      if (!s) return items;
+      items.push({ label: '✏ 편집', action: () => openShortcutEditModal(s) });
+      items.push({ label: '➡ 점프', action: () => {
+        const el = document.querySelector('[data-shortcut-id="' + id + '"]');
+        jumpToShortcut(s, el);
+      } });
+      items.push({ label: '☑ 선택 모드 진입', action: () => enterSelectMode(kind, id) });
+      items.push({ divider: true });
+      items.push({
+        label: '🗑 삭제', danger: true,
+        action: () => {
+          state.shortcuts = state.shortcuts.filter(x => x.id !== id);
+          announceSave('바로가기 삭제됨'); render();
+        }
+      });
+    } else if (kind === 'pin') {
+      const p = state.pins.find(x => x.id === id);
+      if (!p) return items;
+      items.push({ label: '☑ 선택 모드 진입', action: () => enterSelectMode(kind, id) });
+      items.push({ divider: true });
+      items.push({
+        label: '🗑 삭제', danger: true,
+        action: () => {
+          state.pins = state.pins.filter(x => x.id !== id);
+          announceSave('핀 삭제됨'); render();
+        }
+      });
+    }
+    return items;
+  }
+
+  function getObjectAtPoint(x, y) {
+    const el = document.elementFromPoint(x, y);
+    if (!el) return null;
+    const note = el.closest('.postit-note');
+    if (note) return { kind: 'note', id: note.dataset.noteId, el: note };
+    const tape = el.closest('.label-tape');
+    if (tape) return { kind: 'tape', id: tape.dataset.tapeId, el: tape };
+    const link = el.closest('.link-plate');
+    if (link) return { kind: 'link', id: link.dataset.linkId, el: link };
+    const sc = el.closest('.shortcut-plate');
+    if (sc) return { kind: 'shortcut', id: sc.dataset.shortcutId, el: sc };
+    const pin = el.closest('.pin-obj');
+    if (pin) return { kind: 'pin', id: pin.dataset.pinId, el: pin };
+    return null;
+  }
+
+  // Long-press detector on canvas
+  function startLongpressDetect(clientX, clientY) {
+    longpressStartXY = { x: clientX, y: clientY };
+    longpressMoved = false;
+    longpressTarget = getObjectAtPoint(clientX, clientY);
+    if (!longpressTarget) return;
+    longpressTimer = setTimeout(() => {
+      if (longpressMoved) return;
+      // Don't show menu if user is editing
+      if (document.activeElement && document.activeElement.matches('input, textarea, [contenteditable="true"]')) return;
+      vibrate(30);
+      const items = buildMenuItems(longpressTarget.kind, longpressTarget.id);
+      if (items.length === 0) return;
+      showLongpressMenu(clientX, clientY, items);
+      longpressTimer = null;
+    }, 500);
+  }
+  function cancelLongpressDetect() {
+    if (longpressTimer) {
+      clearTimeout(longpressTimer);
+      longpressTimer = null;
+    }
+    longpressTarget = null;
+  }
+  function checkLongpressMove(clientX, clientY) {
+    if (!longpressStartXY) return;
+    const dx = clientX - longpressStartXY.x;
+    const dy = clientY - longpressStartXY.y;
+    if (Math.hypot(dx, dy) > 8) {
+      longpressMoved = true;
+      cancelLongpressDetect();
+    }
+  }
+  // Wire to canvas touch events
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) { cancelLongpressDetect(); return; }
+    const t = e.touches[0];
+    startLongpressDetect(t.clientX, t.clientY);
+  }, { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches.length !== 1) { cancelLongpressDetect(); return; }
+    const t = e.touches[0];
+    checkLongpressMove(t.clientX, t.clientY);
+  }, { passive: true });
+  document.addEventListener('touchend', () => {
+    cancelLongpressDetect();
+  }, { passive: true });
+  document.addEventListener('touchcancel', () => {
+    cancelLongpressDetect();
+  }, { passive: true });
+
+  // ============================================
+  // ===== Mobile multi-select mode =====
+  // ============================================
+  function enterSelectMode(initialKind, initialId) {
+    document.body.classList.add('select-mode');
+    selectedIds.clear();
+    if (initialKind && initialId) {
+      selectedIds.add(initialKind + ':' + initialId);
+    }
+    updateSelectionUI();
+    updateSelectionBar();
+  }
+  function exitSelectMode() {
+    document.body.classList.remove('select-mode');
+    clearSelection();
+    updateSelectionBar();
+  }
+  function updateSelectionBar() {
+    const bar = $('#selectionBar');
+    const count = $('#selectionBarCount');
+    if (count) count.textContent = `${selectedIds.size}개 선택됨`;
+  }
+  // Periodic check: keep selection bar in sync with selectedIds size
+  // (called whenever selectedIds changes via the toggleItemSelection or rubber-band)
+  // We use a MutationObserver-free approach: observe via render cycle by patching
+  // updateSelectionUI to also call updateSelectionBar when in select mode.
+  // But to avoid reassigning function declarations, we just always call from
+  // a single source: render() will trigger updateSelectionUI which we now want
+  // to extend. Simpler: wrap calls explicitly inside select-mode actions.
+  // For now: each select-mode operation calls updateSelectionBar manually.
+  // Wire bar buttons
+  $('#selBarCopy').addEventListener('click', () => { copySelection(); });
+  $('#selBarCut').addEventListener('click', () => { cutSelection(); exitSelectMode(); });
+  $('#selBarDelete').addEventListener('click', () => {
+    // Trigger delete (same logic as Delete key)
+    const toDeleteNotes = [], toDeleteTapes = [], toDeleteLinks = [], toDeletePins = [], toDeleteShortcuts = [];
+    selectedIds.forEach(k => {
+      const [kind, id] = k.split(':');
+      if (kind === 'note') toDeleteNotes.push(id);
+      else if (kind === 'tape') toDeleteTapes.push(id);
+      else if (kind === 'link') toDeleteLinks.push(id);
+      else if (kind === 'pin') toDeletePins.push(id);
+      else if (kind === 'shortcut') toDeleteShortcuts.push(id);
+    });
+    const total = toDeleteNotes.length + toDeleteTapes.length + toDeleteLinks.length + toDeletePins.length + toDeleteShortcuts.length;
+    if (total === 0) return;
+    state.notes = state.notes.filter(n => !toDeleteNotes.includes(n.id));
+    state.tapes = state.tapes.filter(t => !toDeleteTapes.includes(t.id));
+    state.links = state.links.filter(l => !toDeleteLinks.includes(l.id));
+    state.pins = state.pins.filter(p => !toDeletePins.includes(p.id));
+    state.shortcuts = state.shortcuts.filter(s => !toDeleteShortcuts.includes(s.id));
+    clearSelection();
+    announceSave(`${total}개 삭제됨`);
+    exitSelectMode();
+    render();
+  });
+  $('#selBarCancel').addEventListener('click', () => exitSelectMode());
+
+  // In select mode, single tap on object toggles selection
+  document.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('select-mode')) return;
+    if (e.target.closest('.selection-bar')) return;
+    if (e.target.closest('.longpress-menu')) return;
+    const obj = getObjectAtPoint(e.clientX, e.clientY);
+    if (obj) {
+      e.preventDefault();
+      e.stopPropagation();
+      const key = obj.kind + ':' + obj.id;
+      if (selectedIds.has(key)) selectedIds.delete(key);
+      else selectedIds.add(key);
+      updateSelectionUI();
+      updateSelectionBar();
+      // Auto-exit if empty
+      if (selectedIds.size === 0) {
+        document.body.classList.remove('select-mode');
+      }
+    }
+  }, true);
 
   // ===== Init =====
   applyBoard();
